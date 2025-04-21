@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ContactSection from "@/components/ContactSection";
 import { useEffect, useState } from "react";
+import valentinCuellarImg from "../assets/valentin-cuellar.png";
+import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler } from "lucide-react";
 
 export default function PropertyDetails({ id }: { id: number }) {
   const [, navigate] = useLocation();
@@ -138,48 +140,54 @@ export default function PropertyDetails({ id }: { id: number }) {
                 <h2 className="font-serif text-2xl font-bold text-neutral-800 mb-4">Property Overview</h2>
                 <p className="text-neutral-600 mb-6">{property.description}</p>
                 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   {property.type === "RESIDENTIAL" && (
                     <>
-                      <div className="bg-neutral-50 p-4 rounded-md">
-                        <div className="flex items-center">
-                          <i className='bx bx-bed text-primary text-xl mr-2'></i>
-                          <div>
-                            <p className="text-sm text-neutral-600">Bedrooms</p>
-                            <p className="font-bold">{property.bedrooms}</p>
+                      <div className="bg-card dark:bg-slate-800 p-4 rounded-md shadow-sm">
+                        <div className="flex flex-col items-center text-center">
+                          <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-full mb-2">
+                            <Home className="h-5 w-5 text-primary" />
                           </div>
+                          <p className="text-sm text-muted-foreground">Bedrooms</p>
+                          <p className="font-bold text-foreground text-xl">{property.bedrooms}</p>
                         </div>
                       </div>
-                      <div className="bg-neutral-50 p-4 rounded-md">
-                        <div className="flex items-center">
-                          <i className='bx bx-bath text-primary text-xl mr-2'></i>
-                          <div>
-                            <p className="text-sm text-neutral-600">Bathrooms</p>
-                            <p className="font-bold">{property.bathrooms}</p>
+                      <div className="bg-card dark:bg-slate-800 p-4 rounded-md shadow-sm">
+                        <div className="flex flex-col items-center text-center">
+                          <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-full mb-2">
+                            <Bath className="h-5 w-5 text-primary" />
                           </div>
+                          <p className="text-sm text-muted-foreground">Bathrooms</p>
+                          <p className="font-bold text-foreground text-xl">{property.bathrooms}</p>
                         </div>
                       </div>
                     </>
                   )}
-                  <div className="bg-neutral-50 p-4 rounded-md">
-                    <div className="flex items-center">
-                      <i className='bx bx-area text-primary text-xl mr-2'></i>
-                      <div>
-                        <p className="text-sm text-neutral-600">Square Feet</p>
-                        <p className="font-bold">{property.squareFeet?.toLocaleString()}</p>
+                  <div className="bg-card dark:bg-slate-800 p-4 rounded-md shadow-sm">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-full mb-2">
+                        <Ruler className="h-5 w-5 text-primary" />
                       </div>
+                      <p className="text-sm text-muted-foreground">Square Feet</p>
+                      <p className="font-bold text-foreground text-xl">{property.squareFeet?.toLocaleString()}</p>
                     </div>
                   </div>
-                  <div className="bg-neutral-50 p-4 rounded-md">
-                    <div className="flex items-center">
-                      <i className='bx bx-building-house text-primary text-xl mr-2'></i>
-                      <div>
-                        <p className="text-sm text-neutral-600">Property Type</p>
-                        <p className="font-bold">
-                          {property.type === "RESIDENTIAL" ? "Residential" : 
-                           property.type === "COMMERCIAL" ? "Commercial" : "Land"}
-                        </p>
+                  <div className="bg-card dark:bg-slate-800 p-4 rounded-md shadow-sm">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-full mb-2">
+                        {property.type === "RESIDENTIAL" ? (
+                          <Home className="h-5 w-5 text-primary" />
+                        ) : property.type === "COMMERCIAL" ? (
+                          <Building className="h-5 w-5 text-primary" />
+                        ) : (
+                          <MapPin className="h-5 w-5 text-primary" />
+                        )}
                       </div>
+                      <p className="text-sm text-muted-foreground">Property Type</p>
+                      <p className="font-bold text-foreground text-xl">
+                        {property.type === "RESIDENTIAL" ? "Residential" : 
+                         property.type === "COMMERCIAL" ? "Commercial" : "Land"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -189,18 +197,20 @@ export default function PropertyDetails({ id }: { id: number }) {
                 <h2 className="font-serif text-2xl font-bold text-neutral-800 mb-4">Property Features</h2>
                 
                 {property.features && property.features.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
                     {property.features.map((feature, index) => (
-                      <div key={index} className="flex items-center">
-                        <div className="bg-primary-light bg-opacity-10 p-2 rounded-full mr-3">
-                          <i className='bx bx-check text-primary'></i>
+                      <div key={index} className="flex items-center bg-card dark:bg-slate-800 p-3 rounded-md shadow-sm">
+                        <div className="bg-primary/10 dark:bg-primary/20 p-2 rounded-full mr-3">
+                          <Check className="h-4 w-4 text-primary" />
                         </div>
-                        <span>{feature}</span>
+                        <span className="text-foreground">{feature}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-neutral-600">No additional features listed for this property.</p>
+                  <p className="text-muted-foreground bg-card dark:bg-slate-800 p-4 rounded-md shadow-sm">
+                    No additional features listed for this property.
+                  </p>
                 )}
               </TabsContent>
               
@@ -210,7 +220,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                   {property.address}, {property.city}, {property.state} {property.zipCode}
                 </p>
                 
-                <div className="h-80 bg-neutral-200 rounded-md mb-4 flex items-center justify-center">
+                <div className="h-80 bg-card dark:bg-slate-800 rounded-md mb-4 overflow-hidden shadow-sm">
                   {property.lat && property.lng ? (
                     <iframe
                       width="100%"
@@ -221,45 +231,55 @@ export default function PropertyDetails({ id }: { id: number }) {
                       src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyD_5wX6LM0b-L0M3VEIpDe3QAfllQ72YuE&q=${property.lat},${property.lng}`}
                     ></iframe>
                   ) : (
-                    <div className="text-center">
-                      <i className='bx bx-map text-5xl text-neutral-400'></i>
-                      <p className="mt-2 text-neutral-600">Map location not available</p>
+                    <div className="flex flex-col items-center justify-center h-full">
+                      <MapPin className="h-12 w-12 text-muted-foreground/50 mb-2" />
+                      <p className="text-muted-foreground">Map location not available</p>
                     </div>
                   )}
                 </div>
                 
-                <p className="text-neutral-600">
-                  This property is located in {property.city}, TX. 
-                  {property.type === "RESIDENTIAL" 
-                    ? " Perfect for families and individuals looking for a comfortable living space in Laredo."
-                    : property.type === "COMMERCIAL"
-                    ? " Ideal for businesses looking for a prime commercial location in Laredo."
-                    : " Great opportunity for development in Laredo."}
-                </p>
+                <div className="bg-card dark:bg-slate-800 p-4 rounded-md shadow-sm">
+                  <h3 className="text-md font-medium mb-2 flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-primary" />
+                    Neighborhood Information
+                  </h3>
+                  <p className="text-muted-foreground">
+                    This property is located in {property.city}, TX.
+                    {property.type === "RESIDENTIAL" 
+                      ? " Perfect for families and individuals looking for a comfortable living space in Laredo."
+                      : property.type === "COMMERCIAL"
+                      ? " Ideal for businesses looking for a prime commercial location in Laredo."
+                      : " Great opportunity for development in Laredo."}
+                  </p>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
           
           {/* Sidebar */}
           <div>
-            <div className="bg-neutral-50 p-6 rounded-lg shadow-sm mb-6">
-              <h3 className="font-serif text-xl font-bold text-neutral-800 mb-4">Interested in this property?</h3>
-              <p className="text-neutral-600 mb-4">
-                Contact Valentin Cuellar for more information or to schedule a viewing.
+            <div className="bg-card dark:bg-slate-800 p-6 rounded-lg shadow-md mb-6">
+              <h3 className="font-serif text-xl font-bold text-foreground mb-4">Interested in this property?</h3>
+              <p className="text-muted-foreground mb-4">
+                Contact Valentin Cuellar for more information or to schedule a viewing of this {property.type.toLowerCase()} property.
               </p>
               
               <div className="space-y-4">
-                <Button className="w-full">
-                  <i className='bx bx-phone mr-2'></i>
-                  Call: 956-712-3000
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <i className='bx bx-envelope mr-2'></i>
-                  Email Agent
-                </Button>
+                <a href="tel:+19567123000">
+                  <Button className="w-full">
+                    <Phone className="h-4 w-4 mr-2" />
+                    Call: 956-712-3000
+                  </Button>
+                </a>
+                <a href="mailto:valentin@ohanarealty.com?subject=Inquiry about {property.address}">
+                  <Button variant="outline" className="w-full">
+                    <Mail className="h-4 w-4 mr-2" />
+                    Email Agent
+                  </Button>
+                </a>
                 <a href="#contact" className="block">
                   <Button variant="secondary" className="w-full">
-                    <i className='bx bx-calendar mr-2'></i>
+                    <Calendar className="h-4 w-4 mr-2" />
                     Schedule a Viewing
                   </Button>
                 </a>
@@ -268,28 +288,61 @@ export default function PropertyDetails({ id }: { id: number }) {
             
             <div className="bg-primary p-6 rounded-lg text-white">
               <div className="flex items-center mb-4">
-                <div className="bg-white rounded-full p-2 mr-3">
-                  <i className='bx bx-user text-primary text-xl'></i>
+                <div className="relative overflow-hidden w-16 h-16 rounded-full mr-4 border-2 border-white">
+                  <img 
+                    src={valentinCuellarImg} 
+                    alt="Valentin Cuellar" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
-                  <h3 className="font-bold">Valentin Cuellar</h3>
-                  <p className="text-sm">Ohana Realty</p>
+                  <h3 className="font-bold text-lg">Valentin Cuellar</h3>
+                  <p className="text-sm text-white/80">Ohana Realty</p>
+                  <p className="text-xs mt-1 bg-secondary text-white px-2 py-0.5 rounded-full inline-block">
+                    Licensed Broker
+                  </p>
                 </div>
               </div>
               <Separator className="bg-white/20 my-4" />
-              <div className="space-y-2 text-sm">
+              <div className="space-y-3 text-sm">
                 <p className="flex items-center">
-                  <i className='bx bx-envelope mr-2'></i>
-                  info@ohanarealty.com
+                  <Mail className="h-4 w-4 mr-2 text-secondary" />
+                  valentin@ohanarealty.com
                 </p>
                 <p className="flex items-center">
-                  <i className='bx bx-phone mr-2'></i>
-                  956-712-3000
+                  <Phone className="h-4 w-4 mr-2 text-secondary" />
+                  Office: 956-712-3000
                 </p>
                 <p className="flex items-center">
-                  <i className='bx bx-mobile mr-2'></i>
-                  956-324-6714
+                  <Phone className="h-4 w-4 mr-2 text-secondary" />
+                  Mobile: 956-324-6714
                 </p>
+                <p className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 text-secondary" />
+                  505 Shiloh Dr, Apt 201, Laredo, TX
+                </p>
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-white/20">
+                <p className="text-sm mb-2">Areas of Expertise:</p>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center">
+                    <Check className="h-3 w-3 mr-1 text-secondary" />
+                    <span>Residential</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Check className="h-3 w-3 mr-1 text-secondary" />
+                    <span>Commercial</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Check className="h-3 w-3 mr-1 text-secondary" />
+                    <span>Investments</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Check className="h-3 w-3 mr-1 text-secondary" />
+                    <span>Laredo Market</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
