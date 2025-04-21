@@ -105,7 +105,7 @@ export default function Header() {
     <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center">
-          <div className="w-40 h-16 overflow-hidden">
+          <div className="w-40 h-16 overflow-hidden bg-white rounded-md">
             <img src={logoImg} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
           </div>
         </Link>

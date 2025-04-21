@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import logo from "../assets/logo.svg";
+import logo from "@assets/OIP.jfif";
 
 export default function Footer() {
   return (
@@ -9,10 +9,9 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 overflow-hidden rounded-md bg-white">
-                <img src={logo} alt="Ohana Realty Logo" className="w-full h-full object-cover" />
+              <div className="w-32 h-12 overflow-hidden bg-white rounded-md">
+                <img src={logo} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="font-serif text-2xl font-bold text-white">Ohana Realty</span>
             </div>
             <p className="mb-4">Your trusted partner for real estate services in Laredo, Texas. Specializing in residential and commercial properties.</p>
             <p className="text-sm">
