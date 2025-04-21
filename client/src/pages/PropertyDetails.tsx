@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ContactSection from "@/components/ContactSection";
 import { useEffect, useState } from "react";
-import valentinCuellarImg from "@assets/image_1745276882398.png";
+import valentinCuellarImg from "../assets/valentin-original.jfif";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler } from "lucide-react";
 
 export default function PropertyDetails({ id }: { id: number }) {
@@ -290,13 +290,13 @@ export default function PropertyDetails({ id }: { id: number }) {
               <div className="mb-5">
                 {/* Enhanced agent image with better background and styling */}
                 <div className="flex justify-center mb-4">
-                  <div className="relative w-36 h-36 rounded-full border-4 border-white shadow-xl bg-white">
-                    <img 
-                      src={valentinCuellarImg} 
-                      alt="Valentin Cuellar" 
-                      className="w-full h-full rounded-full"
-                    />
-                  </div>
+                  <img 
+                    src={valentinCuellarImg} 
+                    alt="Valentin Cuellar" 
+                    width={150}
+                    height={150}
+                    className="rounded-lg border-2 border-white shadow-lg"
+                  />
                 </div>
                 <div className="text-center">
                   <h3 className="font-bold text-xl">Valentin Cuellar</h3>

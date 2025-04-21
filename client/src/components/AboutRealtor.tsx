@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useEffect, useState } from "react";
-import valentinCuellarImg from "../assets/valentin-cuellar.png";
+import valentinCuellarImg from "../assets/valentin-original.jfif";
 import { Phone, Mail, Award, Star, MapPin, Clock } from "lucide-react";
 
 export default function AboutRealtor() {
@@ -122,7 +122,9 @@ export default function AboutRealtor() {
               <img 
                 src={valentinCuellarImg} 
                 alt="Valentin Cuellar - Ohana Realty" 
-                className="rounded-lg shadow-lg w-full h-auto"
+                className="rounded-lg shadow-lg"
+                width={500}
+                height={400}
               />
               <div className={`absolute -bottom-6 -right-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'} p-4 rounded-lg shadow-md`}>
                 <div className="flex items-center">
