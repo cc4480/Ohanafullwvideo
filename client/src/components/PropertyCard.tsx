@@ -25,7 +25,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   };
   
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+    <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
       <Link href={`/properties/${property.id}`}>
         <div className="relative">
           <img 
@@ -45,9 +45,9 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             <button 
               className={`${
                 isFavorited 
-                  ? 'bg-primary text-white' 
-                  : 'bg-white text-primary'
-              } p-2 rounded-full hover:bg-primary hover:text-white transition`}
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-background text-primary'
+              } p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition`}
               onClick={toggleFavorite}
               aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
             >
@@ -58,37 +58,37 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       </Link>
       <div className="p-6">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-serif text-xl font-bold text-neutral-800">
+          <h3 className="font-serif text-xl font-bold text-foreground">
             {property.address}
           </h3>
           <p className="text-secondary font-bold">
             {formatPrice(property.price)}
           </p>
         </div>
-        <p className="text-neutral-600 mb-4">
+        <p className="text-muted-foreground mb-4">
           {property.city}, {property.state} {property.zipCode}
         </p>
         <div className="flex flex-wrap gap-4 mb-4">
           {property.type === "RESIDENTIAL" && property.bedrooms && (
-            <div className="flex items-center text-neutral-700">
+            <div className="flex items-center text-foreground">
               <i className='bx bx-bed text-primary text-xl mr-2'></i>
               <span>{property.bedrooms} {property.bedrooms === 1 ? 'Bed' : 'Beds'}</span>
             </div>
           )}
           {property.type === "RESIDENTIAL" && property.bathrooms && (
-            <div className="flex items-center text-neutral-700">
+            <div className="flex items-center text-foreground">
               <i className='bx bx-bath text-primary text-xl mr-2'></i>
               <span>{property.bathrooms} {property.bathrooms === 1 ? 'Bath' : 'Baths'}</span>
             </div>
           )}
           {property.squareFeet && (
-            <div className="flex items-center text-neutral-700">
+            <div className="flex items-center text-foreground">
               <i className='bx bx-area text-primary text-xl mr-2'></i>
               <span>{property.squareFeet.toLocaleString()} sq. ft.</span>
             </div>
           )}
           {property.type === "COMMERCIAL" && (
-            <div className="flex items-center text-neutral-700">
+            <div className="flex items-center text-foreground">
               <i className='bx bx-building text-primary text-xl mr-2'></i>
               <span>Commercial</span>
             </div>
