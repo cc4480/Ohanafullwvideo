@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ContactSection from "@/components/ContactSection";
 import { useEffect, useState } from "react";
-import valentinCuellarImg from "../assets/valentin-original.jfif";
+import valentinCuellarImg from "../assets/valentin-realtor.png";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler } from "lucide-react";
 
 export default function PropertyDetails({ id }: { id: number }) {
