@@ -3,8 +3,8 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "./ThemeToggle";
 
-// Import logo
-import logo from "../assets/logo.svg";
+// Load the provided logo image
+import logoImg from "@assets/OIP.jfif";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -104,13 +104,10 @@ export default function Header() {
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-12 h-12 overflow-hidden">
-            <img src={logo} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
+        <Link href="/" className="flex items-center">
+          <div className="w-40 h-16 overflow-hidden">
+            <img src={logoImg} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
           </div>
-          <span className={`font-serif text-2xl font-bold ${scrolled || location !== "/" ? 'text-primary' : 'text-white'}`}>
-            Ohana Realty
-          </span>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8">
