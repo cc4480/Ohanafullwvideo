@@ -47,6 +47,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch properties by type" });
     }
   });
+  
+  // Search properties with filters
+  apiRouter.get("/properties/search", async (req, res) => {
+    try {
+      const { type, minPrice, maxPrice, minBeds, minBaths, city, zipCode } = req.query;
+      
+      let properties = await storage.getProperties();
+      
+      // Apply filters
+      if (type) {
+        properties = properties.filter(p => p.type.toLowerCase() === String(type).toLowerCase());
+      }
+      
+      if (minPrice) {
+        properties = properties.filter(p => p.price >= Number(minPrice));
+      }
+      
+      if (maxPrice) {
+        properties = properties.filter(p => p.price <= Number(maxPrice));
+      }
+      
+      if (minBeds) {
+        properties = properties.filter(p => p.bedrooms && p.bedrooms >= Number(minBeds));
+      }
+      
+      if (minBaths) {
+        properties = properties.filter(p => p.bathrooms && p.bathrooms >= Number(minBaths));
+      }
+      
+      if (city) {
+        properties = properties.filter(p => p.city.toLowerCase().includes(String(city).toLowerCase()));
+      }
+      
+      if (zipCode) {
+        properties = properties.filter(p => p.zipCode === String(zipCode));
+      }
+      
+      res.json(properties);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to search properties" });
+    }
+  });
+  
+  // Get featured properties (top 4 properties)
+  apiRouter.get("/properties/featured", async (req, res) => {
+    try {
+      const properties = await storage.getProperties();
+      // Sort by price (descending) and select top 4
+      const featuredProperties = properties
+        .sort((a, b) => b.price - a.price)
+        .slice(0, 4);
+      
+      res.json(featuredProperties);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch featured properties" });
+    }
+  });
 
   // Get all neighborhoods
   apiRouter.get("/neighborhoods", async (req, res) => {
@@ -96,6 +153,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json({ message: "Message sent successfully", id: message.id });
     } catch (error) {
       res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+  
+  // Schedule a property viewing
+  apiRouter.post("/schedule-viewing", async (req, res) => {
+    try {
+      const viewingSchema = z.object({
+        propertyId: z.number(),
+        name: z.string().min(2),
+        email: z.string().email(),
+        phone: z.string().min(10),
+        date: z.string(),
+        time: z.string(),
+        notes: z.string().optional()
+      });
+      
+      const result = viewingSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid viewing request data", 
+          errors: result.error.errors 
+        });
+      }
+      
+      const { propertyId, name, email, phone, date, time, notes } = result.data;
+      
+      // Get property details
+      const property = await storage.getProperty(propertyId);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      
+      // Create a message with the viewing request details
+      const message = await storage.createMessage({
+        name,
+        email,
+        phone,
+        interest: "Property Viewing",
+        message: `Viewing request for ${property.address} on ${date} at ${time}. ${notes ? 'Notes: ' + notes : ''}`,
+        createdAt: new Date().toISOString()
+      });
+      
+      res.status(201).json({ 
+        message: "Viewing scheduled successfully", 
+        details: {
+          property: property.address,
+          date,
+          time,
+          id: message.id
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to schedule viewing" });
+    }
+  });
+  
+  // Property inquiry
+  apiRouter.post("/property-inquiry", async (req, res) => {
+    try {
+      const inquirySchema = z.object({
+        propertyId: z.number(),
+        name: z.string().min(2),
+        email: z.string().email(),
+        phone: z.string().min(10),
+        questions: z.string().min(5)
+      });
+      
+      const result = inquirySchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid inquiry data", 
+          errors: result.error.errors 
+        });
+      }
+      
+      const { propertyId, name, email, phone, questions } = result.data;
+      
+      // Get property details
+      const property = await storage.getProperty(propertyId);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      
+      // Create a message with the inquiry details
+      const message = await storage.createMessage({
+        name,
+        email,
+        phone,
+        interest: "Property Inquiry",
+        message: `Inquiry about ${property.address}: ${questions}`,
+        createdAt: new Date().toISOString()
+      });
+      
+      res.status(201).json({ 
+        message: "Inquiry submitted successfully", 
+        id: message.id 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to submit inquiry" });
     }
   });
 
