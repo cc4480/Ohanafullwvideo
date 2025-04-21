@@ -1,8 +1,9 @@
 import express, { type Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, initializeSampleData } from "./storage";
 import { insertMessageSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
+import { getDeepSeekResponse } from "./deepSeekAssistant";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Create API routes
@@ -257,7 +258,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Chat with AI assistant
+  // Chat with AI assistant using DeepSeek
   apiRouter.post("/chat", async (req, res) => {
     try {
       // Validate the request body
@@ -283,26 +284,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: new Date().toISOString()
       });
 
-      // Generate simple AI response based on the message content
-      let aiResponse = "";
-      
-      if (message.toLowerCase().includes("shiloh drive")) {
-        aiResponse = "I found 3 properties near Shiloh Drive under $250,000. The closest one is 3720 Flores Ave at $200,000, just 1.5 miles away. Would you like to see the details?";
-      } else if (message.toLowerCase().includes("3720 flores")) {
-        aiResponse = "3720 Flores Ave is a 2-bedroom, 1-bathroom home with 1,514 sq. ft. It's listed at $200,000. Would you like to schedule a viewing?";
-      } else if (message.toLowerCase().includes("iturbide")) {
-        aiResponse = "There are 2 commercial properties on Iturbide St. 1318 and 1314 Iturbide St, both priced at $220,000. They are retail/office spaces in downtown Laredo.";
-      } else if (message.toLowerCase().includes("commercial")) {
-        aiResponse = "We have 2 commercial properties available in Laredo. Both are located on Iturbide St in downtown. Would you like more information?";
-      } else if (message.toLowerCase().includes("residential")) {
-        aiResponse = "We have a residential property at 3720 Flores Ave. It's a 2-bedroom home listed at $200,000. Are you interested in this property?";
-      } else if (message.toLowerCase().includes("valentin")) {
-        aiResponse = "Valentin Cuellar is our real estate expert in Laredo. Would you like me to arrange a call with him? His number is 956-712-3000.";
-      } else if (message.toLowerCase().includes("neighborhood")) {
-        aiResponse = "Laredo has several great neighborhoods. North Laredo is popular for families, Downtown offers historic charm, and South Laredo is known for affordable housing options. Which area interests you most?";
-      } else {
-        aiResponse = "I'd be happy to help you find your dream property in Laredo. Could you tell me more about what you're looking for?";
-      }
+      // Get AI response from DeepSeek API
+      const aiResponse = await getDeepSeekResponse(message);
 
       // Save AI response
       const botMessage = await storage.createChatMessage({
@@ -320,7 +303,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         history: chatHistory
       });
     } catch (error) {
+      console.error("Error in chat endpoint:", error);
       res.status(500).json({ message: "Failed to process chat message" });
+    }
+  });
+  
+  // DeepSeek API endpoint
+  apiRouter.post("/deepseek", async (req, res) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+      
+      const reply = await getDeepSeekResponse(message);
+      res.json({ reply });
+    } catch (error) {
+      console.error("DeepSeek API endpoint error:", error);
+      res.status(500).json({ message: "Failed to get AI response" });
     }
   });
 
