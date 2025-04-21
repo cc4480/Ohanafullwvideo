@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ContactSection from "@/components/ContactSection";
 import { useEffect, useState } from "react";
-import valentinCuellarImg from "../assets/valentin-cuellar.png";
+import valentinCuellarImg from "@assets/image_1745276882398.png";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler } from "lucide-react";
 
 export default function PropertyDetails({ id }: { id: number }) {
@@ -287,20 +287,26 @@ export default function PropertyDetails({ id }: { id: number }) {
             </div>
             
             <div className="bg-primary p-6 rounded-lg text-white">
-              <div className="flex items-center mb-4">
-                <div className="relative overflow-hidden w-16 h-16 rounded-full mr-4 border-2 border-white">
-                  <img 
-                    src={valentinCuellarImg} 
-                    alt="Valentin Cuellar" 
-                    className="w-full h-full object-cover"
-                  />
+              <div className="mb-5">
+                {/* Enhanced agent image with better background and styling */}
+                <div className="flex justify-center mb-4">
+                  <div className="relative overflow-hidden w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white">
+                    <img 
+                      src={valentinCuellarImg} 
+                      alt="Valentin Cuellar" 
+                      className="w-full h-full object-cover object-top"
+                      style={{ imageRendering: 'crisp-edges' }}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg">Valentin Cuellar</h3>
-                  <p className="text-sm text-white/80">Ohana Realty</p>
-                  <p className="text-xs mt-1 bg-secondary text-white px-2 py-0.5 rounded-full inline-block">
-                    Licensed Broker
-                  </p>
+                <div className="text-center">
+                  <h3 className="font-bold text-xl">Valentin Cuellar</h3>
+                  <p className="text-sm text-white/90">Ohana Realty</p>
+                  <div className="mt-2 flex justify-center">
+                    <p className="text-xs bg-secondary text-white px-3 py-1 rounded-full inline-block">
+                      Licensed Broker
+                    </p>
+                  </div>
                 </div>
               </div>
               <Separator className="bg-white/20 my-4" />
