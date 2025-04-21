@@ -122,7 +122,7 @@ export default function AboutRealtor() {
               <img 
                 src={valentinCuellarImg} 
                 alt="Valentin Cuellar - Ohana Realty" 
-                className="rounded-lg shadow-lg w-full object-cover h-auto"
+                className="rounded-lg shadow-lg w-full h-auto"
               />
               <div className={`absolute -bottom-6 -right-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'} p-4 rounded-lg shadow-md`}>
                 <div className="flex items-center">

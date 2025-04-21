@@ -290,12 +290,11 @@ export default function PropertyDetails({ id }: { id: number }) {
               <div className="mb-5">
                 {/* Enhanced agent image with better background and styling */}
                 <div className="flex justify-center mb-4">
-                  <div className="relative overflow-hidden w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white">
+                  <div className="relative w-36 h-36 rounded-full border-4 border-white shadow-xl bg-white">
                     <img 
                       src={valentinCuellarImg} 
                       alt="Valentin Cuellar" 
-                      className="w-full h-full object-cover object-top"
-                      style={{ imageRendering: 'crisp-edges' }}
+                      className="w-full h-full rounded-full"
                     />
                   </div>
                 </div>
