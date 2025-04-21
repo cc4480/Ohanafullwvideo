@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 export default function PropertySearch() {
   const [propertyType, setPropertyType] = useState<string>("All");
   const [priceRange, setPriceRange] = useState<string>("Any");
-  const [locationSearch, setLocationSearch] = useState<string>("");
-  const [, setLocation] = useLocation();
+  const [locationQuery, setLocationQuery] = useState<string>("");
+  const [searchPath, setSearchPath] = useState<string>("/properties");
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,10 +17,11 @@ export default function PropertySearch() {
     const params = new URLSearchParams();
     if (propertyType !== "All") params.append("type", propertyType);
     if (priceRange !== "Any") params.append("price", priceRange);
-    if (locationSearch) params.append("location", locationSearch);
+    if (locationQuery) params.append("location", locationQuery);
     
-    // Navigate to properties page with filters
-    setLocation(`/properties?${params.toString()}`);
+    // Set the path for the Link component to use
+    const queryString = params.toString();
+    setSearchPath(queryString ? `/properties?${queryString}` : "/properties");
   };
   
   return (
@@ -63,14 +64,16 @@ export default function PropertySearch() {
               <Input
                 type="text"
                 placeholder="Enter neighborhood or address"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={locationQuery}
+                onChange={(e) => setLocationQuery(e.target.value)}
               />
             </div>
             <div className="md:col-span-3">
-              <Button type="submit" className="w-full bg-primary hover:bg-primary-dark">
-                Search Properties
-              </Button>
+              <Link href={searchPath}>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary-dark">
+                  Search Properties
+                </Button>
+              </Link>
             </div>
           </form>
         </div>
