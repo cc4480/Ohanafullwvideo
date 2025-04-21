@@ -13,11 +13,11 @@
   --card-foreground: 20 14.3% 4.1%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 174 59% 19%; /* #134E4A */
+  --primary: 180 65% 28%; /* #0E7F7F - Teal from logo */
   --primary-foreground: 211 100% 99%;
-  --secondary: 38 96% 54%; /* #F59E0B */
+  --secondary: 42 100% 50%; /* #FDAF00 - Gold/Orange from logo */
   --secondary-foreground: 24 9.8% 10%;
-  --accent: 60 4.8% 95.9%;
+  --accent: 210 40% 40%; /* Blue accent from logo */
   --accent-foreground: 24 9.8% 10%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 60 9.1% 97.8%;
@@ -26,21 +26,21 @@
 }
 
 .dark {
-  --background: 240 10% 3.9%;
+  --background: 215 28% 17%; /* Dark blue-gray */
   --foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
+  --muted: 215 28% 25%;
   --muted-foreground: 240 5% 64.9%;
-  --popover: 240 10% 3.9%;
+  --popover: 215 28% 17%;
   --popover-foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
+  --card: 215 28% 17%;
   --card-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --primary: 174 59% 19%; /* #134E4A */
+  --border: 215 28% 25%;
+  --input: 215 28% 25%;
+  --primary: 180 65% 28%; /* #0E7F7F - Teal from logo */
   --primary-foreground: 211 100% 99%;
-  --secondary: 38 96% 54%; /* #F59E0B */
+  --secondary: 42 100% 50%; /* #FDAF00 - Gold/Orange from logo */
   --secondary-foreground: 0 0% 98%;
-  --accent: 240 3.7% 15.9%;
+  --accent: 210 40% 60%; /* Lighter blue accent for dark mode */
   --accent-foreground: 0 0% 98%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
