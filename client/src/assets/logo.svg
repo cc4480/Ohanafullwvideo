@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="#0E7F7F" />
+  <circle cx="50" cy="50" r="40" fill="#FFFFFF" />
+  <circle cx="50" cy="50" r="35" fill="#0E7F7F" />
+  <path d="M30,40 L70,40 L50,20 Z" fill="#FDAF00" />
+  <path d="M35,50 L65,50 L50,70 Z" fill="#FDAF00" />
+  <text x="50" y="53" font-family="Arial" font-size="12" text-anchor="middle" fill="#FFFFFF">OHANA</text>
+</svg>

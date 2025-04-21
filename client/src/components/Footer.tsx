@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import logo from "../assets/logo.jfif";
+import logo from "../assets/logo.svg";
 
 export default function Footer() {
   return (

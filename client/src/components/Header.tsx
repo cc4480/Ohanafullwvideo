@@ -5,7 +5,7 @@ import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "./ThemeProvider";
 
 // Import logo
-import logo from "../assets/logo.jfif";
+import logo from "../assets/logo.svg";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -68,7 +68,7 @@ export default function Header() {
     }
     
     if (location === "/" && !scrolled) {
-      return `hover:text-secondary font-medium ${isActive ? 'text-secondary' : 'text-white'}`;
+      return `hover:text-white hover:brightness-125 font-medium transition-all ${isActive ? 'text-secondary' : 'text-white'}`;
     }
     
     return `hover:text-primary font-medium ${isActive ? 'text-primary' : 'text-foreground'}`;

@@ -3,21 +3,21 @@ import { Button } from "@/components/ui/button";
 
 export default function Hero() {
   return (
-    <section className="relative bg-neutral-900 h-screen flex items-center pt-16">
+    <section className="relative bg-neutral-900 min-h-screen flex items-center">
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/30 z-10"></div>
         <img 
           src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1973&auto=format&fit=crop" 
           alt="Luxury home exterior" 
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="container mx-auto px-4 relative z-20 mt-[-4rem]">
+      <div className="container mx-auto px-4 relative z-20 pt-24 pb-16">
         <div className="max-w-3xl">
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
             Find Your Dream Property in Laredo with Ohana Realty
           </h1>
-          <p className="text-neutral-100 text-lg md:text-xl mb-8 max-w-2xl">
+          <p className="text-white text-lg md:text-xl mb-8 max-w-2xl">
             Expert guidance from Valentin Cuellar to make your real estate journey seamless and successful.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
