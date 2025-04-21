@@ -1,10 +1,11 @@
-import { Moon, Sun } from "lucide-react";
+import { Moon, MoonStar, Sun, SunMoon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 
 export default function ThemeToggle() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [location] = useLocation();
   const isHome = location === "/";
 
@@ -37,6 +38,7 @@ export default function ThemeToggle() {
 
   // Handle toggle manually by adding/removing dark class
   const handleToggle = () => {
+    setIsTransitioning(true);
     const newIsDarkMode = !isDarkMode;
     
     if (newIsDarkMode) {
@@ -48,34 +50,48 @@ export default function ThemeToggle() {
     }
     
     setIsDarkMode(newIsDarkMode);
-    console.log("Theme toggled to:", newIsDarkMode ? "dark" : "light");
+    
+    // Reset the transition state after animation
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 300);
   };
 
   return (
-    <Button
-      variant={isHome ? "outline" : (isDarkMode ? "outline" : "secondary")}
-      size="sm"
-      onClick={handleToggle}
-      aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-      className={`rounded-full transition-all ${
-        isHome 
-          ? 'bg-white/20 backdrop-blur-sm hover:bg-white/30 border-white/50' 
-          : isDarkMode 
-            ? 'border-secondary hover:border-secondary/80' 
-            : ''
-      }`}
-    >
-      {isDarkMode ? (
-        <div className="flex items-center gap-2">
-          <Sun className="h-4 w-4 text-secondary" />
-          <span className="text-xs hidden sm:inline">Light Mode</span>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          <Moon className="h-4 w-4 text-primary-foreground" />
-          <span className="text-xs hidden sm:inline">Dark Mode</span>
-        </div>
-      )}
-    </Button>
+    <div className="relative group">
+      <Button
+        variant={isHome ? "outline" : "ghost"}
+        size="icon"
+        onClick={handleToggle}
+        aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+        className={`
+          rounded-full p-2 transition-all duration-300
+          ${isHome 
+            ? 'bg-white/20 backdrop-blur-sm hover:bg-white/30 border-white/50' 
+            : isDarkMode 
+              ? 'bg-slate-800 border-slate-700 hover:bg-slate-700' 
+              : 'bg-white hover:bg-secondary/10 shadow-sm'}
+          ${isTransitioning ? 'scale-90' : 'scale-100'}
+        `}
+      >
+        {isTransitioning ? (
+          <SunMoon className={`h-5 w-5 transition-all ${isDarkMode ? 'text-yellow-300' : 'text-primary'}`} />
+        ) : isDarkMode ? (
+          <MoonStar className="h-5 w-5 text-yellow-300" />
+        ) : (
+          <Sun className="h-5 w-5 text-primary" />
+        )}
+      </Button>
+      
+      <div className={`
+        absolute top-full left-1/2 transform -translate-x-1/2 mt-2 
+        bg-black/80 dark:bg-white/90 text-white dark:text-slate-900 
+        text-xs px-2 py-1 rounded shadow-lg pointer-events-none
+        opacity-0 group-hover:opacity-100 transition-opacity duration-200
+        hidden md:block
+      `}>
+        {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      </div>
+    </div>
   );
 }

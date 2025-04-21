@@ -3,17 +3,17 @@ import { Button } from "@/components/ui/button";
 
 export default function Hero() {
   return (
-    <section className="relative bg-neutral-900 min-h-screen flex items-center">
+    <section className="relative bg-neutral-900 min-h-screen flex items-center mt-[-4rem]">
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/30 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/30 z-10"></div>
         <img 
           src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1973&auto=format&fit=crop" 
           alt="Luxury home exterior" 
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="container mx-auto px-4 relative z-20 pt-24 pb-16">
-        <div className="max-w-3xl">
+      <div className="container mx-auto px-4 relative z-20 pt-28 md:pt-32 pb-16">
+        <div className="max-w-3xl mt-12">
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
             Find Your Dream Property in Laredo with Ohana Realty
           </h1>

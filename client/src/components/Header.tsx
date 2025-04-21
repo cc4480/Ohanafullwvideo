@@ -105,8 +105,8 @@ export default function Header() {
     <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 overflow-hidden rounded-md">
-            <img src={logo} alt="Ohana Realty Logo" className="w-full h-full object-cover" />
+          <div className="w-12 h-12 overflow-hidden">
+            <img src={logo} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
           </div>
           <span className={`font-serif text-2xl font-bold ${scrolled || location !== "/" ? 'text-primary' : 'text-white'}`}>
             Ohana Realty
