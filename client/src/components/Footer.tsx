@@ -9,8 +9,8 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-primary p-2 rounded-md">
-                <i className='bx bxs-home text-white text-2xl'></i>
+              <div className="w-10 h-10 overflow-hidden rounded-md bg-white">
+                <img src={logo} alt="Ohana Realty Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-serif text-2xl font-bold text-white">Ohana Realty</span>
             </div>
@@ -103,13 +103,13 @@ export default function Footer() {
               </li>
             </ul>
             <div className="flex space-x-4 mt-4">
-              <a href="#" className="text-neutral-400 hover:text-white transition">
+              <a href="#" className="text-secondary hover:text-white transition-colors">
                 <i className='bx bxl-facebook text-xl'></i>
               </a>
-              <a href="#" className="text-neutral-400 hover:text-white transition">
+              <a href="#" className="text-secondary hover:text-white transition-colors">
                 <i className='bx bxl-instagram text-xl'></i>
               </a>
-              <a href="#" className="text-neutral-400 hover:text-white transition">
+              <a href="#" className="text-secondary hover:text-white transition-colors">
                 <i className='bx bxl-linkedin text-xl'></i>
               </a>
             </div>
@@ -117,10 +117,10 @@ export default function Footer() {
         </div>
         
         {/* Copyright */}
-        <div className="border-t border-neutral-700 pt-6 mt-6">
+        <div className="border-t border-white/20 pt-6 mt-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm">&copy; {new Date().getFullYear()} Ohana Realty. All rights reserved.</p>
-            <p className="text-sm mt-2 md:mt-0">Website designed and developed with ❤️</p>
+            <p className="text-sm mt-2 md:mt-0">Website designed and developed with <span className="text-secondary">❤️</span></p>
           </div>
         </div>
       </div>
