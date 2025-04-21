@@ -6,6 +6,15 @@ import { z } from "zod";
 import { getDeepSeekResponse } from "./deepSeekAssistant";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize database with sample data
+  try {
+    console.log("Initializing database with sample data...");
+    await initializeSampleData();
+    console.log("Database initialization complete.");
+  } catch (error) {
+    console.error("Error initializing database:", error);
+  }
+  
   // Create API routes
   const apiRouter = express.Router();
 
