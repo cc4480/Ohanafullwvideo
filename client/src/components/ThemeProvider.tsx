@@ -5,6 +5,7 @@ type Theme = "light" | "dark";
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -14,42 +15,56 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>("light");
+  const [mounted, setMounted] = useState(false);
 
+  // Only run once the component is mounted to avoid hydration issues
   useEffect(() => {
+    setMounted(true);
+    
     // Initialize theme based on localStorage or system preference
     const storedTheme = localStorage.getItem("theme") as Theme;
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
     if (storedTheme === "dark" || (!storedTheme && prefersDark)) {
-      setTheme("dark");
+      setThemeState("dark");
       document.documentElement.classList.add("dark");
     } else {
-      setTheme("light");
+      setThemeState("light");
       document.documentElement.classList.remove("dark");
     }
   }, []);
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => {
-      const newTheme = prevTheme === "light" ? "dark" : "light";
-      
-      // Update localStorage
-      localStorage.setItem("theme", newTheme);
-      
-      // Update DOM
-      if (newTheme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-      
-      return newTheme;
-    });
+  // Separate function to set theme that can be called externally
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    
+    // Update localStorage
+    localStorage.setItem("theme", newTheme);
+    
+    // Update DOM
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   };
 
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    
+    // Log for debugging
+    console.log(`Theme toggled to: ${newTheme}`);
+  };
+
+  // Avoid rendering anything until mounted to prevent hydration issues
+  if (!mounted) {
+    return <>{children}</>;
+  }
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

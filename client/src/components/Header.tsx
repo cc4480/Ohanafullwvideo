@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "./ThemeToggle";
-import { useTheme } from "./ThemeProvider";
 
 // Import logo
 import logo from "../assets/logo.svg";
@@ -11,14 +10,42 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const [isDark, setIsDark] = useState(false);
+  
+  // Detect dark mode from document class
+  useEffect(() => {
+    const checkDarkMode = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    
+    // Check immediately
+    checkDarkMode();
+    
+    // Set up observer to monitor class changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.attributeName === 'class' &&
+          mutation.target === document.documentElement
+        ) {
+          checkDarkMode();
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, []);
   
   // Handle scroll effect for header
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 20);
     };
+    
+    // Initial check
+    handleScroll();
     
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -59,7 +86,7 @@ export default function Header() {
   const headerClasses = scrolled
     ? "bg-background shadow-md" 
     : location === "/"
-      ? "bg-transparent"
+      ? "bg-transparent bg-gradient-to-b from-black/30 to-transparent"
       : "bg-background";
       
   const textClasses = (isActive: boolean) => {
@@ -68,7 +95,7 @@ export default function Header() {
     }
     
     if (location === "/" && !scrolled) {
-      return `hover:text-white hover:brightness-125 font-medium transition-all ${isActive ? 'text-secondary' : 'text-white'}`;
+      return `hover:text-white hover:brightness-125 font-medium transition-all ${isActive ? 'text-secondary font-bold' : 'text-white'}`;
     }
     
     return `hover:text-primary font-medium ${isActive ? 'text-primary' : 'text-foreground'}`;

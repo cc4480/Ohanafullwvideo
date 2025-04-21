@@ -12,9 +12,9 @@ import PropertyDetails from "@/pages/PropertyDetails";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-function Router() {
+function App() {
   // Scroll to top on route change
-  const useScrollToTop = () => {
+  const ScrollToTop = () => {
     useEffect(() => {
       window.scrollTo(0, 0);
     }, []);
@@ -23,46 +23,56 @@ function Router() {
   };
 
   return (
-    <>
-      <Header />
-      <Switch>
-        <Route path="/">
-          {() => {
-            useScrollToTop();
-            return <Home />;
-          }}
-        </Route>
-        <Route path="/properties">
-          {() => {
-            useScrollToTop();
-            return <Properties />;
-          }}
-        </Route>
-        <Route path="/properties/:id">
-          {(params) => {
-            useScrollToTop();
-            return <PropertyDetails id={parseInt(params.id)} />;
-          }}
-        </Route>
-        <Route>
-          {() => {
-            useScrollToTop();
-            return <NotFound />;
-          }}
-        </Route>
-      </Switch>
-      <Footer />
-    </>
-  );
-}
-
-function App() {
-  return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <>
+            <Header />
+            <Switch>
+              <Route path="/">
+                {() => {
+                  return (
+                    <>
+                      <ScrollToTop />
+                      <Home />
+                    </>
+                  );
+                }}
+              </Route>
+              <Route path="/properties">
+                {() => {
+                  return (
+                    <>
+                      <ScrollToTop />
+                      <Properties />
+                    </>
+                  );
+                }}
+              </Route>
+              <Route path="/properties/:id">
+                {(params) => {
+                  return (
+                    <>
+                      <ScrollToTop />
+                      <PropertyDetails id={parseInt(params.id)} />
+                    </>
+                  );
+                }}
+              </Route>
+              <Route>
+                {() => {
+                  return (
+                    <>
+                      <ScrollToTop />
+                      <NotFound />
+                    </>
+                  );
+                }}
+              </Route>
+            </Switch>
+            <Footer />
+          </>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

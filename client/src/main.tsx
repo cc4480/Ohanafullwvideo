@@ -2,6 +2,21 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+// Initialize dark mode based on localStorage or system preference before render
+const initializeTheme = () => {
+  const storedTheme = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  
+  if (storedTheme === "dark" || (!storedTheme && prefersDark)) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+};
+
+// Call the initialization function
+initializeTheme();
+
 // Add global styles from external sources
 const linkElement = document.createElement('link');
 linkElement.rel = 'stylesheet';

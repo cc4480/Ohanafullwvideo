@@ -17,6 +17,8 @@ export default function PropertyMap() {
     queryKey: ['/api/properties'],
   });
   
+  const [mapError, setMapError] = useState<string | null>(null);
+  
   // Load Google Maps script
   useEffect(() => {
     // Check if the Google Maps script is already loaded
@@ -25,9 +27,18 @@ export default function PropertyMap() {
       return;
     }
     
+    // Use a placeholder API key or fetch from environment
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+    
+    if (!apiKey) {
+      console.warn("No Google Maps API key provided, map functionality will be limited");
+      setMapError("Missing Google Maps API key");
+      return;
+    }
+    
     // Initialize the Google Maps loader
     const loader = new Loader({
-      apiKey: "AIzaSyD_5wX6LM0b-L0M3VEIpDe3QAfllQ72YuE",
+      apiKey,
       version: "weekly",
     });
     
@@ -36,6 +47,7 @@ export default function PropertyMap() {
       setMapLoaded(true);
     }).catch(error => {
       console.error("Error loading Google Maps:", error);
+      setMapError("Failed to load Google Maps");
     });
   }, []);
   
@@ -43,71 +55,84 @@ export default function PropertyMap() {
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || !properties?.length) return;
     
-    const map = new google.maps.Map(mapRef.current, {
-      center: { lat: 27.52, lng: -99.50 }, // Laredo, TX center
-      zoom: 12,
-      mapTypeControl: false,
-      fullscreenControl: false,
-      streetViewControl: false,
-    });
-    
-    // Create bounds to fit all markers
-    const bounds = new google.maps.LatLngBounds();
-    
-    // Add markers for each property
-    properties.forEach(property => {
-      if (!property.lat || !property.lng) return;
+    try {
+      // Fallback to static map if Google Maps isn't available
+      if (!window.google?.maps) {
+        setMapError("Google Maps not available");
+        return;
+      }
       
-      const position = { lat: property.lat, lng: property.lng };
+      const mapOptions = {
+        center: { lat: 27.52, lng: -99.50 }, // Laredo, TX center
+        zoom: 12,
+        mapTypeControl: false,
+        fullscreenControl: false,
+        streetViewControl: false,
+      };
       
-      // Create marker
-      const marker = new google.maps.Marker({
-        position,
-        map,
-        title: property.address,
-        icon: {
-          url: property.type === "RESIDENTIAL" 
-            ? "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" 
-            : "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-          scaledSize: new google.maps.Size(40, 40),
-        },
-      });
+      const map = new window.google.maps.Map(mapRef.current, mapOptions);
       
-      // Create info window
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <div style="max-width: 200px">
-            <h3 style="font-weight: bold; margin-bottom: 4px">${property.address}</h3>
-            <p style="margin-bottom: 4px">${property.city}, ${property.state} ${property.zipCode}</p>
-            <p style="font-weight: bold; color: #F59E0B">$${property.price.toLocaleString()}</p>
-            <a 
-              href="/properties/${property.id}" 
-              style="display: block; text-align: center; background-color: #134E4A; color: white; padding: 4px; margin-top: 8px; text-decoration: none; border-radius: 4px;"
-            >
-              View Details
-            </a>
-          </div>
-        `,
-      });
+      // Create bounds to fit all markers
+      const bounds = new window.google.maps.LatLngBounds();
       
-      // Add click listener to marker
-      marker.addListener("click", () => {
-        infoWindow.open({
-          anchor: marker,
+      // Add markers for each property
+      properties.forEach(property => {
+        if (!property.lat || !property.lng) return;
+        
+        const position = { lat: property.lat, lng: property.lng };
+        
+        // Create marker
+        const marker = new window.google.maps.Marker({
+          position,
           map,
+          title: property.address,
+          icon: {
+            url: property.type === "RESIDENTIAL" 
+              ? "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" 
+              : "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+            scaledSize: new window.google.maps.Size(40, 40),
+          },
         });
+        
+        // Create info window
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style="max-width: 200px">
+              <h3 style="font-weight: bold; margin-bottom: 4px">${property.address}</h3>
+              <p style="margin-bottom: 4px">${property.city}, ${property.state} ${property.zipCode}</p>
+              <p style="font-weight: bold; color: #F59E0B">$${property.price.toLocaleString()}</p>
+              <a 
+                href="/properties/${property.id}" 
+                style="display: block; text-align: center; background-color: #134E4A; color: white; padding: 4px; margin-top: 8px; text-decoration: none; border-radius: 4px;"
+              >
+                View Details
+              </a>
+            </div>
+          `,
+        });
+        
+        // Add click listener to marker
+        marker.addListener("click", () => {
+          infoWindow.open({
+            anchor: marker,
+            map,
+          });
+        });
+        
+        // Extend bounds to include this marker
+        bounds.extend(position);
       });
       
-      // Extend bounds to include this marker
-      bounds.extend(position);
-    });
-    
-    // Fit the map to the bounds
-    map.fitBounds(bounds);
-    
-    // Adjust zoom if there's only one marker
-    if (properties.filter(p => p.lat && p.lng).length === 1) {
-      map.setZoom(15);
+      // Fit the map to the bounds
+      map.fitBounds(bounds);
+      
+      // Adjust zoom if there's only one marker
+      if (properties.filter(p => p.lat && p.lng).length === 1) {
+        map.setZoom(15);
+      }
+    } catch (error) {
+      console.error("Error initializing map:", error);
+      setMapError("Failed to initialize map");
     }
   }, [mapLoaded, properties]);
   

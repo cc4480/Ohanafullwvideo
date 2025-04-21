@@ -36,9 +36,9 @@
   --card-foreground: 0 0% 98%;
   --border: 215 28% 25%;
   --input: 215 28% 25%;
-  --primary: 180 65% 28%; /* #0E7F7F - Teal from logo */
+  --primary: 180 65% 45%; /* Brighter teal for dark mode */
   --primary-foreground: 211 100% 99%;
-  --secondary: 42 100% 50%; /* #FDAF00 - Gold/Orange from logo */
+  --secondary: 42 100% 55%; /* Brighter gold for dark mode */
   --secondary-foreground: 0 0% 98%;
   --accent: 210 40% 60%; /* Lighter blue accent for dark mode */
   --accent-foreground: 0 0% 98%;
