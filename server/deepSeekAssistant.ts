@@ -1,53 +1,72 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
-
-// Check if API key is available
-const apiKey = process.env.DEEPSEEK_API_KEY;
-const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1';
-
-// Create axios instance for DeepSeek API
-const deepSeekClient = axios.create({
-  baseURL: baseUrl,
-  headers: {
-    'Authorization': `Bearer ${apiKey}`,
-    'Content-Type': 'application/json'
-  }
-});
 
 /**
  * Function to get AI response from DeepSeek API
  */
 export async function getDeepSeekResponse(userMessage: string): Promise<string> {
-  // If API key is not available, provide a fallback response
-  if (!apiKey) {
-    console.warn("DeepSeek API key not found. Using fallback response.");
-    return generateFallbackResponse(userMessage);
-  }
-
   try {
-    const response = await deepSeekClient.post('/chat/completions', {
-      model: "deepseek-chat",
-      messages: [
-        { 
-          role: "system", 
-          content: "You are an expert real estate assistant for Ohana Realty in Laredo, Texas. " +
-                  "Your name is Valentin AI, and you work alongside Valentin Cuellar, the licensed broker. " +
-                  "Provide helpful information about properties, neighborhoods, and the home buying/selling process. " +
-                  "Always be professional, concise, and accurate. If asked about specific property details you don't have, " +
-                  "offer to connect the user with Valentin Cuellar for more information."
-        },
-        { role: "user", content: userMessage }
-      ],
-      stream: false
-    });
+    // Check if the API key and base URL are set
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    const baseUrl = process.env.DEEPSEEK_BASE_URL;
 
-    return response.data.choices[0].message.content;
+    if (!apiKey || !baseUrl) {
+      console.error('DeepSeek API credentials are missing');
+      return generateFallbackResponse(userMessage);
+    }
+
+    // Prepare the request for DeepSeek API
+    const response = await axios.post(
+      baseUrl,
+      {
+        model: "deepseek-chat",
+        messages: [
+          {
+            role: "system", 
+            content: `You are Valentin AI, a real estate assistant for Ohana Realty in Laredo, Texas. 
+            Your primary role is to help potential clients find properties, learn about neighborhoods, 
+            and understand the buying/selling process.
+            
+            About Ohana Realty:
+            - Founded by Valentin Cuellar, a licensed Realtor
+            - Located at 505 Shiloh Dr, Apt 201, Laredo, TX 78045
+            - Phone: (956) 712-3000, Mobile: (956) 324-6714
+            - Specializes in both residential and commercial properties in Laredo area
+            
+            When responding to questions:
+            - Be helpful, professional, and knowledgeable
+            - Keep responses concise and clear
+            - Focus on Laredo real estate market specifics when possible
+            - Always offer to connect the client with Valentin for personalized service
+            - If asked about specific properties not in your knowledge, suggest contacting Valentin directly
+            - Avoid making up specific property details you don't have information about
+            
+            Some featured properties include:
+            - Residential: 3720 Flores Ave
+            - Commercial: 1318 & 1314 Iturbide St`
+          },
+          {
+            role: "user",
+            content: userMessage
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 800,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        }
+      }
+    );
+
+    // Extract and return the AI response
+    return response.data.choices[0]?.message?.content || 
+      "I'm sorry, I couldn't process your request at the moment. Please try again or contact Valentin directly.";
+
   } catch (error) {
-    console.error("DeepSeek API Error:", error);
-    return "I'm having trouble connecting to my knowledge base right now. Please try again later or contact Valentin Cuellar directly at 956-712-3000 for immediate assistance.";
+    console.error('Error getting response from DeepSeek API:', error);
+    return generateFallbackResponse(userMessage);
   }
 }
 
@@ -55,27 +74,44 @@ export async function getDeepSeekResponse(userMessage: string): Promise<string> 
  * Generate fallback responses when API is not available
  */
 function generateFallbackResponse(userMessage: string): string {
-  const message = userMessage.toLowerCase();
+  const userMessageLower = userMessage.toLowerCase();
   
-  if (message.includes("shiloh drive")) {
-    return "I found 3 properties near Shiloh Drive under $400,000. The closest one is 3720 Flores Ave at $359,000, just 1.5 miles away. Would you like to see the details?";
-  } else if (message.includes("3720 flores")) {
-    return "3720 Flores Ave is a 4-bedroom, 3-bathroom home with 2,800 sq. ft. It's listed at $359,000. It features hardwood floors, granite countertops, and a large backyard. Would you like to schedule a viewing?";
-  } else if (message.includes("iturbide")) {
-    return "There's a commercial property at 1318 & 1314 Iturbide St, priced at $899,000. It's a 5,400 sq. ft. retail/office space in downtown Laredo with excellent visibility and high foot traffic.";
-  } else if (message.includes("commercial")) {
-    return "We have a commercial property at 1318 & 1314 Iturbide St in downtown Laredo. It's priced at $899,000 with 5,400 sq. ft. Would you like more information?";
-  } else if (message.includes("residential")) {
-    return "We have residential properties like 3720 Flores Ave (4-bed, $359,000) and 245 Brumoso Ct (5-bed, $425,000). Which one would you like to know more about?";
-  } else if (message.includes("valentin")) {
-    return "Valentin Cuellar is our licensed real estate broker with over 20 years of experience in Laredo. He specializes in both residential and commercial properties. Would you like me to arrange a call with him? His office number is 956-712-3000 and mobile is 956-324-6714.";
-  } else if (message.includes("neighborhood")) {
-    return "Laredo has several great neighborhoods. North Laredo is popular for families with top schools and shopping centers, Downtown offers historic charm and cultural attractions, and Del Mar is known for its character homes and strong community. Which area interests you most?";
-  } else if (message.includes("mortgage") || message.includes("loan") || message.includes("finance")) {
-    return "For a $359,000 home with 20% down payment and a 30-year fixed mortgage at 6.5% interest rate, your estimated monthly payment would be around $1,815 (not including taxes and insurance). Would you like me to connect you with a mortgage specialist?";
-  } else if (message.includes("sell") || message.includes("selling")) {
-    return "Selling your home with Ohana Realty means working with experienced professionals who know the Laredo market inside and out. Valentin Cuellar can provide a free home valuation and marketing strategy tailored to your property. Would you like to schedule a consultation?";
-  } else {
-    return "I'd be happy to help you find your dream property in Laredo or answer any questions about the real estate market. Could you tell me more about what you're looking for? We have both residential and commercial properties available.";
+  // Property related questions
+  if (userMessageLower.includes('property') || 
+      userMessageLower.includes('house') || 
+      userMessageLower.includes('home') || 
+      userMessageLower.includes('apartment')) {
+    return "We have several great properties available in Laredo! Our featured residential property is at 3720 Flores Ave, and we have commercial spaces at 1318 & 1314 Iturbide St. Would you like to schedule a viewing with Valentin? You can reach him at (956) 324-6714.";
   }
+  
+  // Contact information
+  if (userMessageLower.includes('contact') || 
+      userMessageLower.includes('phone') || 
+      userMessageLower.includes('email') || 
+      userMessageLower.includes('call')) {
+    return "You can contact Valentin Cuellar at Ohana Realty by calling (956) 712-3000 or his mobile at (956) 324-6714. The office is located at 505 Shiloh Dr, Apt 201, Laredo, TX 78045.";
+  }
+  
+  // Neighborhood information
+  if (userMessageLower.includes('neighborhood') || 
+      userMessageLower.includes('area') || 
+      userMessageLower.includes('location')) {
+    return "Laredo has several great neighborhoods! North Laredo is known for newer developments and shopping, while Central Laredo has historic charm and cultural significance. South Laredo offers more affordable options with growing amenities. Which area interests you most?";
+  }
+  
+  // Buying process
+  if (userMessageLower.includes('buy') || 
+      userMessageLower.includes('buying') || 
+      userMessageLower.includes('purchase')) {
+    return "The home buying process typically involves getting pre-approved for a mortgage, searching for properties, making an offer, completing inspections, and closing the deal. Valentin can guide you through every step of this process. Would you like to discuss your specific needs?";
+  }
+  
+  // Selling process
+  if (userMessageLower.includes('sell') || 
+      userMessageLower.includes('selling')) {
+    return "When selling your property, it's important to price it correctly, prepare it for showings, market it effectively, and negotiate offers. Valentin can help you maximize your property's value and streamline the selling process. Would you like to schedule a consultation?";
+  }
+  
+  // Default response
+  return "Thank you for your interest in Ohana Realty! Valentin would be happy to help you with your real estate needs. Whether you're buying, selling, or just exploring options in Laredo, we're here to assist you. How can we help you specifically today?";
 }
