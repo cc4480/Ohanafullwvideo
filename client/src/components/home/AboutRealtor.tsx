@@ -140,12 +140,12 @@ export default function AboutRealtor() {
               <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full border-2 border-dashed border-primary/20 -z-10"></div>
               <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full border-2 border-dashed border-secondary/30 -z-10"></div>
               
-              {/* Main image with enhanced styling */}
+              {/* Main image with clear styling - no blur effects */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/10 group">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 z-10"></div>
+                {/* Dark overlay ONLY at the bottom to ensure text visibility but keep image clear */}
+                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
                 
-                {/* Animated overlay on hover */}
-                <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-30 transition-opacity duration-300 z-10"></div>
+                {/* Removed animated hover overlay for clarity */}
                 
                 <img 
                   src={valentinCuellarImg} 
@@ -153,6 +153,7 @@ export default function AboutRealtor() {
                   className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                   width={500}
                   height={400}
+                  style={{ imageRendering: 'crisp-edges' }}
                 />
                 
                 {/* Name tag overlay */}
