@@ -25,36 +25,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get property by ID
-  apiRouter.get("/properties/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid property ID" });
-      }
-
-      const property = await storage.getProperty(id);
-      if (!property) {
-        return res.status(404).json({ message: "Property not found" });
-      }
-
-      res.json(property);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch property" });
-    }
-  });
-
-  // Get properties by type (moved to non-conflicting route)
-  apiRouter.get("/propertiesByType/:type", async (req, res) => {
-    try {
-      const type = req.params.type;
-      const properties = await storage.getPropertiesByType(type);
-      res.json(properties);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch properties by type" });
-    }
-  });
-
   // Get featured properties (top 4 properties)
   apiRouter.get("/properties/featured", async (req, res) => {
     try {
@@ -109,6 +79,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(properties);
     } catch (error) {
       res.status(500).json({ message: "Failed to search properties" });
+    }
+  });
+  
+  // Get properties by type (moved to non-conflicting route)
+  apiRouter.get("/propertiesByType/:type", async (req, res) => {
+    try {
+      const type = req.params.type;
+      const properties = await storage.getPropertiesByType(type);
+      res.json(properties);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch properties by type" });
+    }
+  });
+  
+  // Get property by ID (needs to be AFTER the specific routes to avoid conflicts)
+  apiRouter.get("/properties/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid property ID" });
+      }
+
+      const property = await storage.getProperty(id);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      res.json(property);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch property" });
     }
   });
 
