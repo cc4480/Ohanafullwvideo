@@ -83,10 +83,10 @@
 /* Enhanced smooth animations */
 @keyframes float {
   0%, 100% {
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-10px) translateZ(0);
   }
 }
 
@@ -101,10 +101,10 @@
 
 @keyframes slow-zoom {
   0% {
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
   }
   100% {
-    transform: scale(1.1);
+    transform: scale(1.1) translateZ(0);
   }
 }
 
@@ -122,23 +122,23 @@
 }
 
 @keyframes slide-up {
-  0% { transform: translateY(20px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% { transform: translateY(20px) translateZ(0); opacity: 0; }
+  100% { transform: translateY(0) translateZ(0); opacity: 1; }
 }
 
 @keyframes slide-down {
-  0% { transform: translateY(-20px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% { transform: translateY(-20px) translateZ(0); opacity: 0; }
+  100% { transform: translateY(0) translateZ(0); opacity: 1; }
 }
 
 @keyframes scale-in {
-  0% { transform: scale(0.9); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(0.9) translateZ(0); opacity: 0; }
+  100% { transform: scale(1) translateZ(0); opacity: 1; }
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { transform: scale(1) translateZ(0); }
+  50% { transform: scale(1.05) translateZ(0); }
 }
 
 /* Additional smooth animations for the theme toggle */
@@ -148,8 +148,8 @@
 }
 
 @keyframes stars-pulse {
-  0%, 100% { opacity: 0.8; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
+  0%, 100% { opacity: 0.8; transform: scale(0.8) translateZ(0); }
+  50% { opacity: 1; transform: scale(1.2) translateZ(0); }
 }
 
 /* Smoother loading animation for skeleton */
@@ -160,19 +160,19 @@
 
 /* Animation for content load */
 @keyframes content-appear {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% { opacity: 0; transform: translateY(10px) translateZ(0); }
+  100% { opacity: 1; transform: translateY(0) translateZ(0); }
 }
 
 /* Animations for image hover */
 @keyframes image-zoom {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.05); }
+  0% { transform: scale(1) translateZ(0); }
+  100% { transform: scale(1.05) translateZ(0); }
 }
 
 @keyframes subtle-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50% { transform: translateY(-5px) translateZ(0); }
 }
 
 @layer base {
@@ -301,21 +301,27 @@
     will-change: transform;
   }
   
-  /* Faster loading by preloading theme transitions */
+  /* Faster loading by preloading theme transitions with better performance */
   .theme-transition {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, 
-                box-shadow 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+    transition: background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), 
+                color 0.3s cubic-bezier(0.22, 1, 0.36, 1), 
+                border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), 
+                box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1), 
+                transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), 
+                opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: background-color, color, border-color, box-shadow, transform, opacity;
+    transform: translateZ(0);
   }
   
   /* Enhanced hover effects with GPU acceleration */
   .card-hover-effect {
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform, box-shadow;
+    transform: translateZ(0);
   }
   
   .card-hover-effect:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px) translateZ(0);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
   
