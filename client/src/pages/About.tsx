@@ -220,8 +220,8 @@ export default function About() {
                 </p>
                 
                 <p className="text-muted-foreground mb-6">
-                  Valentin is active in the Laredo community, serving on the board of the local Habitat for Humanity 
-                  chapter and volunteering with several youth education initiatives.
+                  Valentin is dedicated to providing exceptional service and building strong relationships with clients
+                  throughout Laredo and surrounding areas.
                 </p>
                 
                 <div className="flex flex-wrap gap-4">
