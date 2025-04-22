@@ -19,6 +19,7 @@ import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import PerformanceOptimizer from "@/components/common/PerformanceOptimizer";
+import SiteMapGenerator from "@/components/SiteMapGenerator";
 
 // ScrollToTop component that watches for route changes
 const ScrollToTop = () => {
@@ -34,10 +35,39 @@ const ScrollToTop = () => {
 function App() {
   // Main App component with fixed background parallax effects and performance optimizations
   
+  // Base URL for the website - used for SEO components and sitemap generation
+  const websiteUrl = "https://ohanarealty.com";
+  
   return (
     <QueryClientProvider client={queryClient}>
       {/* Apply performance optimizations globally */}
       <PerformanceOptimizer />
+      
+      {/* Enterprise-grade SEO: Sitemap Generator */}
+      <SiteMapGenerator 
+        baseUrl={websiteUrl}
+        enableXml={true}
+        enableRss={true}
+        enableHTML={true}
+        priorityMap={{
+          home: 1.0,
+          properties: 0.9,
+          propertyDetail: 0.8,
+          neighborhoods: 0.8,
+          neighborhoodDetail: 0.7,
+          about: 0.6,
+          contact: 0.5
+        }}
+        changeFreqMap={{
+          home: 'weekly',
+          properties: 'daily',
+          propertyDetail: 'weekly',
+          neighborhoods: 'weekly',
+          neighborhoodDetail: 'monthly',
+          about: 'monthly',
+          contact: 'monthly'
+        }}
+      />
       
       <ThemeProvider>
         <TooltipProvider>

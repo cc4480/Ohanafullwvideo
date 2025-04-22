@@ -9,10 +9,10 @@ import { useEffect, useState } from "react";
 import valentinCuellarImg from "../assets/valentin-realtor.png";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle, Maximize2 } from "lucide-react";
 
-// Import our new simplified SEO components
-import SimpleSEOMetadata from "@/components/SimpleSEOMetadata";
-import SimpleBreadcrumbs from "@/components/SimpleBreadcrumbs";
-import { generatePropertyStructuredData } from "@/components/SimplePropertyStructuredData";
+// Import our enterprise-grade SEO components
+import SafeHelmet from "../components/SafeHelmet";
+import SimpleBreadcrumbs from "../components/SimpleBreadcrumbs";
+import { generatePropertyStructuredData } from "../components/SimplePropertyStructuredData";
 import SEOLocationMap from "@/components/SEOLocationMap";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
@@ -111,45 +111,78 @@ export default function PropertyDetails({ id }: { id: number }) {
 
   return (
     <>
-      {/* Enhanced SEO metadata with simplified implementation */}
-      <SimpleSEOMetadata
+      {/* Enhanced SEO metadata using SafeHelmet to avoid Symbol conversion errors */}
+      <SafeHelmet
         title={`${property.bedrooms ? `${property.bedrooms} Bed, ` : ''}${property.bathrooms ? `${property.bathrooms} Bath ` : ''}${property.type} For Sale at ${property.address} | ${formatPrice(property.price)}`}
-        description={propertyDescription}
-        keywords={[
-          `${property.type.toLowerCase()} for sale`,
-          `${property.city} real estate`,
-          `${property.bedrooms} bedroom house`,
-          `${property.bathrooms} bathroom home`,
-          `${property.address}`,
-          `${property.zipCode} properties`,
-          `${property.city} ${property.state} real estate`,
-          `homes for sale in ${property.city}`,
-          property.features && Array.isArray(property.features) ? property.features.join(', ') : ''
+        meta={[
+          // Basic Meta Tags
+          { name: "description", content: propertyDescription },
+          { name: "keywords", content: [
+            `${property.type.toLowerCase()} for sale`,
+            `${property.city} real estate`,
+            `${property.bedrooms} bedroom house`,
+            `${property.bathrooms} bathroom home`,
+            `${property.address}`,
+            `${property.zipCode} properties`,
+            `${property.city} ${property.state} real estate`,
+            `homes for sale in ${property.city}`,
+            property.features && Array.isArray(property.features) ? property.features.join(', ') : ''
+          ].join(', ') },
+          
+          // Open Graph / Facebook
+          { property: "og:type", content: "product" },
+          { property: "og:url", content: `${websiteUrl}/properties/${property.id}` },
+          { property: "og:title", content: `${property.bedrooms ? `${property.bedrooms} Bed, ` : ''}${property.bathrooms ? `${property.bathrooms} Bath ` : ''}${property.type} For Sale at ${property.address}` },
+          { property: "og:description", content: propertyDescription },
+          { property: "og:site_name", content: "Ohana Realty" },
+          { property: "og:locale", content: "en_US" },
+          
+          // Only add image if available
+          ...(property.images && Array.isArray(property.images) && property.images.length > 0 ? [
+            { property: "og:image", content: property.images[0] },
+            { property: "og:image:alt", content: `Property at ${property.address}` },
+            { name: "twitter:image", content: property.images[0] }
+          ] : []),
+          
+          // Twitter
+          { name: "twitter:card", content: "summary_large_image" },
+          { name: "twitter:title", content: `${property.bedrooms ? `${property.bedrooms} Bed, ` : ''}${property.type} at ${property.address}` },
+          { name: "twitter:description", content: propertyDescription },
+          { name: "twitter:site", content: "@ohanarealty" },
+          
+          // Geographic Metadata
+          ...(property.lat && property.lng ? [
+            { name: "geo.position", content: `${property.lat};${property.lng}` },
+            { name: "geo.placename", content: `${property.city}, ${property.state}` },
+            { name: "geo.region", content: `US-${property.state}` }
+          ] : []),
+          
+          // Author and dates
+          { property: "article:author", content: "Valentin Cuellar" },
+          { property: "article:published_time", content: new Date().toISOString() },
+          { property: "article:modified_time", content: new Date().toISOString() }
         ]}
-        canonicalUrl={`${websiteUrl}/properties/${property.id}`}
-        ogType="product"
-        ogImage={property.images && Array.isArray(property.images) && property.images.length > 0 ? property.images[0] : ''}
-        ogImageAlt={`Property at ${property.address}`}
-        twitterCard="summary_large_image"
-        twitterSite="@ohanarealty"
-        geoPosition={property.lat && property.lng ? { lat: property.lat, lng: property.lng } : undefined}
-        geoPlacename={`${property.city}, ${property.state}`}
-        geoRegion={`US-${property.state}`}
-        author="Valentin Cuellar"
-        publishedDate={new Date().toISOString()}
-        modifiedDate={new Date().toISOString()}
-        structuredData={generatePropertyStructuredData({
-          property,
-          baseUrl: websiteUrl,
-          agent: {
-            name: "Valentin Cuellar",
-            url: `${websiteUrl}/realtors/valentin-cuellar`,
-            image: valentinCuellarImg,
-            telephone: "+1-555-123-4567",
-            email: "valentin@ohanarealty.com"
+        link={[
+          // Canonical URL
+          { rel: "canonical", href: `${websiteUrl}/properties/${property.id}` }
+        ]}
+        script={[
+          // Structured Data / JSON-LD
+          {
+            type: "application/ld+json",
+            innerHTML: JSON.stringify(generatePropertyStructuredData({
+              property,
+              baseUrl: websiteUrl,
+              agent: {
+                name: "Valentin Cuellar",
+                url: `${websiteUrl}/realtors/valentin-cuellar`,
+                image: valentinCuellarImg,
+                telephone: "+1-555-123-4567",
+                email: "valentin@ohanarealty.com"
+              }
+            }))
           }
-        })}
-        siteName="Ohana Realty"
+        ]}
       />
       
       {/* Enhanced breadcrumbs with schema markup */}
