@@ -52,7 +52,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     <div className={`property-card ${isDarkMode ? 'bg-slate-800' : 'bg-card'} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 card-hover-effect border border-border/30 mobile-optimized group w-full`}>
       <Link href={`/properties/${property.id}`} onClick={() => window.scrollTo(0, 0)}>
         <div className="relative overflow-hidden h-52 sm:h-52 bg-slate-100 dark:bg-slate-700 transform-gpu">
-          {property.images && property.images.length > 0 ? (
+          {property.images && Array.isArray(property.images) && property.images.length > 0 ? (
             <img 
               src={property.images[0]} 
               alt={property.address} 

@@ -78,7 +78,8 @@ export default function PropertyListingMetadata({
   const title = `${property.bedrooms ? `${property.bedrooms} Bed, ` : ''}${property.bathrooms ? `${property.bathrooms} Bath ` : ''}${property.type} For Sale at ${property.address} | ${formattedPrice}`;
   
   // Create optimized meta description
-  const description = `${property.type} located at ${property.address}, ${property.city}, ${property.state} ${property.zipCode} for ${formattedPrice}. ${property.description.slice(0, 120)}${property.description.length > 120 ? '...' : ''}`;
+  const descriptionText = typeof property.description === 'string' ? property.description : '';
+  const description = `${property.type} located at ${property.address}, ${property.city}, ${property.state} ${property.zipCode} for ${formattedPrice}. ${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? '...' : ''}`;
   
   // Property URL
   const url = `${baseUrl}/properties/${property.id}`;
@@ -168,7 +169,7 @@ export default function PropertyListingMetadata({
       {/* Schema.org Structured Data */}
       <PropertyStructuredData
         name={title}
-        description={property.description}
+        description={descriptionText}
         url={url}
         image={Array.isArray(property.images) ? property.images : [mainImage]}
         price={property.price}

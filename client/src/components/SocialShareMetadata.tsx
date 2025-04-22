@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet';
+import SafeHelmet from './SafeHelmet';
 
 interface SocialShareMetadataProps {
   /**
@@ -157,18 +157,21 @@ export default function SocialShareMetadata({
   currency,
   availability
 }: SocialShareMetadataProps) {
-  // Truncate description for optimal display
-  const truncatedDescription = description.length > 160 
-    ? description.substring(0, 157) + '...' 
-    : description;
+  // Ensure description is a string and truncate it for optimal display
+  const descString = typeof description === 'string' ? description : '';
+  const truncatedDescription = descString.length > 160 
+    ? descString.substring(0, 157) + '...' 
+    : descString;
     
   // Ensure image is an absolute URL
-  const absoluteImage = image.startsWith('http') 
-    ? image 
-    : `https://ohanarealty.com${image.startsWith('/') ? '' : '/'}${image}`;
+  const absoluteImage = typeof image === 'string' 
+    ? (image.startsWith('http') 
+       ? image 
+       : `https://ohanarealty.com${image.startsWith('/') ? '' : '/'}${image}`)
+    : 'https://ohanarealty.com/placeholder-property.jpg';
   
   return (
-    <Helmet>
+    <SafeHelmet>
       {/* Basic OpenGraph tags */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={truncatedDescription} />
@@ -253,6 +256,6 @@ export default function SocialShareMetadata({
       {/* WhatsApp preview */}
       <meta property="og:site_name" content={siteName} />
       <meta property="og:rich_attachment" content="true" />
-    </Helmet>
+    </SafeHelmet>
   );
 }
