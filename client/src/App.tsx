@@ -7,6 +7,7 @@ import { queryClient } from "./lib/queryClient";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Layout from "@/components/layout/Layout";
+import BackgroundLogo from "@/components/layout/BackgroundLogo";
 import Home from "@/pages/Home";
 import Properties from "@/pages/Properties";
 import PropertyDetails from "@/pages/PropertyDetails";
@@ -37,6 +38,9 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <ErrorBoundary>
+            {/* Background logo overlay */}
+            <BackgroundLogo />
+            
             {/* Global header */}
             <Header />
             
