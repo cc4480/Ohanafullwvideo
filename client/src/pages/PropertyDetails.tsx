@@ -114,17 +114,19 @@ export default function PropertyDetails({ id }: { id: number }) {
   return (
     <>
       {/* Enhanced SEO for property listing */}
-      <PropertyListingMetadata
-        property={property}
-        baseUrl={websiteUrl}
-        broker={{
-          name: "Valentin Cuellar",
-          url: `${websiteUrl}/realtors/valentin-cuellar`,
-          image: valentinCuellarImg,
-          telephone: "+1-555-123-4567",
-          email: "valentin@ohanarealty.com"
-        }}
-      />
+      {/* PropertyListingMetadata temporarily disabled to fix Symbol to string error 
+        <PropertyListingMetadata
+          property={property}
+          baseUrl={websiteUrl}
+          broker={{
+            name: "Valentin Cuellar",
+            url: `${websiteUrl}/realtors/valentin-cuellar`,
+            image: valentinCuellarImg, 
+            telephone: "+1-555-123-4567",
+            email: "valentin@ohanarealty.com"
+          }}
+        />
+      */}
       
       {/* Enhanced SEO breadcrumbs with schema markup */}
       <SEOBreadcrumbs
