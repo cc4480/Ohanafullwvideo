@@ -315,14 +315,24 @@ export default function Hero() {
         </div>
       </div>
       
-      {/* Decorative elements with hardware acceleration */}
+      {/* Decorative elements with hardware acceleration - improved positioning for mobile */}
       <div 
-        className="absolute top-32 right-16 w-32 h-32 rounded-full bg-secondary/10 blur-3xl animate-float"
+        className="absolute top-32 right-16 w-24 sm:w-32 h-24 sm:h-32 rounded-full bg-secondary/10 blur-3xl animate-float hidden sm:block"
         style={{ willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       <div 
-        className="absolute bottom-24 left-16 w-48 h-48 rounded-full bg-primary/10 blur-3xl animate-float" 
+        className="absolute bottom-24 left-16 w-32 sm:w-48 h-32 sm:h-48 rounded-full bg-primary/10 blur-3xl animate-float hidden sm:block" 
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
+      ></div>
+      
+      {/* Mobile-specific smaller decorative elements */}
+      <div 
+        className="absolute top-20 right-8 w-16 h-16 rounded-full bg-secondary/5 blur-2xl animate-float sm:hidden opacity-30"
+        style={{ willChange: 'transform', transform: 'translateZ(0)' }}
+      ></div>
+      <div 
+        className="absolute bottom-32 left-4 w-20 h-20 rounded-full bg-primary/5 blur-2xl animate-float sm:hidden opacity-30" 
+        style={{ animationDelay: "1.5s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
       {/* Removed background logo */}
@@ -377,22 +387,26 @@ export default function Hero() {
             </Link>
           </div>
           
-          {/* Stats or badges - improved for mobile */}
+          {/* Stats or badges - completely redesigned for mobile */}
           <div 
-            className="mt-6 sm:mt-8 md:mt-10 flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3 md:gap-6 animate-slide-up" 
+            className="mt-6 sm:mt-8 md:mt-10 animate-slide-up" 
             style={{ animationDelay: "0.6s", willChange: 'transform, opacity' }}
           >
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 min-w-[100px] text-center sm:text-left">
-              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">27+</p>
-              <p className="text-white text-xs md:text-sm">Years Experience</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 min-w-[100px] text-center sm:text-left">
-              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">150+</p>
-              <p className="text-white text-xs md:text-sm">Properties Sold</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 min-w-[100px] text-center sm:text-left">
-              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">100%</p>
-              <p className="text-white text-xs md:text-sm">Client Satisfaction</p>
+            {/* Grid layout for mobile, flex for desktop */}
+            <div className="grid grid-cols-3 sm:flex sm:flex-wrap sm:justify-start gap-2 sm:gap-3 md:gap-6">
+              {/* Each stat box with fixed width and proper spacing */}
+              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[90px] sm:min-w-[100px] text-center">
+                <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">27+</p>
+                <p className="text-white text-xs md:text-sm whitespace-nowrap">Years Exp.</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[90px] sm:min-w-[100px] text-center">
+                <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">150+</p>
+                <p className="text-white text-xs md:text-sm whitespace-nowrap">Properties</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[90px] sm:min-w-[100px] text-center">
+                <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">100%</p>
+                <p className="text-white text-xs md:text-sm whitespace-nowrap">Satisfaction</p>
+              </div>
             </div>
           </div>
         </div>
