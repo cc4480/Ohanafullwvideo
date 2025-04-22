@@ -47,29 +47,58 @@ export default function AIAssistant() {
     }
   }, [chatHistory, isOpen]);
 
-  // Fetch chat history from server
-  const fetchChatHistory = async (sid: string) => {
+  // Fetch chat history from server with retry logic
+  const fetchChatHistory = async (sid: string, retryCount: number = 0) => {
     try {
-      const response = await axios.get(`/api/chat/${sid}`);
+      const response = await axios.get(`/api/chat/${sid}`, { timeout: 8000 });
       setChatHistory(response.data);
+      
+      // If we don't have any messages yet, add a welcome message
+      if (response.data.length === 0) {
+        setChatHistory([{
+          id: Date.now(),
+          sessionId: sid,
+          message: "👋 Welcome to Ohana Realty! I'm your virtual assistant. How can I help you with your real estate needs today?",
+          isUser: false,
+          createdAt: new Date().toISOString()
+        }]);
+      }
     } catch (error) {
       console.error("Error fetching chat history:", error);
+      
+      // Retry up to 2 times with exponential backoff
+      if (retryCount < 2) {
+        console.log(`Retrying chat history fetch in ${(retryCount + 1) * 1.5}s...`);
+        setTimeout(() => fetchChatHistory(sid, retryCount + 1), (retryCount + 1) * 1500);
+      } else if (chatHistory.length === 0) {
+        // If we still have no chat history after retries, show a welcome message
+        setChatHistory([{
+          id: Date.now(),
+          sessionId: sid,
+          message: "👋 Aloha! I'm your Ohana Real Estate Assistant. How can I help with your property search today?",
+          isUser: false,
+          createdAt: new Date().toISOString()
+        }]);
+      }
     }
   };
 
-  // Send message to AI assistant
-  const sendMessage = async () => {
+  // Send message to AI assistant with retry capability
+  const sendMessage = async (retryCount: number = 0) => {
     if (!message.trim()) return;
     
     setIsLoading(true);
     const userMessage = message;
     setMessage("");
     
+    // Generate unique message ID for tracking
+    const userMessageId = Date.now();
+    
     // Optimistically add user message to chat
     setChatHistory(prev => [
       ...prev,
       {
-        id: Date.now(),
+        id: userMessageId,
         sessionId,
         message: userMessage,
         isUser: true,
@@ -78,23 +107,75 @@ export default function AIAssistant() {
     ]);
     
     try {
+      // Set timeout to prevent hanging requests
       const response = await axios.post("/api/chat", {
         sessionId,
         message: userMessage
+      }, {
+        timeout: 15000, // 15 second timeout
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       
       // Update chat history with latest from server
-      setChatHistory(response.data.history);
+      if (response.data && response.data.history) {
+        setChatHistory(response.data.history);
+      } else if (response.data && response.data.reply) {
+        // Handle alternative response format
+        setChatHistory(prev => [
+          ...prev,
+          {
+            id: Date.now(),
+            sessionId,
+            message: response.data.reply,
+            isUser: false,
+            createdAt: new Date().toISOString()
+          }
+        ]);
+      }
     } catch (error) {
       console.error("Error sending message:", error);
       
-      // Add error message
+      // Retry on connection errors, with backoff
+      if (retryCount < 2 && 
+          (axios.isAxiosError(error) && 
+          (error.code === "ECONNABORTED" || error.response?.status === 502 || error.response?.status === 503))) {
+        console.log(`Retrying message send in ${(retryCount + 1) * 2}s...`);
+        setTimeout(() => sendMessage(retryCount + 1), (retryCount + 1) * 2000);
+        return;
+      }
+      
+      // Fallback to direct DeepSeek endpoint if chat endpoint fails
+      try {
+        const fallbackResponse = await axios.post("/api/deepseek", {
+          message: userMessage
+        }, { timeout: 10000 });
+        
+        if (fallbackResponse.data && fallbackResponse.data.reply) {
+          setChatHistory(prev => [
+            ...prev,
+            {
+              id: Date.now(),
+              sessionId,
+              message: fallbackResponse.data.reply,
+              isUser: false,
+              createdAt: new Date().toISOString()
+            }
+          ]);
+          return;
+        }
+      } catch (fallbackError) {
+        console.error("Fallback also failed:", fallbackError);
+      }
+      
+      // If all else fails, add generic error message
       setChatHistory(prev => [
         ...prev,
         {
-          id: Date.now() + 1,
+          id: Date.now(),
           sessionId,
-          message: "Sorry, I couldn't process your request. Please try again.",
+          message: "I apologize, but I'm having trouble connecting to my knowledge base right now. Please try again in a moment, or contact Valentin directly at (956) 324-6714 for immediate assistance.",
           isUser: false,
           createdAt: new Date().toISOString()
         }

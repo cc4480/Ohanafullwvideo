@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
-// Simple component that replaces the Google Maps API loader
-// We're using direct Google Maps links instead of embedding the map
 
+/**
+ * A simplified component that serves as a replacement for the Google Maps loader
+ * Instead of embedding maps with the Google Maps API, we use direct links to Google Maps
+ * which doesn't require an API key and is more lightweight
+ */
 interface GoogleMapsLoaderProps {
   children: React.ReactNode;
 }
 
 export default function GoogleMapsLoader({ children }: GoogleMapsLoaderProps) {
-  const [loaded, setLoaded] = useState<boolean>(true); // Always true since we don't load the API
+  const [loaded, setLoaded] = useState<boolean>(true);
   
   useEffect(() => {
-    // No API to load - we use direct links to Google Maps instead
+    // Since we're using direct links to Google Maps instead of the API,
+    // we just set loaded to true immediately
     setLoaded(true);
   }, []);
   
