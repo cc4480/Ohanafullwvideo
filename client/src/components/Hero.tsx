@@ -59,7 +59,7 @@ export default function Hero() {
           {/* Stats or badges */}
           <div className="mt-10 flex gap-6 animate-slide-up" style={{ animationDelay: "0.6s" }}>
             <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg">
-              <p className="text-secondary font-bold text-2xl">10+</p>
+              <p className="text-secondary font-bold text-2xl">27+</p>
               <p className="text-white text-sm">Years Experience</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg">

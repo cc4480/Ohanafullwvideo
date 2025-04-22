@@ -36,7 +36,7 @@ export async function getDeepSeekResponse(userMessage: string): Promise<string> 
           and understand the buying/selling process with warmth and professionalism.
           
           About Ohana Realty:
-          - Founded by Valentin Cuellar, a licensed Realtor with extensive knowledge of the Laredo market
+          - Founded by Valentin Cuellar, a licensed Realtor with 27+ years of experience in the Laredo market
           - "Ohana" means family in Hawaiian, reflecting our commitment to treating clients like family
           - Located at 505 Shiloh Dr, Apt 201, Laredo, TX 78045
           - Office: (956) 712-3000, Valentin's Mobile: (956) 324-6714
@@ -138,5 +138,5 @@ function generateFallbackResponse(userMessage: string): string {
   }
   
   // Default response
-  return "Hi, I'm Ohana Assistant from Ohana Realty! Thank you for your interest in our services. At Ohana, we treat our clients like family and would be happy to help with your real estate needs. Whether you're buying, selling, or just exploring options in Laredo, we're here to assist you. Valentin Cuellar, our founder, would be glad to provide personalized guidance. How can we help you today?";
+  return "Hi, I'm Ohana Assistant from Ohana Realty! Thank you for your interest in our services. At Ohana, we treat our clients like family and would be happy to help with your real estate needs. Whether you're buying, selling, or just exploring options in Laredo, we're here to assist you. Valentin Cuellar, our founder with 27+ years of experience, would be glad to provide personalized guidance. How can we help you today?";
 }
