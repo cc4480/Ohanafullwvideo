@@ -269,6 +269,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register the API router
   app.use("/api", apiRouter);
+  
+  // SEO Routes - Sitemap and Robots.txt
+  
+  // XML Sitemap
+  app.get('/sitemap.xml', async (req, res) => {
+    try {
+      // Get all properties and neighborhoods from the database
+      const properties = await storage.getProperties();
+      const neighborhoods = await storage.getNeighborhoods();
+      
+      // Base URL for the sitemap
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://ohanarealty.com'
+        : `http://${req.headers.host}`;
+      
+      // Generate sitemap XML content
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
+      
+      // Add main pages
+      const mainPages = [
+        { url: '', changefreq: 'weekly', priority: 1.0 },
+        { url: 'properties', changefreq: 'daily', priority: 0.9 },
+        { url: 'neighborhoods', changefreq: 'weekly', priority: 0.8 },
+        { url: 'about', changefreq: 'monthly', priority: 0.7 },
+        { url: 'contact', changefreq: 'monthly', priority: 0.7 }
+      ];
+      
+      // Add main pages to sitemap
+      for (const page of mainPages) {
+        xml += '  <url>\n';
+        xml += `    <loc>${baseUrl}/${page.url}</loc>\n`;
+        xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+        xml += `    <priority>${page.priority.toFixed(1)}</priority>\n`;
+        xml += '  </url>\n';
+      }
+      
+      // Add property pages
+      for (const property of properties) {
+        xml += '  <url>\n';
+        xml += `    <loc>${baseUrl}/properties/${property.id}</loc>\n`;
+        // Use current date for lastmod
+        const today = new Date().toISOString().split('T')[0];
+        xml += `    <lastmod>${today}</lastmod>\n`;
+        xml += '    <changefreq>weekly</changefreq>\n';
+        xml += '    <priority>0.8</priority>\n';
+        xml += '  </url>\n';
+      }
+      
+      // Add neighborhood pages
+      for (const neighborhood of neighborhoods) {
+        xml += '  <url>\n';
+        xml += `    <loc>${baseUrl}/neighborhoods/${neighborhood.id}</loc>\n`;
+        xml += '    <changefreq>weekly</changefreq>\n';
+        xml += '    <priority>0.7</priority>\n';
+        xml += '  </url>\n';
+      }
+      
+      // Filter pages for various property types
+      // Create a collection of unique property types
+      const typeSet = new Set<string>();
+      properties.forEach(p => p.type && typeSet.add(p.type));
+      const propertyTypes = Array.from(typeSet);
+      
+      for (const type of propertyTypes) {
+        xml += '  <url>\n';
+        xml += `    <loc>${baseUrl}/properties?type=${type.toLowerCase()}</loc>\n`;
+        xml += '    <changefreq>daily</changefreq>\n';
+        xml += '    <priority>0.7</priority>\n';
+        xml += '  </url>\n';
+      }
+      
+      // City-based filter pages
+      // Create a collection of unique cities
+      const citySet = new Set<string>();
+      properties.forEach(p => p.city && citySet.add(p.city));
+      const cities = Array.from(citySet);
+      
+      for (const city of cities) {
+        if (city) {
+          xml += '  <url>\n';
+          xml += `    <loc>${baseUrl}/properties?city=${encodeURIComponent(city)}</loc>\n`;
+          xml += '    <changefreq>weekly</changefreq>\n';
+          xml += '    <priority>0.6</priority>\n';
+          xml += '  </url>\n';
+        }
+      }
+      
+      xml += '</urlset>';
+      
+      // Set headers and send response
+      res.header('Content-Type', 'application/xml');
+      res.header('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+      res.send(xml);
+    } catch (error) {
+      console.error('Error generating sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+  
+  // Robots.txt
+  app.get('/robots.txt', (req, res) => {
+    const baseUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://ohanarealty.com'
+      : `http://${req.headers.host}`;
+    
+    const robotsTxt = `
+# Ohana Realty Robots.txt
+# Website: ${baseUrl}
+# Generated: ${new Date().toISOString()}
+
+User-agent: *
+Allow: /
+
+# Disallow admin and internal pages
+Disallow: /admin/
+Disallow: /internal/
+Disallow: /api/
+
+# Allow search engines to process important pages
+Allow: /properties
+Allow: /neighborhoods
+Allow: /about
+Allow: /contact
+
+# Sitemap location
+Sitemap: ${baseUrl}/sitemap.xml
+
+# Crawl delay to avoid overloading the server
+Crawl-delay: 1
+    `.trim();
+    
+    res.header('Content-Type', 'text/plain');
+    res.header('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+    res.send(robotsTxt);
+  });
 
   const httpServer = createServer(app);
   return httpServer;

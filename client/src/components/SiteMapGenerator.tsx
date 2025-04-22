@@ -69,7 +69,7 @@ export default function SiteMapGenerator({
         // Property details have high priority to ensure listing pages are crawled first
         urls.push({
           url: `${baseUrl}/properties/${property.id}`,
-          lastmod: property.updatedAt || new Date().toISOString(),
+          lastmod: new Date().toISOString(), // Use current date since updatedAt doesn't exist
           changefreq: 'weekly',
           priority: 0.8
         });
@@ -116,7 +116,9 @@ export default function SiteMapGenerator({
       }
       
       // Get unique cities from properties for city-based filter pages
-      const cities = [...new Set(properties.map(p => p.city))];
+      const citySet = new Set<string>();
+      properties.forEach(p => p.city && citySet.add(p.city));
+      const cities = Array.from(citySet);
       
       cities.forEach(city => {
         if (city) {
@@ -218,7 +220,7 @@ export function generateSitemapXML(props: SiteMapGeneratorProps): string {
     // Property details have high priority to ensure listing pages are crawled first
     urls.push({
       url: `${baseUrl}/properties/${property.id}`,
-      lastmod: property.updatedAt || new Date().toISOString(),
+      lastmod: new Date().toISOString(), // Use current date since updatedAt doesn't exist
       changefreq: 'weekly',
       priority: 0.8
     });
