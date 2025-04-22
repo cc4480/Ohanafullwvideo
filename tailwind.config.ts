@@ -157,6 +157,12 @@ export default {
         "slide-down": "slide-down 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both",
         "scale-in": "scale-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both",
         "fade-in": "fade-in 0.5s ease-out",
+        "slow-zoom": "slow-zoom 20s ease-in-out infinite alternate",
+        "noise": "noise 1s steps(10) infinite",
+      },
+      
+      backgroundImage: {
+        "noise": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='a' x='0' y='0'%3E%3CfeTurbulence baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E\")",
       },
     },
   },

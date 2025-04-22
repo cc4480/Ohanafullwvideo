@@ -25,49 +25,62 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   };
   
   return (
-    <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+    <div className="property-card bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 card-hover-effect border border-border/30">
       <Link href={`/properties/${property.id}`}>
-        <div className="relative">
+        <div className="relative overflow-hidden">
           <img 
             src={property.images[0]} 
             alt={property.address} 
             className="property-card-img w-full"
           />
-          <div className="absolute top-4 left-4">
-            <span className={`text-white text-sm font-medium px-3 py-1 rounded-full ${
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+          
+          <div className="absolute top-4 left-4 z-10">
+            <span className={`text-white text-sm font-medium px-3 py-1 rounded-full shadow-md backdrop-blur-sm ${
               property.type === "RESIDENTIAL" ? "bg-secondary" : "bg-primary"
-            }`}>
+            } animate-fade-in`}>
               {property.type === "RESIDENTIAL" ? "Residential" : 
                property.type === "COMMERCIAL" ? "Commercial" : "Land"}
             </span>
           </div>
-          <div className="absolute bottom-4 right-4">
+          
+          <div className="absolute bottom-4 right-4 z-10">
             <button 
               className={`${
                 isFavorited 
                   ? 'bg-primary text-primary-foreground' 
-                  : 'bg-background text-primary'
-              } p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition`}
+                  : 'bg-background/80 text-primary backdrop-blur-sm'
+              } p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-lg`}
               onClick={toggleFavorite}
               aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
             >
-              <i className={`bx ${isFavorited ? 'bxs-heart' : 'bx-heart'} text-xl`}></i>
+              <i className={`bx ${isFavorited ? 'bxs-heart' : 'bx-heart'} text-xl ${isFavorited ? 'animate-scale-in' : ''}`}></i>
             </button>
+          </div>
+          
+          {/* Price tag */}
+          <div className="absolute bottom-4 left-4 z-10">
+            <div className="bg-primary/90 text-white font-bold px-3 py-1.5 rounded-md shadow-lg backdrop-blur-sm">
+              {formatPrice(property.price)}
+            </div>
           </div>
         </div>
       </Link>
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-serif text-xl font-bold text-foreground">
+      <div className="p-6 relative">
+        {/* Subtle corner decoration */}
+        <div className="absolute top-0 right-0 w-12 h-12 overflow-hidden">
+          <div className="absolute -top-6 -right-6 w-12 h-12 bg-primary/10 rotate-45 transform origin-bottom-left"></div>
+        </div>
+        
+        <div className="flex flex-col mb-2">
+          <h3 className="font-serif text-xl font-bold text-foreground hover:text-primary transition-colors duration-300">
             {property.address}
           </h3>
-          <p className="text-secondary font-bold">
-            {formatPrice(property.price)}
+          <p className="text-muted-foreground">
+            {property.city}, {property.state} {property.zipCode}
           </p>
         </div>
-        <p className="text-muted-foreground mb-4">
-          {property.city}, {property.state} {property.zipCode}
-        </p>
         <div className="flex flex-wrap gap-4 mb-4">
           {property.type === "RESIDENTIAL" && property.bedrooms && (
             <div className="flex items-center text-foreground">
@@ -95,8 +108,9 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           )}
         </div>
         <Link href={`/properties/${property.id}`}>
-          <Button className="w-full">
-            View Details
+          <Button className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg group">
+            <span>View Details</span>
+            <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1'></i>
           </Button>
         </Link>
       </div>

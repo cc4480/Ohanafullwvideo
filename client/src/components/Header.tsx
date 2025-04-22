@@ -84,53 +84,66 @@ export default function Header() {
   
   // Dynamic header styles based on scroll position
   const headerClasses = scrolled
-    ? "bg-background shadow-md" 
+    ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/10" 
     : location === "/"
-      ? "bg-transparent bg-gradient-to-b from-black/30 to-transparent"
-      : "bg-background";
+      ? "bg-transparent bg-gradient-to-b from-black/50 via-black/30 to-transparent backdrop-blur-sm"
+      : "bg-background/95 backdrop-blur-md";
       
   const textClasses = (isActive: boolean) => {
     if (scrolled) {
-      return `hover:text-primary font-medium ${isActive ? 'text-primary' : 'text-foreground'}`;
+      return `hover:text-primary font-medium transition-all duration-300 relative
+        ${isActive ? 'text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-primary after:rounded-full' : 'text-foreground'}`;
     }
     
     if (location === "/" && !scrolled) {
-      return `hover:text-white hover:brightness-125 font-medium transition-all ${isActive ? 'text-secondary font-bold' : 'text-white'}`;
+      return `hover:text-white hover:brightness-125 font-medium transition-all duration-300 
+        ${isActive ? 'text-secondary font-bold after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-secondary after:rounded-full' : 'text-white'}`;
     }
     
-    return `hover:text-primary font-medium ${isActive ? 'text-primary' : 'text-foreground'}`;
+    return `hover:text-primary font-medium transition-all duration-300 relative
+      ${isActive ? 'text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-primary after:rounded-full' : 'text-foreground'}`;
   };
   
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
+    <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center">
-          <div className="w-40 h-16 overflow-hidden bg-white rounded-md">
+        <Link href="/" className="flex items-center relative group animate-fade-in">
+          <div className="w-40 h-16 overflow-hidden bg-white rounded-md shadow-md group-hover:shadow-lg transition-all duration-300">
             <img src={logoImg} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
           </div>
+          {/* Subtle decoration */}
+          <div className="absolute -bottom-2 -right-2 h-4 w-4 bg-secondary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </Link>
         
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/" className={textClasses(location === '/')}>
-            Home
-          </Link>
-          <Link href="/properties" className={textClasses(location === '/properties')}>
-            Properties
-          </Link>
-          <Link href="/#about" className={textClasses(false)}>
-            About
-          </Link>
-          <Link href="/#contact" className={textClasses(false)}>
-            Contact
-          </Link>
+        <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
+          {[
+            { path: '/', label: 'Home' },
+            { path: '/properties', label: 'Properties' },
+            { path: '/#about', label: 'About' },
+            { path: '/#contact', label: 'Contact' }
+          ].map((item, index) => (
+            <Link 
+              key={item.path} 
+              href={item.path} 
+              className={`${textClasses(location === item.path)} relative group overflow-hidden`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              {item.label}
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
+            </Link>
+          ))}
         </nav>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 animate-fade-in">
           <ThemeToggle />
           
           <Link href="/#contact">
-            <Button variant="secondary" className="hidden md:inline-block">
-              Contact Valentin
+            <Button 
+              variant="secondary" 
+              className="hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white transition-all duration-300 shadow-md hover:shadow-lg animate-slide-up"
+            >
+              <span>Contact Valentin</span>
+              <i className='bx bx-envelope'></i>
             </Button>
           </Link>
           
