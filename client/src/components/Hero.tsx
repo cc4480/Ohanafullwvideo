@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 
 export default function Hero() {
   return (
-    <section className="relative bg-neutral-900 min-h-screen flex items-center mt-[-5rem]">
+    <section className="relative bg-neutral-900 min-h-screen flex items-center mt-[-5.5rem]">
       {/* Background image and overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {/* Enhanced gradient overlay with multiple layers */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/60 to-black/40 z-10"></div>
+        {/* Enhanced gradient overlay with multiple layers - fully transparent at top for seamless header blend */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/40 z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10 mix-blend-overlay"></div>
         
         {/* Animated grain texture */}

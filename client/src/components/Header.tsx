@@ -86,7 +86,7 @@ export default function Header() {
   const headerClasses = scrolled
     ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/10" 
     : location === "/"
-      ? "bg-transparent bg-gradient-to-b from-black/50 via-black/30 to-transparent backdrop-blur-sm"
+      ? "bg-transparent"  // Completely transparent on homepage when not scrolled
       : "bg-background/95 backdrop-blur-md";
       
   const textClasses = (isActive: boolean) => {
@@ -108,7 +108,7 @@ export default function Header() {
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center relative group animate-fade-in">
-          <div className="w-40 h-16 overflow-hidden bg-white rounded-md shadow-md group-hover:shadow-lg transition-all duration-300">
+          <div className={`w-40 h-16 overflow-hidden ${location === "/" && !scrolled ? "bg-transparent" : "bg-white"} rounded-md transition-all duration-300`}>
             <img src={logoImg} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
           </div>
           {/* Subtle decoration */}
