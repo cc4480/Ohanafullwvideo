@@ -11,6 +11,21 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const [isDark, setIsDark] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check for mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    // Check immediately
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Detect dark mode from document class
   useEffect(() => {
@@ -108,12 +123,16 @@ export default function Header() {
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center relative group animate-fade-in">
-          <div className={`w-32 sm:w-40 md:w-48 h-14 sm:h-16 md:h-20 flex items-center justify-center ${location === "/" && !scrolled ? "bg-transparent" : "bg-white"} rounded-md transition-all duration-300`}>
+          <div className={`w-48 h-20 flex items-center justify-center ${location === "/" && !scrolled ? "bg-transparent" : "bg-white"} rounded-md transition-all duration-300`}>
             <img 
               src={logoImg} 
               alt="Ohana Realty Logo" 
-              className="w-auto h-auto max-w-[95%] max-h-[90%] transform-gpu" 
+              className="transform-gpu" 
               style={{ 
+                width: 'auto',
+                height: 'auto',
+                maxWidth: isMobile ? '45%' : '80%',
+                maxHeight: isMobile ? '45%' : '70%',
                 padding: '2px',
                 objectFit: 'contain',
                 display: 'block'
