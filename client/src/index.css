@@ -238,6 +238,61 @@
     font-family: 'Inter', sans-serif;
   }
   
+  /* Mobile Optimization - Fix rendering issues */
+  @media (max-width: 768px) {
+    /* Enable hardware acceleration on all elements */
+    * {
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-transform: perspective(1000px) translateZ(0);
+      transform: perspective(1000px) translateZ(0);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Optimize scrolling */
+    body {
+      -webkit-overflow-scrolling: touch;
+      overflow-y: scroll;
+      scroll-behavior: smooth;
+      touch-action: manipulation;
+    }
+    
+    /* Fix text rendering */
+    p, h1, h2, h3, h4, h5, h6, span, a, button {
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      hyphens: auto;
+    }
+    
+    /* Reduce complex rendering operations */
+    .property-card-img, .animation-scale-in, .animate-float, .animate-pulse {
+      animation-play-state: paused !important;
+      transition: transform 0.2s ease, opacity 0.2s ease !important;
+      will-change: transform, opacity !important;
+    }
+    
+    /* Ensure proper input sizing and prevent zooming */
+    input, textarea, select, button {
+      font-size: 16px !important; /* iOS won't zoom on inputs ≥ 16px */
+      max-width: 100% !important;
+    }
+    
+    /* Optimize images on mobile */
+    img {
+      max-width: 100% !important;
+      height: auto !important;
+      transform: translateZ(0) !important;
+    }
+    
+    /* Improve mobile touch targets */
+    button, a, [role="button"], [type="button"], [type="submit"], [type="reset"] {
+      min-height: 44px !important;
+      padding: 0.5rem !important;
+    }
+  }
+  
   /* Critical AI assistant styles - IMPORTANT: DO NOT REMOVE */
   .ai-assistant-button {
     position: fixed !important;
