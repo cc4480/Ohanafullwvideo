@@ -114,14 +114,17 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
             </span>
           ))}
         </div>
-        <a 
-          href="#" 
-          className="flex items-center text-primary font-medium hover:text-primary-dark active:scale-95 transition-transform transform-gpu"
+        <div 
+          className="flex items-center text-primary font-medium hover:text-primary-dark active:scale-95 transition-transform transform-gpu cursor-pointer"
           style={{ touchAction: 'manipulation' }}
+          onClick={() => {
+            // On mobile, this helps ensure the page starts from the top
+            window.scrollTo(0, 0);
+          }}
         >
           <span className="text-sm sm:text-base">Learn More</span>
           <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
-        </a>
+        </div>
       </div>
     </div>
   );

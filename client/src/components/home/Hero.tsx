@@ -166,16 +166,18 @@ export default function Hero() {
               <Button 
                 size="lg" 
                 className="w-full sm:w-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu"
+                onClick={() => window.scrollTo(0, 0)}
               >
                 <span>Explore Listings</span>
                 <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1'></i>
               </Button>
             </Link>
-            <Link href="/#contact">
+            <Link href="/contact">
               <Button 
                 size="lg" 
                 variant="outline" 
                 className="border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white w-full sm:w-auto text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu"
+                onClick={() => window.scrollTo(0, 0)}
               >
                 Contact Valentin Cuellar
               </Button>

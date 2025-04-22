@@ -13,12 +13,20 @@ export default function CallToAction() {
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link href="/properties">
-            <Button variant="outline" className="bg-white hover:bg-neutral-100 text-primary w-full sm:w-auto">
+            <Button 
+              variant="outline" 
+              className="bg-white hover:bg-neutral-100 text-primary w-full sm:w-auto"
+              onClick={() => window.scrollTo(0, 0)}
+            >
               Explore Properties
             </Button>
           </Link>
           <Link href="/contact">
-            <Button variant="secondary" className="w-full sm:w-auto">
+            <Button 
+              variant="secondary" 
+              className="w-full sm:w-auto"
+              onClick={() => window.scrollTo(0, 0)}
+            >
               Contact Valentin
             </Button>
           </Link>
