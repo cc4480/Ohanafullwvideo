@@ -17,19 +17,19 @@ export default function About() {
       name: "Maria Rodriguez",
       role: "First-time Homebuyer",
       content: "Working with Valentin made buying my first home a stress-free experience. He was patient, knowledgeable, and always available to answer my questions.",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      avatar: "@assets/MLS1.jpg"
     },
     {
       name: "Carlos Mendez",
       role: "Property Investor",
       content: "I've worked with many realtors, but Valentin's market knowledge and negotiation skills are unmatched. He helped me acquire multiple investment properties in Laredo at great prices.",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      avatar: "@assets/MLS2.jpg"
     },
     {
       name: "Lisa Treviño",
       role: "Home Seller",
       content: "Valentin sold our home in just two weeks for above asking price! His marketing strategy and staging advice made all the difference. Highly recommend!",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      avatar: "@assets/MLS5.jpg"
     }
   ];
 
@@ -188,12 +188,9 @@ export default function About() {
 
             <div className="rounded-lg overflow-hidden shadow-lg">
               <img 
-                src="/images/ohana-property.jpg" 
+                src="@assets/MLS15.jpg" 
                 alt="Ohana Realty property" 
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "https://placehold.co/600x400/slate/white?text=Ohana+Realty";
-                }}
               />
             </div>
           </div>
@@ -241,12 +238,9 @@ export default function About() {
               <div className="order-1 lg:order-2 flex justify-center">
                 <div className="w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden border-4 border-primary/20">
                   <img 
-                    src="/images/valentin-cuellar.jpg" 
+                    src="@assets/realtor-image.jpg" 
                     alt="Valentin Cuellar - Broker and Owner" 
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://placehold.co/800x800/slate/white?text=Valentin+Cuellar";
-                    }}
                   />
                 </div>
               </div>
