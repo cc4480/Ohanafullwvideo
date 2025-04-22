@@ -76,6 +76,7 @@ export default function Hero() {
                 style={{ 
                   transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
                   willChange: 'opacity',
+                  WebkitBackfaceVisibility: 'hidden',
                   backfaceVisibility: 'hidden',
                   transform: 'translate3d(0,0,0)'
                 }}
@@ -89,6 +90,7 @@ export default function Hero() {
                   style={{ 
                     willChange: 'transform',
                     transform: 'translate3d(0,0,0)',
+                    WebkitBackfaceVisibility: 'hidden',
                     backfaceVisibility: 'hidden'
                   }}
                 />
@@ -209,6 +211,7 @@ export default function Hero() {
         <a 
           href="#featured-properties" 
           className="text-white bg-white/10 backdrop-blur-sm p-2 rounded-full hover:bg-white/20 transition-all duration-300 shadow-lg transform-gpu"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
