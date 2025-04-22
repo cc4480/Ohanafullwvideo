@@ -17,15 +17,15 @@ export default function BackgroundLogo() {
   }, []);
 
   return (
-    <div className="fixed inset-0 w-full h-full pointer-events-none z-0 flex items-center justify-center">
+    <div className="fixed inset-0 w-full h-full pointer-events-none z-20 flex items-center justify-center">
       {/* Semi-transparent dark overlay to ensure content visibility */}
       <div className="absolute inset-0 bg-black opacity-70 z-0" />
       
-      {/* Logo on top of the overlay */}
+      {/* Logo on top of the overlay - static, not animated */}
       <img 
         src={logoImg}
         alt="Ohana Realty Logo" 
-        className="fixed transform-gpu animate-float z-[1]"
+        className="fixed z-[21]"
         onLoad={() => {
           console.log("Logo image loaded successfully");
           setLogoLoaded(true);
@@ -34,15 +34,16 @@ export default function BackgroundLogo() {
           console.error("Error loading logo image:", e);
         }}
         style={{
-          width: '500px',
+          width: '800px',
           height: 'auto', 
-          opacity: 0.15,
+          opacity: 0.6,
           objectFit: 'contain',
-          filter: 'grayscale(50%) drop-shadow(0 0 20px rgba(255,255,255,0.2))',
+          filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.6))',
           pointerEvents: 'none',
           willChange: 'transform',
           backfaceVisibility: 'hidden',
           display: 'block', // Ensure display is set to block
+          position: 'fixed',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)'
@@ -52,14 +53,14 @@ export default function BackgroundLogo() {
       {/* Fallback logo - use direct SVG if the image fails */}
       {!logoLoaded && (
         <div 
-          className="fixed transform-gpu animate-float z-[1]"
+          className="fixed z-[21]"
           style={{
-            width: '500px',
-            height: '500px',
-            opacity: 0.15,
+            width: '800px',
+            height: '800px',
+            opacity: 0.6,
             pointerEvents: 'none',
-            willChange: 'transform',
             backfaceVisibility: 'hidden',
+            position: 'fixed',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)'

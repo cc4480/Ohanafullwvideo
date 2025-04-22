@@ -13,7 +13,7 @@ export default function Layout({ children, transparentHeader = false }: LayoutPr
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
       {/* Main content that scrolls over the fixed background */}
-      <main className="flex-grow relative z-10 bg-transparent">
+      <main className="flex-grow relative z-1 bg-transparent">
         {/* Content container */}
         <div className="overlay-content">
           {children}
