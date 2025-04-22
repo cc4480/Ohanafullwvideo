@@ -103,13 +103,18 @@ export default function Neighborhoods() {
 
         <div className="mb-8">
           <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-            <div className="flex justify-center mb-8">
-              <TabsList>
-                <TabsTrigger value="all">All Neighborhoods</TabsTrigger>
-                {uniqueFeatures.slice(0, 4).map(feature => (
-                  <TabsTrigger key={feature} value={feature}>{feature}</TabsTrigger>
-                ))}
-              </TabsList>
+            <div className="flex flex-col items-center mb-8">
+              <h2 className="text-xl font-serif font-semibold mb-4">Filter Neighborhoods by Feature</h2>
+              <div className="bg-card border border-border rounded-lg shadow-sm p-3 overflow-x-auto w-full max-w-4xl">
+                <TabsList className="w-full flex justify-start min-w-max">
+                  <TabsTrigger value="all" className="flex-shrink-0">All Neighborhoods</TabsTrigger>
+                  <TabsTrigger value="family" className="flex-shrink-0">Family-Friendly</TabsTrigger>
+                  <TabsTrigger value="historic" className="flex-shrink-0">Historic Areas</TabsTrigger>
+                  <TabsTrigger value="affordable" className="flex-shrink-0">Affordable Housing</TabsTrigger>
+                  <TabsTrigger value="modern" className="flex-shrink-0">Modern Developments</TabsTrigger>
+                  <TabsTrigger value="cultural" className="flex-shrink-0">Cultural Hotspots</TabsTrigger>
+                </TabsList>
+              </div>
             </div>
 
             <TabsContent value="all">
@@ -120,33 +125,134 @@ export default function Neighborhoods() {
               </div>
             </TabsContent>
             
-            {uniqueFeatures.slice(0, 4).map(feature => (
-              <TabsContent key={feature} value={feature}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {neighborhoods
-                    .filter(n => n.features && n.features.includes(feature))
-                    .map(neighborhood => (
-                      <NeighborhoodCard key={neighborhood.id} neighborhood={neighborhood} />
-                    ))}
-                </div>
-              </TabsContent>
-            ))}
+            <TabsContent value="family">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {neighborhoods
+                  .filter(n => n.features && (
+                    n.features.includes("Family-friendly") || 
+                    n.features.includes("Family-oriented")
+                  ))
+                  .map(neighborhood => (
+                    <NeighborhoodCard key={neighborhood.id} neighborhood={neighborhood} />
+                  ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="historic">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {neighborhoods
+                  .filter(n => n.features && (
+                    n.features.includes("Historic architecture") || 
+                    n.features.includes("Character homes")
+                  ))
+                  .map(neighborhood => (
+                    <NeighborhoodCard key={neighborhood.id} neighborhood={neighborhood} />
+                  ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="affordable">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {neighborhoods
+                  .filter(n => n.features && (
+                    n.features.includes("Affordable housing")
+                  ))
+                  .map(neighborhood => (
+                    <NeighborhoodCard key={neighborhood.id} neighborhood={neighborhood} />
+                  ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="modern">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {neighborhoods
+                  .filter(n => n.features && (
+                    n.features.includes("Modern developments") || 
+                    n.features.includes("New developments")
+                  ))
+                  .map(neighborhood => (
+                    <NeighborhoodCard key={neighborhood.id} neighborhood={neighborhood} />
+                  ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="cultural">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {neighborhoods
+                  .filter(n => n.features && (
+                    n.features.includes("Cultural attractions")
+                  ))
+                  .map(neighborhood => (
+                    <NeighborhoodCard key={neighborhood.id} neighborhood={neighborhood} />
+                  ))}
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
 
         <div className="mt-16 bg-card rounded-lg p-8 shadow-sm">
           <h2 className="text-2xl font-serif font-semibold mb-6">Popular Features in Laredo Neighborhoods</h2>
           <div className="flex flex-wrap gap-2">
-            {uniqueFeatures.map(feature => (
-              <Badge 
-                key={feature} 
-                variant={activeTab === feature ? "default" : "outline"}
-                className="cursor-pointer text-sm py-1.5"
-                onClick={() => setActiveTab(feature)}
-              >
-                {feature}
-              </Badge>
-            ))}
+            <Badge 
+              variant={activeTab === "all" ? "default" : "outline"}
+              className="cursor-pointer text-sm py-1.5"
+              onClick={() => setActiveTab("all")}
+            >
+              All Features
+            </Badge>
+            <Badge 
+              variant={activeTab === "family" ? "default" : "outline"}
+              className="cursor-pointer text-sm py-1.5"
+              onClick={() => setActiveTab("family")}
+            >
+              Family-Friendly
+            </Badge>
+            <Badge 
+              variant={activeTab === "historic" ? "default" : "outline"}
+              className="cursor-pointer text-sm py-1.5"
+              onClick={() => setActiveTab("historic")}
+            >
+              Historic Architecture
+            </Badge>
+            <Badge 
+              variant={activeTab === "affordable" ? "default" : "outline"}
+              className="cursor-pointer text-sm py-1.5"
+              onClick={() => setActiveTab("affordable")}
+            >
+              Affordable Housing
+            </Badge>
+            <Badge 
+              variant={activeTab === "modern" ? "default" : "outline"}
+              className="cursor-pointer text-sm py-1.5"
+              onClick={() => setActiveTab("modern")}
+            >
+              Modern Developments
+            </Badge>
+            <Badge 
+              variant={activeTab === "cultural" ? "default" : "outline"}
+              className="cursor-pointer text-sm py-1.5"
+              onClick={() => setActiveTab("cultural")}
+            >
+              Cultural Attractions
+            </Badge>
+            <Badge 
+              variant="outline"
+              className="cursor-pointer text-sm py-1.5"
+            >
+              Top Schools
+            </Badge>
+            <Badge 
+              variant="outline"
+              className="cursor-pointer text-sm py-1.5"
+            >
+              Shopping Centers
+            </Badge>
+            <Badge 
+              variant="outline"
+              className="cursor-pointer text-sm py-1.5"
+            >
+              Parks & Recreation
+            </Badge>
           </div>
         </div>
 

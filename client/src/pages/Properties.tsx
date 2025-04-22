@@ -14,6 +14,8 @@ export default function Properties() {
   const [propertyType, setPropertyType] = useState<string>("All");
   const [priceRange, setPriceRange] = useState<string>("Any");
   const [searchText, setSearchText] = useState<string>("");
+  const [bedrooms, setBedrooms] = useState<string>("Any");
+  const [bathrooms, setBathrooms] = useState<string>("Any");
   
   // Ensure we scroll to the top when the component mounts
   useEffect(() => {
@@ -35,6 +37,22 @@ export default function Properties() {
     if (priceRange !== "Any") {
       const [min, max] = priceRange.split('-').map(p => parseInt(p.replace(/\D/g, '')));
       if (property.price < min || (max && property.price > max)) {
+        return false;
+      }
+    }
+    
+    // Filter by bedrooms
+    if (bedrooms !== "Any" && property.bedrooms) {
+      const minBeds = parseInt(bedrooms.replace(/\D/g, ''));
+      if (property.bedrooms < minBeds) {
+        return false;
+      }
+    }
+    
+    // Filter by bathrooms
+    if (bathrooms !== "Any" && property.bathrooms) {
+      const minBaths = parseInt(bathrooms.replace(/\D/g, ''));
+      if (property.bathrooms < minBaths) {
         return false;
       }
     }
@@ -121,7 +139,7 @@ export default function Properties() {
             <h2 id="property-filter-heading" className="text-xl sm:text-2xl font-serif font-bold text-neutral-800 dark:text-white mb-4 sm:mb-6">
               Find Your Perfect Property
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               <div>
                 <label htmlFor="property-type-select" className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">
                   Property Type
@@ -169,6 +187,57 @@ export default function Properties() {
                   style={{ touchAction: 'manipulation' }}
                   aria-label="Search by location or address"
                 />
+              </div>
+              <div>
+                <label htmlFor="bedrooms-select" className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">
+                  Bedrooms
+                </label>
+                <Select value={bedrooms} onValueChange={setBedrooms} name="bedrooms">
+                  <SelectTrigger id="bedrooms-select" className="w-full h-10 sm:h-auto">
+                    <SelectValue placeholder="Any Bedrooms" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Any">Any Bedrooms</SelectItem>
+                    <SelectItem value="1+">1+ Bedrooms</SelectItem>
+                    <SelectItem value="2+">2+ Bedrooms</SelectItem>
+                    <SelectItem value="3+">3+ Bedrooms</SelectItem>
+                    <SelectItem value="4+">4+ Bedrooms</SelectItem>
+                    <SelectItem value="5+">5+ Bedrooms</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label htmlFor="bathrooms-select" className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">
+                  Bathrooms
+                </label>
+                <Select value={bathrooms} onValueChange={setBathrooms} name="bathrooms">
+                  <SelectTrigger id="bathrooms-select" className="w-full h-10 sm:h-auto">
+                    <SelectValue placeholder="Any Bathrooms" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Any">Any Bathrooms</SelectItem>
+                    <SelectItem value="1+">1+ Bathrooms</SelectItem>
+                    <SelectItem value="2+">2+ Bathrooms</SelectItem>
+                    <SelectItem value="3+">3+ Bathrooms</SelectItem>
+                    <SelectItem value="4+">4+ Bathrooms</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end">
+                <Button 
+                  variant="outline" 
+                  className="w-full h-10 sm:h-auto border-primary text-primary hover:bg-primary hover:text-white"
+                  onClick={() => {
+                    setPropertyType("All");
+                    setPriceRange("Any");
+                    setSearchText("");
+                    setBedrooms("Any");
+                    setBathrooms("Any");
+                  }}
+                >
+                  <i className="bx bx-reset mr-2"></i>
+                  Reset Filters
+                </Button>
               </div>
             </div>
           </div>
@@ -250,6 +319,8 @@ export default function Properties() {
                   setPropertyType("All");
                   setPriceRange("Any");
                   setSearchText("");
+                  setBedrooms("Any");
+                  setBathrooms("Any");
                 }}
                 aria-label="Reset all search filters"
               >
