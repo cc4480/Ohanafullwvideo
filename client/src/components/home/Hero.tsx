@@ -3,10 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import FloatingLogo from "./FloatingLogo";
-
-// Import logo for background effect
-import logoImg from "@assets/OIP.jfif";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -100,21 +96,7 @@ export default function Hero() {
       }, 0);
     }
     
-    // Add extra parallax effect to floating logo
-    const logoParallax = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 0.5
-      }
-    });
-    
-    logoParallax.to(".top-1\\/2", {
-      y: -80,
-      scale: 0.9,
-      ease: "power1.out"
-    }, 0);
+    // No floating logo effect since it's been removed
     
     return () => {
       // Clean up all ScrollTrigger instances when component unmounts
@@ -122,36 +104,132 @@ export default function Hero() {
     };
   }, []);
   
-  // Setup hover effects
+  // Enhanced hover effects for the Hero section
   useEffect(() => {
     if (!sectionRef.current) return;
     
-    // The hover zoom effect for the whole hero section
+    // Enhanced hover zoom effect for the entire hero section
     const handleMouseEnter = () => {
+      // Add subtle scale to the hero section
       gsap.to(sectionRef.current, { 
-        scale: 1.02, 
-        duration: 0.5, 
+        scale: 1.03, 
+        duration: 0.7, 
         ease: "power2.out" 
       });
+      
+      // Add parallax effect to background images on hover
+      document.querySelectorAll(".parallax-bg").forEach(bg => {
+        gsap.to(bg, {
+          scale: 1.08,
+          duration: 1.5,
+          ease: "power1.out"
+        });
+      });
+      
+      // Add glow effect to decorative elements
+      document.querySelectorAll(".bg-secondary\\/10, .bg-primary\\/10").forEach(element => {
+        gsap.to(element, {
+          boxShadow: "0 0 30px rgba(255, 255, 255, 0.3)",
+          filter: "blur(35px)",
+          duration: 1,
+          ease: "power2.out"
+        });
+      });
+      
+      // Enhance content visibility
+      if (contentRef.current) {
+        gsap.to(contentRef.current, {
+          y: -10,
+          duration: 0.8,
+          ease: "power2.out"
+        });
+      }
     };
     
+    // Reset all effects on mouse leave
     const handleMouseLeave = () => {
       gsap.to(sectionRef.current, { 
         scale: 1, 
-        duration: 0.5, 
+        duration: 0.7, 
         ease: "power2.out" 
+      });
+      
+      document.querySelectorAll(".parallax-bg").forEach(bg => {
+        gsap.to(bg, {
+          scale: 1,
+          duration: 1.5,
+          ease: "power1.out"
+        });
+      });
+      
+      document.querySelectorAll(".bg-secondary\\/10, .bg-primary\\/10").forEach(element => {
+        gsap.to(element, {
+          boxShadow: "none",
+          filter: "blur(30px)",
+          duration: 1,
+          ease: "power2.out"
+        });
+      });
+      
+      if (contentRef.current) {
+        gsap.to(contentRef.current, {
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out"
+        });
+      }
+    };
+    
+    // Add mouse move parallax effect
+    const handleMouseMove = (e: MouseEvent) => {
+      // Calculate mouse position as percentage of viewport
+      const mouseX = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+      const mouseY = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
+      
+      // Apply subtle parallax to background images
+      document.querySelectorAll(".parallax-bg").forEach(bg => {
+        gsap.to(bg, {
+          x: mouseX * 20,
+          y: mouseY * 20,
+          duration: 1,
+          ease: "power1.out",
+          overwrite: "auto"
+        });
+      });
+      
+      // Move decorative elements in opposite direction
+      document.querySelectorAll(".bg-secondary\\/10").forEach(element => {
+        gsap.to(element, {
+          x: -mouseX * 30,
+          y: -mouseY * 30,
+          duration: 1.2,
+          ease: "power1.out",
+          overwrite: "auto"
+        });
+      });
+      
+      document.querySelectorAll(".bg-primary\\/10").forEach(element => {
+        gsap.to(element, {
+          x: -mouseX * 40,
+          y: -mouseY * 40,
+          duration: 1.2,
+          ease: "power1.out",
+          overwrite: "auto"
+        });
       });
     };
     
     // Add event listeners
     sectionRef.current.addEventListener('mouseenter', handleMouseEnter);
     sectionRef.current.addEventListener('mouseleave', handleMouseLeave);
+    sectionRef.current.addEventListener('mousemove', handleMouseMove);
     
     // Cleanup
     return () => {
       if (sectionRef.current) {
         sectionRef.current.removeEventListener('mouseenter', handleMouseEnter);
         sectionRef.current.removeEventListener('mouseleave', handleMouseLeave);
+        sectionRef.current.removeEventListener('mousemove', handleMouseMove);
       }
     };
   }, []);
@@ -247,12 +325,7 @@ export default function Hero() {
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
-      {/* Floating Logo in background - made larger and more prominent */}
-      <FloatingLogo 
-        logoUrl={logoImg}
-        className="top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] z-5"
-        intensity={0.6}
-      />
+      {/* Removed the logo as requested */}
       
       {/* Content - completely rebuilt for mobile */}
       <div className="container mx-auto px-4 relative z-20 py-2 md:py-8" ref={contentRef}>

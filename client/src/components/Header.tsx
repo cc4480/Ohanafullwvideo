@@ -107,12 +107,17 @@ export default function Header() {
   return (
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center relative group animate-fade-in">
-          <div className={`w-40 h-16 overflow-hidden ${location === "/" && !scrolled ? "bg-transparent" : "bg-white"} rounded-md transition-all duration-300`}>
-            <img src={logoImg} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
+        <Link href="/" className="flex items-center relative group animate-fade-in hover:scale-105 transition-transform duration-300">
+          <div className={`w-48 h-16 overflow-hidden ${location === "/" && !scrolled ? "bg-white/90 backdrop-blur-sm shadow-md" : "bg-white shadow-lg"} rounded-md transition-all duration-300 flex items-center justify-center`}>
+            <img 
+              src={logoImg} 
+              alt="Ohana Realty Logo" 
+              className="w-full h-full object-contain p-1 transform-gpu hover:scale-[1.02] transition-transform" 
+              style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))' }}
+            />
           </div>
-          {/* Subtle decoration */}
-          <div className="absolute -bottom-2 -right-2 h-4 w-4 bg-secondary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          {/* Animated glow effect */}
+          <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
