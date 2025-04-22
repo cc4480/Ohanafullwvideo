@@ -1,6 +1,7 @@
 import { Award, CheckCircle, Home, Star, User } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import SEOHead from "@/components/SEOHead";
 
 export default function About() {
   const stats = [

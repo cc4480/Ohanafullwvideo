@@ -14,6 +14,7 @@ import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // ScrollToTop component that watches for route changes
 const ScrollToTop = () => {
@@ -34,7 +35,7 @@ function App() {
       <ThemeProvider>
         <TooltipProvider>
           <Toaster />
-          <>
+          <ErrorBoundary>
             <Header />
             <Switch>
               <Route path="/">
@@ -42,7 +43,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <Home />
+                      <ErrorBoundary>
+                        <Home />
+                      </ErrorBoundary>
                     </>
                   );
                 }}
@@ -52,7 +55,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <Properties />
+                      <ErrorBoundary>
+                        <Properties />
+                      </ErrorBoundary>
                     </>
                   );
                 }}
@@ -62,7 +67,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <PropertyDetails id={parseInt(params.id)} />
+                      <ErrorBoundary>
+                        <PropertyDetails id={parseInt(params.id)} />
+                      </ErrorBoundary>
                     </>
                   );
                 }}
@@ -72,7 +79,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <Neighborhoods />
+                      <ErrorBoundary>
+                        <Neighborhoods />
+                      </ErrorBoundary>
                     </>
                   );
                 }}
@@ -82,7 +91,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <About />
+                      <ErrorBoundary>
+                        <About />
+                      </ErrorBoundary>
                     </>
                   );
                 }}
@@ -92,7 +103,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <Contact />
+                      <ErrorBoundary>
+                        <Contact />
+                      </ErrorBoundary>
                     </>
                   );
                 }}
@@ -102,14 +115,16 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <NotFound />
+                      <ErrorBoundary>
+                        <NotFound />
+                      </ErrorBoundary>
                     </>
                   );
                 }}
               </Route>
             </Switch>
             <Footer />
-          </>
+          </ErrorBoundary>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
