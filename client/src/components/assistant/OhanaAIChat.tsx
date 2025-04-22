@@ -185,7 +185,7 @@ export default function OhanaAIChat() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      sendMessage(0);
     }
   };
 
@@ -437,7 +437,7 @@ export default function OhanaAIChat() {
                 autoComplete="off" // Prevent keyboard suggestions from covering view
               />
               <Button
-                onClick={() => sendMessage()}
+                onClick={() => sendMessage(0)}
                 disabled={!message.trim() || isLoading}
                 style={{ 
                   backgroundColor: 'hsl(215, 80%, 50%)', 

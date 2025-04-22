@@ -10,7 +10,7 @@ export async function getDeepSeekResponse(userMessage: string): Promise<string> 
     const baseUrl = process.env.DEEPSEEK_BASE_URL;
 
     if (!apiKey || !baseUrl) {
-      console.error('DeepSeek API credentials are missing');
+      console.warn('DeepSeek API credentials are missing. Please set DEEPSEEK_API_KEY and DEEPSEEK_BASE_URL environment variables.');
       return generateFallbackResponse(userMessage);
     }
 
@@ -22,7 +22,8 @@ export async function getDeepSeekResponse(userMessage: string): Promise<string> 
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
-      }
+      },
+      timeout: 15000 // 15 second timeout
     });
 
     // Prepare the request for DeepSeek API with the correct endpoint
@@ -91,6 +92,66 @@ export async function getDeepSeekResponse(userMessage: string): Promise<string> 
       console.error('Response status:', error.response.status);
       console.error('Response data:', error.response.data);
     }
+    
+    // Implement retry with exponential backoff
+    if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT' || 
+        (error.response && (error.response.status === 429 || error.response.status >= 500))) {
+      console.log('Attempting to retry DeepSeek API request...');
+      
+      // Try up to 3 retries with exponential backoff
+      for (let retry = 1; retry <= 3; retry++) {
+        try {
+          console.log(`Retry attempt ${retry}/3`);
+          
+          // Exponential backoff: 1s, 2s, 4s
+          await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retry - 1)));
+          
+          const retryClient = axios.create({
+            baseURL: process.env.DEEPSEEK_BASE_URL,
+            headers: {
+              'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            timeout: 15000 * (retry + 1) // Increase timeout for retries
+          });
+          
+          const retryResponse = await retryClient.post('/chat/completions', {
+            model: "deepseek-chat",
+            messages: [
+              {
+                role: "system", 
+                content: "You are Ohana Assistant, a helpful real estate assistant for Ohana Realty in Laredo, Texas."
+              },
+              {
+                role: "user",
+                content: userMessage
+              }
+            ],
+            temperature: 0.7,
+            max_tokens: 800,
+            stream: false
+          });
+          
+          if (retryResponse.data && retryResponse.data.choices && retryResponse.data.choices.length > 0) {
+            console.log(`Retry ${retry} succeeded`);
+            return retryResponse.data.choices[0].message.content;
+          }
+        } catch (err) {
+          // Safe error logging without property access that might fail
+          let errorMessage = 'Unknown error';
+          if (err instanceof Error) {
+            errorMessage = err.message;
+          } else if (typeof err === 'string') {
+            errorMessage = err;
+          } else if (err && typeof err === 'object') {
+            errorMessage = String(err);
+          }
+          console.error(`Retry ${retry} failed:`, errorMessage);
+        }
+      }
+    }
+    
+    // If all retries fail or it's not a retryable error, use fallback
     return generateFallbackResponse(userMessage);
   }
 }
