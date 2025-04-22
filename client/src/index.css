@@ -3,49 +3,99 @@
 @tailwind utilities;
 
 :root {
+  /* Updated color palette to match logo */
   --background: 0 0% 100%;
-  --foreground: 20 14.3% 4.1%;
-  --muted: 60 4.8% 95.9%;
-  --muted-foreground: 25 5.3% 44.7%;
+  --foreground: 200 14% 14%;
+  --muted: 200 10% 95%;
+  --muted-foreground: 200 10% 45%;
   --popover: 0 0% 100%;
-  --popover-foreground: 20 14.3% 4.1%;
+  --popover-foreground: 200 14% 14%;
   --card: 0 0% 100%;
-  --card-foreground: 20 14.3% 4.1%;
-  --border: 20 5.9% 90%;
-  --input: 20 5.9% 90%;
-  --primary: 180 65% 28%; /* #0E7F7F - Teal from logo */
-  --primary-foreground: 211 100% 99%;
-  --secondary: 42 100% 50%; /* #FDAF00 - Gold/Orange from logo */
-  --secondary-foreground: 24 9.8% 10%;
-  --accent: 210 40% 40%; /* Blue accent from logo */
-  --accent-foreground: 24 9.8% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 60 9.1% 97.8%;
-  --ring: 20 14.3% 4.1%;
+  --card-foreground: 200 14% 14%;
+  --border: 200 10% 90%;
+  --input: 200 10% 90%;
+  
+  /* Main brand color - Teal blue from logo */
+  --primary: 195 100% 29%;
+  --primary-foreground: 0 0% 100%;
+  
+  /* Secondary color - Orange accent from logo */
+  --secondary: 18 91% 55%;
+  --secondary-foreground: 0 0% 100%;
+  
+  /* Accent color - Green accent from logo */
+  --accent: 142 70% 45%;
+  --accent-foreground: 0 0% 100%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --ring: 195 100% 29%;
   --radius: 0.5rem;
+
+  /* Chart colors */
+  --chart-1: 195 100% 29%;
+  --chart-2: 18 91% 55%;
+  --chart-3: 142 70% 45%;
+  --chart-4: 55 92% 52%;
+  --chart-5: 250 85% 65%;
 }
 
 .dark {
-  --background: 215 28% 17%; /* Dark blue-gray */
+  --background: 200 30% 10%;
   --foreground: 0 0% 98%;
-  --muted: 215 28% 25%;
-  --muted-foreground: 240 5% 64.9%;
-  --popover: 215 28% 17%;
+  --muted: 200 30% 15%;
+  --muted-foreground: 200 10% 70%;
+  --popover: 200 30% 10%;
   --popover-foreground: 0 0% 98%;
-  --card: 215 28% 17%;
+  --card: 200 30% 12%;
   --card-foreground: 0 0% 98%;
-  --border: 215 28% 25%;
-  --input: 215 28% 25%;
-  --primary: 180 65% 45%; /* Brighter teal for dark mode */
-  --primary-foreground: 211 100% 99%;
-  --secondary: 42 100% 55%; /* Brighter gold for dark mode */
-  --secondary-foreground: 0 0% 98%;
-  --accent: 210 40% 60%; /* Lighter blue accent for dark mode */
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --ring: 240 4.9% 83.9%;
-  --radius: 0.5rem;
+  --border: 200 30% 18%;
+  --input: 200 30% 18%;
+  
+  /* Brighter versions for dark mode */
+  --primary: 195 85% 40%;
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 18 95% 60%;
+  --secondary-foreground: 0 0% 100%;
+  
+  --accent: 142 75% 50%;
+  --accent-foreground: 0 0% 100%;
+  
+  --destructive: 0 90% 50%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --ring: 195 85% 40%;
+}
+
+@keyframes gentle-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 10px 25px -5px rgba(var(--primary), 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px -5px rgba(var(--primary), 0.7);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }
 
 @layer base {
@@ -59,6 +109,26 @@
   
   html {
     scroll-behavior: smooth;
+  }
+  
+  /* Custom scrollbar for the entire website */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.3);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
   }
 }
 
@@ -74,6 +144,11 @@
   .property-card-img {
     height: 240px;
     object-fit: cover;
+    transition: all 0.3s ease;
+  }
+  
+  .property-card:hover .property-card-img {
+    transform: scale(1.03);
   }
   
   .map-container {
@@ -84,5 +159,62 @@
     .map-container {
       height: 350px;
     }
+  }
+  
+  /* Visual enhancements */
+  .card-hover-effect {
+    transition: all 0.3s ease;
+  }
+  
+  .card-hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .floating-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .dark .bg-grid-pattern {
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+  
+  .shimmer-effect {
+    background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+  }
+  
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .gradient-text {
+    background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .dark .glass-effect {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 }

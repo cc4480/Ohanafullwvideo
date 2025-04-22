@@ -143,32 +143,46 @@ export default function AIAssistant() {
       {/* Chat toggle button */}
       <Button
         onClick={toggleChat}
-        className={`fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center bg-primary hover:bg-primary/90 transition-all duration-300 z-50
+        className={`fixed bottom-6 right-6 rounded-full shadow-xl h-14 w-14 p-0 flex items-center justify-center bg-primary hover:bg-primary/90 transition-all duration-300 z-50
           ${isOpen && !isMinimized ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}
+          animate-gentle-pulse border-2 border-white/80 backdrop-blur-sm
         `}
         aria-label="Chat with AI assistant"
       >
-        <MessageSquare className="h-6 w-6 text-white" />
+        <div className="relative">
+          <MessageSquare className="h-6 w-6 text-white" />
+          <span className="absolute -top-1 -right-1 w-2 h-2 bg-secondary rounded-full animate-ping"></span>
+        </div>
       </Button>
       
       {/* Chat window */}
       <div 
         className={`
-          fixed bottom-6 right-6 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg shadow-xl flex flex-col overflow-hidden transition-all duration-300 z-50 border border-border
-          ${isOpen && !isMinimized ? 'opacity-100 scale-100 h-[500px]' : 'opacity-0 scale-95 h-0 pointer-events-none'}
+          fixed bottom-6 right-6 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg shadow-2xl flex flex-col overflow-hidden transition-all duration-500 z-50 
+          border border-primary/30 backdrop-blur-sm
+          ${isOpen && !isMinimized ? 'opacity-100 scale-100 h-[500px] animate-scale-in' : 'opacity-0 scale-95 h-0 pointer-events-none'}
         `}
       >
+        {/* Decorative gradients */}
+        <div className="absolute inset-0 overflow-hidden rounded-lg pointer-events-none">
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-secondary/20 rounded-full blur-3xl"></div>
+        </div>
+        
         {/* Chat header */}
-        <div className="bg-primary text-white p-3 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-3 flex items-center justify-between relative z-10">
           <div className="flex items-center space-x-2">
-            <MessageSquare className="h-5 w-5" />
+            <div className="relative">
+              <MessageSquare className="h-5 w-5" />
+              <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-secondary rounded-full"></span>
+            </div>
             <h3 className="font-medium">Ohana Assistant</h3>
           </div>
           <div className="flex space-x-1">
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/20 text-white"
+              className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
               onClick={minimizeChat}
             >
               <span className="sr-only">Minimize</span>
@@ -177,7 +191,7 @@ export default function AIAssistant() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/20 text-white"
+              className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
               onClick={() => setIsOpen(false)}
             >
               <span className="sr-only">Close</span>
@@ -187,32 +201,46 @@ export default function AIAssistant() {
         </div>
         
         {/* Chat messages */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-4 bg-gray-50 dark:bg-slate-950">
+        <div className="flex-1 overflow-y-auto p-3 space-y-4 bg-gradient-to-b from-gray-50 to-white dark:from-slate-950 dark:to-slate-900 relative">
+          {/* Subtle grid pattern overlay */}
+          <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
+          
           {welcomeMessage()}
           
-          {chatHistory.map((msg) => (
+          {chatHistory.map((msg, index) => (
             <div
               key={msg.id}
-              className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
+              className={`flex ${msg.isUser ? "justify-end" : "justify-start"} animate-fade-in`}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div
-                className={`max-w-[85%] p-3 rounded-lg ${
+                className={`max-w-[85%] p-3 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg ${
                   msg.isUser
-                    ? "bg-primary text-white"
-                    : "bg-white dark:bg-slate-800 shadow-sm border border-gray-100 dark:border-slate-700"
-                }`}
+                    ? "bg-gradient-to-r from-primary to-primary/90 text-white"
+                    : "bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700"
+                } ${msg.isUser ? "rounded-tr-sm" : "rounded-tl-sm"}`}
               >
-                <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.message}</p>
+                <div className="text-xs mt-1 opacity-70 text-right">
+                  {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
               </div>
             </div>
           ))}
           
           {isLoading && (
-            <div className="flex justify-start">
-              <div className="max-w-[85%] p-3 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-gray-100 dark:border-slate-700">
+            <div className="flex justify-start animate-fade-in">
+              <div className="max-w-[85%] p-3 rounded-lg bg-white dark:bg-slate-800 shadow-md border border-gray-100 dark:border-slate-700 rounded-tl-sm">
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  <p className="text-sm text-muted-foreground">Thinking...</p>
+                  <div className="relative">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    <span className="absolute top-0 left-0 h-full w-full bg-gradient-to-r from-transparent to-white dark:to-slate-800 opacity-60"></span>
+                  </div>
+                  <div className="flex space-x-1">
+                    <span className="h-2 w-2 bg-primary/60 rounded-full animate-pulse" style={{ animationDelay: "0s" }}></span>
+                    <span className="h-2 w-2 bg-primary/60 rounded-full animate-pulse" style={{ animationDelay: "0.3s" }}></span>
+                    <span className="h-2 w-2 bg-primary/60 rounded-full animate-pulse" style={{ animationDelay: "0.6s" }}></span>
+                  </div>
                 </div>
               </div>
             </div>
