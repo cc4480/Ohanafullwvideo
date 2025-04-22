@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import northLaredoImg from "../../assets/north-laredo-industrial-park.png";
 import downtownLaredoImg from "../../assets/downtown-laredo.png";
 import delMarImg from "../../assets/del-mar.png";
+import southLaredoImg from "../../assets/south-laredo.png";
 
 interface NeighborhoodCardProps {
   neighborhood: Neighborhood;
@@ -55,6 +56,14 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
         ) : neighborhood.name === "Del Mar" ? (
           <img 
             src={delMarImg} 
+            alt={neighborhood.name} 
+            className="w-full h-full object-cover group-hover:scale-105 transition duration-500 transform-gpu"
+            loading="lazy"
+            style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
+          />
+        ) : neighborhood.name === "South Laredo" ? (
+          <img 
+            src={southLaredoImg} 
             alt={neighborhood.name} 
             className="w-full h-full object-cover group-hover:scale-105 transition duration-500 transform-gpu"
             loading="lazy"
