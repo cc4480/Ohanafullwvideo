@@ -37,6 +37,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <ErrorBoundary>
+            <BackgroundLogo />
             <Header />
             <Switch>
               <Route path="/">
