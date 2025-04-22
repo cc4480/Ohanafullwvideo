@@ -2,7 +2,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { queryClient } from "./lib/queryClient";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -18,6 +18,7 @@ import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
+import PerformanceOptimizer from "@/components/common/PerformanceOptimizer";
 
 // ScrollToTop component that watches for route changes
 const ScrollToTop = () => {
@@ -31,10 +32,13 @@ const ScrollToTop = () => {
 };
 
 function App() {
-  // Main App component with fixed background parallax effects
-
+  // Main App component with fixed background parallax effects and performance optimizations
+  
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Apply performance optimizations globally */}
+      <PerformanceOptimizer />
+      
       <ThemeProvider>
         <TooltipProvider>
           <Toaster />
@@ -45,104 +49,109 @@ function App() {
               
               {/* Main content with layout wrapper */}
               <Layout>
-                <Switch>
-                  <Route path="/">
-                    {() => {
-                      return (
-                        <>
-                          <ScrollToTop />
-                          <ErrorBoundary>
-                            <Home />
-                          </ErrorBoundary>
-                        </>
-                      );
-                    }}
-                  </Route>
-                  <Route path="/properties">
-                    {() => {
-                      return (
-                        <>
-                          <ScrollToTop />
-                          <ErrorBoundary>
-                            <Properties />
-                          </ErrorBoundary>
-                        </>
-                      );
-                    }}
-                  </Route>
-                  <Route path="/properties/:id">
-                    {(params) => {
-                      return (
-                        <>
-                          <ScrollToTop />
-                          <ErrorBoundary>
-                            <PropertyDetails id={parseInt(params.id)} />
-                          </ErrorBoundary>
-                        </>
-                      );
-                    }}
-                  </Route>
-                  <Route path="/neighborhoods">
-                    {() => {
-                      return (
-                        <>
-                          <ScrollToTop />
-                          <ErrorBoundary>
-                            <Neighborhoods />
-                          </ErrorBoundary>
-                        </>
-                      );
-                    }}
-                  </Route>
-                  <Route path="/about">
-                    {() => {
-                      return (
-                        <>
-                          <ScrollToTop />
-                          <ErrorBoundary>
-                            <About />
-                          </ErrorBoundary>
-                        </>
-                      );
-                    }}
-                  </Route>
-                  <Route path="/contact">
-                    {() => {
-                      return (
-                        <>
-                          <ScrollToTop />
-                          <ErrorBoundary>
-                            <Contact />
-                          </ErrorBoundary>
-                        </>
-                      );
-                    }}
-                  </Route>
-                  <Route path="/favorites">
-                    {() => {
-                      return (
-                        <>
-                          <ScrollToTop />
-                          <ErrorBoundary>
-                            <Favorites />
-                          </ErrorBoundary>
-                        </>
-                      );
-                    }}
-                  </Route>
-                  <Route>
-                    {() => {
-                      return (
-                        <>
-                          <ScrollToTop />
-                          <ErrorBoundary>
-                            <NotFound />
-                          </ErrorBoundary>
-                        </>
-                      );
-                    }}
-                  </Route>
+                {/* Use Suspense for route-based code splitting */}
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center transform-gpu">
+                  <div className="animate-pulse text-primary">Loading...</div>
+                </div>}>
+                  <Switch>
+                    <Route path="/">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <Home />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/properties">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <Properties />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/properties/:id">
+                      {(params) => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <PropertyDetails id={parseInt(params.id)} />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/neighborhoods">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <Neighborhoods />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/about">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <About />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/contact">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <Contact />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/favorites">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <Favorites />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route>
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <NotFound />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
                 </Switch>
+                </Suspense>
               </Layout>
               
               {/* Global footer */}
