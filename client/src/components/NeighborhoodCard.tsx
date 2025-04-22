@@ -151,7 +151,10 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
   return (
     <div 
       ref={cardRef}
-      className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group will-change-transform orange-glow-border`}
+      className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group card-hover-effect card-accent-top transform-gpu`}
+      style={{
+        boxShadow: 'var(--card-shadow)',
+      }}
     >
       <div 
         ref={imageContainerRef}
@@ -161,8 +164,11 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
           <img 
             src={neighborhood.image} 
             alt={neighborhood.name} 
-            className="w-full h-full object-cover transform-gpu will-change-transform"
-            style={{ transformOrigin: 'center center' }}
+            className="w-full h-full object-cover transform-gpu will-change-transform transition-transform duration-700 group-hover:scale-110"
+            style={{ 
+              transformOrigin: 'center center',
+              backfaceVisibility: 'hidden'
+            }}
             loading="lazy"
             onError={(e) => {
               // Fallback for failed images
@@ -175,25 +181,39 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
             <span className="text-muted-foreground">No image available</span>
           </div>
         )}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent h-16"></div>
+        {/* Enhanced gradient overlay with smoother transition */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-60 group-hover:opacity-75 transition-opacity duration-500"></div>
+        
+        {/* Neighborhood tag with premium effect */}
         <div 
           ref={tagRef}
-          className="absolute bottom-2 left-2 will-change-transform"
-          style={{ transformOrigin: 'center center' }}
+          className="absolute bottom-3 left-3 will-change-transform transition-all duration-500 transform-gpu translate-y-0 group-hover:-translate-y-1 group-hover:scale-105 z-10"
         >
-          <span className={`bg-primary text-white text-xs px-2 py-1 rounded-sm`}>
+          <span className={`bg-primary text-white text-xs px-3 py-1.5 rounded-md shadow-lg backdrop-blur-sm highlight-pulse`}>
             {neighborhood.features?.[0] || "Laredo"}
           </span>
         </div>
+        
+        {/* New badge in top-right corner */}
+        <div className="absolute top-3 right-3 transition-all duration-500 transform-gpu scale-90 group-hover:scale-100 z-10">
+          <div className="bg-secondary/90 text-white text-xs px-2 py-1 rounded-full shadow-lg backdrop-blur-sm rotate-3 transform-gpu">
+            Featured
+          </div>
+        </div>
       </div>
-      <div ref={contentRef} className="p-6">
+      <div ref={contentRef} className="p-6 relative">
+        {/* Corner decoration for visual interest */}
+        <div className="absolute top-0 right-0 w-12 h-12 overflow-hidden pointer-events-none">
+          <div className="absolute -top-6 -right-6 w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/5 rotate-45 transform-gpu origin-bottom-left group-hover:from-primary/30 group-hover:to-primary/10 transition-colors duration-500"></div>
+        </div>
+        
         <h3 
           ref={titleRef}
-          className={`font-serif text-xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mb-2 transition-colors`}
+          className={`font-serif text-xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mb-2 transition-colors gradient-text`}
         >
           {neighborhood.name}
         </h3>
-        <p className={`${isDarkMode ? 'text-slate-300' : 'text-muted-foreground'} mb-4`}>
+        <p className={`${isDarkMode ? 'text-slate-300' : 'text-muted-foreground'} mb-4 line-clamp-2`}>
           {neighborhood.description}
         </p>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -203,7 +223,9 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
               className={`${isDarkMode 
                 ? 'bg-slate-700 text-slate-200' 
                 : 'bg-neutral-100 text-neutral-700'} 
-                text-sm px-3 py-1 rounded-full transition-all duration-300`}
+                text-sm px-3 py-1 rounded-full transition-all duration-300 transform-gpu
+                hover:scale-105 hover:shadow-md group-hover:translate-x-1 group-hover:delay-${index * 100}`}
+              style={{ transitionDelay: `${index * 50}ms` }}
             >
               {feature}
             </span>
@@ -212,11 +234,11 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
         <a 
           ref={linkRef}
           href="#" 
-          className="flex items-center text-primary font-medium hover:text-primary-dark will-change-transform"
+          className="flex items-center text-primary font-medium hover:text-primary-dark will-change-transform button-premium inline-block py-1.5 px-3 rounded-md transition-all duration-300 transform-gpu group-hover:shadow-md"
           style={{ transformOrigin: 'left center' }}
         >
-          Learn More
-          <ArrowRight className="h-4 w-4 ml-1 will-change-transform" />
+          <span className="mr-1.5">Learn More</span>
+          <ArrowRight className="h-4 w-4 transition-transform duration-500 transform-gpu group-hover:translate-x-1" />
         </a>
       </div>
     </div>
