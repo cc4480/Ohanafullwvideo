@@ -1,37 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { useEffect, useState } from "react";
 import valentinCuellarImg from "../../assets/valentin-realtor.png";
 import { Phone, Mail, Award, Star, MapPin, Clock } from "lucide-react";
+import { useDarkMode } from "@/hooks/use-dark-mode";
 
 export default function AboutRealtor() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  
-  // Detect dark mode from document class
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDarkMode(document.documentElement.classList.contains('dark'));
-    };
-    
-    // Check immediately
-    checkDarkMode();
-    
-    // Set up observer to monitor class changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (
-          mutation.attributeName === 'class' &&
-          mutation.target === document.documentElement
-        ) {
-          checkDarkMode();
-        }
-      });
-    });
-    
-    observer.observe(document.documentElement, { attributes: true });
-    
-    return () => observer.disconnect();
-  }, []);
+  const isDarkMode = useDarkMode();
 
   return (
     <section id="about" className={`py-20 ${isDarkMode ? 'bg-background text-foreground' : 'bg-slate-50/70'} relative overflow-hidden`}>
@@ -141,7 +115,7 @@ export default function AboutRealtor() {
               <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full border-2 border-dashed border-secondary/30 -z-10"></div>
               
               {/* Main image with clear styling - no blur effects */}
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/10 group">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/10 group" style={{ minHeight: '600px' }}>
                 {/* Dark overlay ONLY at the bottom to ensure text visibility but keep image clear */}
                 <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
                 
@@ -150,10 +124,13 @@ export default function AboutRealtor() {
                 <img 
                   src={valentinCuellarImg} 
                   alt="Valentin Cuellar - Ohana Realty" 
-                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                  width={500}
-                  height={400}
-                  style={{ imageRendering: 'crisp-edges' }}
+                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  width={600}
+                  height={800}
+                  style={{ 
+                    imageRendering: 'crisp-edges',
+                    objectPosition: 'center top'
+                  }}
                 />
                 
                 {/* Name tag overlay */}
