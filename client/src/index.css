@@ -253,7 +253,7 @@
     display: none;
   }
   
-  /* ===== Enhanced Animations and Transitions ===== */
+  /* ===== Enhanced Animations and Transitions with Hardware Acceleration ===== */
   /* Improved property card image animation with GPU acceleration */
   .property-card-img {
     height: 240px;
@@ -275,6 +275,7 @@
     will-change: opacity;
     transform: translateZ(0);
     backface-visibility: hidden;
+    perspective: 1000px;
   }
   
   .animate-slide-up {
@@ -282,6 +283,7 @@
     will-change: transform, opacity;
     transform: translateZ(0);
     backface-visibility: hidden;
+    perspective: 1000px;
   }
   
   .animate-slide-down {
@@ -289,6 +291,7 @@
     will-change: transform, opacity;
     transform: translateZ(0);
     backface-visibility: hidden;
+    perspective: 1000px;
   }
   
   .animate-scale-in {
@@ -296,6 +299,7 @@
     will-change: transform, opacity;
     transform: translateZ(0);
     backface-visibility: hidden;
+    perspective: 1000px;
   }
   
   .animate-pulse {
@@ -303,6 +307,7 @@
     will-change: transform;
     transform: translateZ(0);
     backface-visibility: hidden;
+    perspective: 1000px;
   }
   
   .animate-float {
@@ -310,6 +315,7 @@
     will-change: transform;
     transform: translateZ(0);
     backface-visibility: hidden;
+    perspective: 1000px;
   }
   
   .animate-slow-zoom {
@@ -317,6 +323,26 @@
     will-change: transform;
     transform: translateZ(0);
     backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
+  /* Hardware accelerated transform classes */
+  .transform-gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+  }
+  
+  /* Enhanced carousel transition */
+  .transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity;
+  }
+  
+  .duration-1500 {
+    transition-duration: 1500ms;
   }
   
   /* Faster loading by preloading theme transitions with better performance */
