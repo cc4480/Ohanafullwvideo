@@ -13,6 +13,7 @@ import PropertyDetails from "@/pages/PropertyDetails";
 import Neighborhoods from "@/pages/Neighborhoods";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import Favorites from "@/pages/Favorites";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -112,6 +113,18 @@ function App() {
                           <ScrollToTop />
                           <ErrorBoundary>
                             <Contact />
+                          </ErrorBoundary>
+                        </>
+                      );
+                    }}
+                  </Route>
+                  <Route path="/favorites">
+                    {() => {
+                      return (
+                        <>
+                          <ScrollToTop />
+                          <ErrorBoundary>
+                            <Favorites />
                           </ErrorBoundary>
                         </>
                       );

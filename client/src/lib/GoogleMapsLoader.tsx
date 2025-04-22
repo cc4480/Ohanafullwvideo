@@ -1,16 +1,22 @@
 import { useEffect, useState, createContext, useContext } from "react";
-import { Loader } from "@googlemaps/js-api-loader";
+
+// Type definition for Google Maps to resolve TypeScript errors
+declare global {
+  interface Window {
+    google?: {
+      maps: any;
+    };
+  }
+}
 
 // Create a context to provide Google Maps resources across components
 type GoogleMapsContextType = {
   isLoaded: boolean;
-  googleMaps: typeof google.maps | null;
   error: Error | null;
 };
 
 const GoogleMapsContext = createContext<GoogleMapsContextType>({
   isLoaded: false,
-  googleMaps: null,
   error: null
 });
 
@@ -19,43 +25,20 @@ export const useGoogleMaps = () => useContext(GoogleMapsContext);
 
 interface GoogleMapsLoaderProps {
   children: React.ReactNode;
-  apiKey?: string;
 }
 
-export default function GoogleMapsLoader({ children, apiKey }: GoogleMapsLoaderProps) {
+export default function GoogleMapsLoader({ children }: GoogleMapsLoaderProps) {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [googleMaps, setGoogleMaps] = useState<typeof google.maps | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (!apiKey) {
-      // If no API key is provided, we'll just use direct links to Google Maps
-      // This allows the app to function without the actual maps API
-      setIsLoaded(true);
-      return;
-    }
-
-    const loader = new Loader({
-      apiKey,
-      version: "weekly",
-      libraries: ["places"]
-    });
-
-    loader.load()
-      .then((google) => {
-        setGoogleMaps(google.maps);
-        setIsLoaded(true);
-      })
-      .catch((err) => {
-        console.error("Error loading Google Maps API:", err);
-        setError(err);
-        // Still set loaded to true so the app can fallback to static maps
-        setIsLoaded(true);
-      });
-  }, [apiKey]);
+    // Since we're using a direct link approach instead of the actual Maps API,
+    // we'll just set isLoaded to true immediately
+    setIsLoaded(true);
+  }, []);
   
   return (
-    <GoogleMapsContext.Provider value={{ isLoaded, googleMaps, error }}>
+    <GoogleMapsContext.Provider value={{ isLoaded, error }}>
       {!isLoaded ? (
         <div className="flex items-center justify-center p-8">
           <div className="text-center">

@@ -161,6 +161,7 @@ export default function Header() {
             { path: '/', label: 'Home' },
             { path: '/properties', label: 'Properties' },
             { path: '/neighborhoods', label: 'Neighborhoods' },
+            { path: '/favorites', label: 'Favorites' },
             { path: '/about', label: 'About' },
             { path: '/contact', label: 'Contact' }
           ].map((item, index) => (
@@ -225,6 +226,7 @@ export default function Header() {
             { path: '/', label: 'Home', icon: 'bx-home' },
             { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
             { path: '/neighborhoods', label: 'Neighborhoods', icon: 'bx-map-alt' },
+            { path: '/favorites', label: 'Favorites', icon: 'bx-heart' },
             { path: '/about', label: 'About', icon: 'bx-user' },
             { path: '/contact', label: 'Contact', icon: 'bx-envelope' }
           ].map((item, index) => (
