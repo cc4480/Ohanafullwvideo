@@ -202,7 +202,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       <Link href={`/properties/${property.id}`} aria-describedby={`property-${property.id}-description`}>
         <div 
           ref={imageRef}
-          className="relative overflow-hidden h-48 bg-slate-100 dark:bg-slate-700"
+          className="relative overflow-hidden h-48 sm:h-52 md:h-48 bg-slate-100 dark:bg-slate-700"
         >
           {property.images && property.images.length > 0 ? (
             <img 
@@ -224,8 +224,8 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             </div>
           )}
           
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" aria-hidden="true"></div>
+          {/* Enhanced overlay gradient better for mobile viewing */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent opacity-70" aria-hidden="true"></div>
           
           <div 
             ref={typeRef}
@@ -248,22 +248,28 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                 isFavorited 
                   ? 'bg-primary text-primary-foreground' 
                   : 'bg-background/80 text-primary backdrop-blur-sm'
-              } p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-lg`}
+              } p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-lg active:scale-95 touch-manipulation`}
               onClick={toggleFavorite}
               aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
               aria-pressed={isFavorited}
+              style={{ 
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+                minHeight: '44px',
+                minWidth: '44px'
+              }}
             >
               <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} aria-hidden="true" />
             </button>
           </div>
           
-          {/* Price tag */}
+          {/* Enhanced Price tag for better mobile visibility */}
           <div 
             ref={priceRef}
             className="absolute bottom-4 left-4 z-10"
           >
             <div 
-              className="bg-primary/90 text-white font-bold px-3 py-1.5 rounded-md shadow-lg backdrop-blur-sm will-change-transform"
+              className="bg-primary/95 text-white font-bold px-3 py-1.5 rounded-md shadow-lg backdrop-blur-sm will-change-transform"
               aria-label={`Price: ${formatPrice(property.price)}`}
               style={{ transformOrigin: 'center center' }}
             >
@@ -347,9 +353,16 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             href={`/properties/${property.id}`}
             aria-label={`View details for property at ${property.address}`}
           >
-            <Button className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg group will-change-transform">
-              <span>View Details</span>
-              <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1' aria-hidden="true"></i>
+            <Button 
+              className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg group will-change-transform"
+              style={{ 
+                minHeight: '50px',
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation'
+              }}
+            >
+              <span className="text-base font-semibold">View Details</span>
+              <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1 group-active:translate-x-1' aria-hidden="true"></i>
             </Button>
           </Link>
         </div>
