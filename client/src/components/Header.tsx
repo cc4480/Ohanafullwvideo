@@ -119,8 +119,8 @@ export default function Header() {
           {[
             { path: '/', label: 'Home' },
             { path: '/properties', label: 'Properties' },
-            { path: '/#about', label: 'About' },
-            { path: '/#contact', label: 'Contact' }
+            { path: '/#about', label: 'About' }
+            /* Contact link removed completely as requested */
           ].map((item, index) => (
             <Link 
               key={item.path} 
@@ -137,15 +137,7 @@ export default function Header() {
         <div className="flex items-center gap-4 animate-fade-in">
           <ThemeToggle />
           
-          <Link href="/#contact">
-            <Button 
-              variant="secondary" 
-              className="hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white transition-all duration-300 shadow-md hover:shadow-lg animate-slide-up"
-            >
-              <span>Contact Valentin</span>
-              <i className='bx bx-envelope'></i>
-            </Button>
-          </Link>
+{/* Desktop Contact button removed completely as requested */}
           
           <button 
             className={`md:hidden focus:outline-none ${scrolled || location !== "/" ? 'text-foreground' : 'text-white'}`}
@@ -174,8 +166,8 @@ export default function Header() {
           {[
             { path: '/', label: 'Home', icon: 'bx-home' },
             { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
-            { path: '/#about', label: 'About', icon: 'bx-user' },
-            { path: '/#contact', label: 'Contact', icon: 'bx-envelope' }
+            { path: '/#about', label: 'About', icon: 'bx-user' }
+            /* Contact link removed as requested */
           ].map((item, index) => (
             <Link 
               key={item.path} 
