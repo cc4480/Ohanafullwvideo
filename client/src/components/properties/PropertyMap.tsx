@@ -37,9 +37,11 @@ export default function PropertyMap() {
   });
   
   // Function to open Google Maps with the property location
-  const openInGoogleMaps = (lat: number | null, lng: number | null, address: string) => {
+  const openInGoogleMaps = (lat: number | null, lng: number | null, property: Property) => {
     if (lat && lng) {
-      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(address)}`;
+      // Format the full address for the map search
+      const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
+      const url = `https://www.google.com/maps/search/?api=1&query=${formattedAddress}`;
       window.open(url, '_blank', 'noopener,noreferrer');
     }
   };

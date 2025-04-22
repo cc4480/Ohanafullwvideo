@@ -295,7 +295,9 @@ export default function PropertyDetails({ id }: { id: number }) {
                       const latitude = getPropertyLatitude(property);
                       const longitude = getPropertyLongitude(property);
                       if (latitude && longitude) {
-                        const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&query_place_id=${encodeURIComponent(property.address)}`;
+                        // Format the full address for the map search
+                        const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
+                        const url = `https://www.google.com/maps/search/?api=1&query=${formattedAddress}`;
                         window.open(url, '_blank', 'noopener,noreferrer');
                       }
                     }}
