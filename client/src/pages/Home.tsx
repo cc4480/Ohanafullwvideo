@@ -14,6 +14,7 @@ import SocialShareMetadata from "@/components/SocialShareMetadata";
 import CanonicalURLs from "@/components/CanonicalURLs";
 import { FAQStructuredData } from "@/components/StructuredData";
 import KeywordOptimizer from "@/components/KeywordOptimizer";
+import SEOHead from "@/components/SEOHead";
 
 export default function Home() {
   const websiteUrl = "https://ohanarealty.com";
