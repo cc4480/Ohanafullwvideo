@@ -142,6 +142,7 @@ export default function SocialShareMetadata({
   twitterSite,
   twitterCreator,
   twitterCard = 'summary_large_image',
+  twitter,
   siteName = 'Ohana Realty',
   videoUrl,
   facebookAppId,
@@ -230,13 +231,15 @@ export default function SocialShareMetadata({
       )}
       
       {/* Twitter Card metadata */}
-      <meta name="twitter:card" content={twitterCard} />
+      <meta name="twitter:card" content={twitter?.card || twitterCard} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={truncatedDescription} />
       <meta name="twitter:image" content={absoluteImage} />
       {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
-      {twitterSite && <meta name="twitter:site" content={`@${twitterSite}`} />}
-      {twitterCreator && <meta name="twitter:creator" content={`@${twitterCreator}`} />}
+      {(twitter?.site || twitterSite) && 
+        <meta name="twitter:site" content={`@${twitter?.site || twitterSite}`} />}
+      {(twitter?.creator || twitterCreator) && 
+        <meta name="twitter:creator" content={`@${twitter?.creator || twitterCreator}`} />}
       
       {/* Additional social platforms */}
       <meta name="linkedin:title" content={title} />

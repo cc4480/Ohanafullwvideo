@@ -24,33 +24,20 @@ export default function Home() {
         url={websiteUrl}
         logo={`${websiteUrl}/logo.png`}
         description="Premier real estate agency in Laredo, TX specializing in residential and commercial properties, with personalized service and expert local knowledge."
-        socialProfiles={{
-          facebook: "https://www.facebook.com/ohanarealty",
-          instagram: "https://www.instagram.com/ohanarealty",
-          linkedin: "https://www.linkedin.com/company/ohana-realty"
-        }}
         address={{
-          streetAddress: "5802 McPherson Rd",
-          addressLocality: "Laredo",
-          addressRegion: "TX",
-          postalCode: "78041",
-          addressCountry: "US"
+          street: "5802 McPherson Rd",
+          city: "Laredo", 
+          state: "TX",
+          zip: "78041",
+          country: "US"
         }}
-        geo={{
-          latitude: 27.5629,
-          longitude: -99.4805
-        }}
-        contactPoint={{
-          telephone: "+19567123000",
-          email: "info@ohanarealty.com",
-          contactType: "Customer Support"
-        }}
-        openingHours={[
-          "Mo-Fr 09:00-18:00",
-          "Sa 10:00-16:00"
+        phone="+19567123000"
+        email="info@ohanarealty.com"
+        socialLinks={[
+          "https://www.facebook.com/ohanarealty",
+          "https://www.instagram.com/ohanarealty",
+          "https://www.linkedin.com/company/ohana-realty"
         ]}
-        areaServed={["Laredo", "Webb County", "South Texas"]}
-        priceRange="$$$"
       />
       
       {/* Social Media Sharing Optimizations */}
