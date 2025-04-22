@@ -2,22 +2,22 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 
-// Define carousel images with optimized sizes and loading
+// Define carousel images with high quality settings - improved for crystal clear images
 const carouselImages = [
   {
-    url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=75&w=1280&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=100&w=1920&auto=format&fit=crop",
     alt: "Luxury home exterior"
   },
   {
-    url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=75&w=1280&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=100&w=1920&auto=format&fit=crop",
     alt: "Modern residential house"
   },
   {
-    url: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=75&w=1280&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=100&w=1920&auto=format&fit=crop",
     alt: "Elegant property with pool"
   },
   {
-    url: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=75&w=1280&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=100&w=1920&auto=format&fit=crop",
     alt: "Contemporary home design"
   }
 ];
@@ -52,14 +52,12 @@ export default function Hero() {
   
   return (
     <section className="relative bg-neutral-900 h-screen flex items-center overflow-hidden">
-      {/* Background image carousel and overlays - COMPLETELY REBUILT FOR MOBILE */}
+      {/* Background image carousel with crystal clear images and minimal overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {/* Enhanced gradient overlay with multiple layers */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black/40 z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10 mix-blend-overlay"></div>
+        {/* Simplified overlay for better image clarity */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/20 z-10"></div>
         
-        {/* Animated grain texture */}
-        <div className="absolute inset-0 opacity-30 z-10 bg-noise"></div>
+        {/* Removed animated grain texture for crystal clear images */}
         
         {/* Optimized carousel container with hardware acceleration */}
         <div className="absolute inset-0 transform-gpu">
@@ -86,12 +84,15 @@ export default function Hero() {
                   alt={image.alt} 
                   loading="eager"
                   decoding="async"
+                  fetchpriority="high"
                   className="w-full h-full object-cover transform-gpu"
                   style={{ 
+                    imageRendering: 'high-quality',
                     willChange: 'transform',
                     transform: 'translate3d(0,0,0)',
                     WebkitBackfaceVisibility: 'hidden',
-                    backfaceVisibility: 'hidden'
+                    backfaceVisibility: 'hidden',
+                    filter: 'none'
                   }}
                 />
               </div>
