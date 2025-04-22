@@ -506,7 +506,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                 </div>
                 
                 <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4">
-                  Valentin is a top-rated realtor with over 15 years of experience in the Laredo real estate market.
+                  Valentin is a top-rated realtor with over 27 years of experience in the Laredo real estate market.
                 </p>
                 
                 <div className="flex space-x-2">

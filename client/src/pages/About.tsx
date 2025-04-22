@@ -6,9 +6,9 @@ import { LocalBusinessStructuredData, BreadcrumbStructuredData, FAQStructuredDat
 
 export default function About() {
   const stats = [
-    { value: "10+", label: "Years Experience" },
-    { value: "250+", label: "Properties Sold" },
-    { value: "350+", label: "Happy Clients" },
+    { value: "27+", label: "Years Experience" },
+    { value: "650+", label: "Properties Sold" },
+    { value: "850+", label: "Happy Clients" },
     { value: "100%", label: "Client Satisfaction" },
   ];
 
@@ -62,7 +62,7 @@ export default function About() {
     <>
       <SEOHead 
         title="About Ohana Realty | Laredo TX Premier Real Estate | Valentin Cuellar"
-        description="Learn about Ohana Realty and expert agent Valentin Cuellar. With over 10 years of experience in Laredo's real estate market, we provide personalized service to find your dream property. Explore our story, values, and client testimonials."
+        description="Learn about Ohana Realty and expert agent Valentin Cuellar. With over 27 years of experience in Laredo's real estate market, we provide personalized service to find your dream property. Explore our story, values, and client testimonials."
         canonicalUrl="/about"
         ogImage={`${websiteUrl}/og-image-about.jpg`}
       />
@@ -124,7 +124,7 @@ export default function About() {
           },
           {
             question: "What areas of real estate does Valentin Cuellar specialize in?",
-            answer: "Valentin Cuellar specializes in residential properties, luxury homes, and commercial investments in Laredo. With over a decade of experience, he has in-depth knowledge of Laredo's neighborhoods, property values, and development trends."
+            answer: "Valentin Cuellar specializes in residential properties, luxury homes, and commercial investments in Laredo. With over 27 years of experience, he has in-depth knowledge of Laredo's neighborhoods, property values, and development trends."
           },
           {
             question: "What values does Ohana Realty operate by?",
@@ -207,7 +207,7 @@ export default function About() {
                 <p className="text-primary font-medium mb-4">Broker & Owner</p>
                 
                 <p className="text-muted-foreground mb-4">
-                  With over a decade of experience in Laredo real estate, Valentin has developed a reputation for 
+                  With over 27 years of experience in Laredo real estate, Valentin has developed a reputation for 
                   his detailed market knowledge, negotiation skills, and client-first approach.
                 </p>
                 
