@@ -1,8 +1,8 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useEffect, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { queryClient } from "./lib/queryClient";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -20,17 +20,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import PerformanceOptimizer from "@/components/common/PerformanceOptimizer";
 import SiteMapGenerator from "@/components/SiteMapGenerator";
-
-// ScrollToTop component that watches for route changes
-const ScrollToTop = () => {
-  const [location] = useLocation();
-  
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location]); // Dependency on location means this runs on every route change
-  
-  return null;
-};
+import ScrollToTop from "@/components/ScrollToTop"; // Import our enhanced ScrollToTop component
 
 function App() {
   // Main App component with fixed background parallax effects and performance optimizations
