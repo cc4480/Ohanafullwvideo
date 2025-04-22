@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import PropertyCard from "./PropertyCard";
+import PropertyCard from "@/components/properties/PropertyCard";
 import { Property } from "@shared/schema";
 
 export default function FeaturedProperties() {

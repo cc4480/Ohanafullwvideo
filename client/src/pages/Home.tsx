@@ -1,11 +1,11 @@
-import Hero from "@/components/Hero";
-import PropertySearch from "@/components/PropertySearch";
-import FeaturedProperties from "@/components/FeaturedProperties";
-import PropertyMap from "@/components/PropertyMap";
-import AboutRealtor from "@/components/AboutRealtor";
-import NeighborhoodInsights from "@/components/NeighborhoodInsights";
-import ContactSection from "@/components/ContactSection";
-import CallToAction from "@/components/CallToAction";
+import Hero from "@/components/home/Hero";
+import PropertySearch from "@/components/properties/PropertySearch";
+import FeaturedProperties from "@/components/home/FeaturedProperties";
+import PropertyMap from "@/components/properties/PropertyMap";
+import AboutRealtor from "@/components/home/AboutRealtor";
+import NeighborhoodInsights from "@/components/features/NeighborhoodInsights";
+import ContactSection from "@/components/features/ContactSection";
+import CallToAction from "@/components/home/CallToAction";
 
 export default function Home() {
   return (

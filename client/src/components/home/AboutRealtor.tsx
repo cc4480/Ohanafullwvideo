@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useEffect, useState } from "react";
-import valentinCuellarImg from "../assets/valentin-realtor.png";
+import valentinCuellarImg from "../../assets/valentin-realtor.png";
 import { Phone, Mail, Award, Star, MapPin, Clock } from "lucide-react";
 
 export default function AboutRealtor() {
