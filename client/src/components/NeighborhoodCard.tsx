@@ -1,6 +1,7 @@
 import { Neighborhood } from "@shared/schema";
 import { ArrowRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
 
 interface NeighborhoodCardProps {
   neighborhood: Neighborhood;
@@ -9,6 +10,123 @@ interface NeighborhoodCardProps {
 export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps) {
   // Simple theme detection as fallback
   const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Refs for animation targets
+  const cardRef = useRef<HTMLDivElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const tagRef = useRef<HTMLDivElement>(null);
+  const linkRef = useRef<HTMLAnchorElement>(null);
+  
+  // Setup animations
+  useEffect(() => {
+    const card = cardRef.current;
+    const imageContainer = imageContainerRef.current;
+    const title = titleRef.current;
+    const tag = tagRef.current;
+    const link = linkRef.current;
+    
+    if (!card || !imageContainer || !title || !tag || !link) return;
+    
+    // Create subtle hover animations
+    const handleMouseEnter = () => {
+      // Card lift and glow effect
+      gsap.to(card, {
+        y: -8,
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+      
+      // Image scale effect (already handled by Tailwind, but we can enhance it)
+      gsap.to(imageContainer.querySelector('img'), {
+        scale: 1.08,
+        duration: 0.8,
+        ease: 'power1.out'
+      });
+      
+      // Title color shift
+      gsap.to(title, {
+        color: 'var(--primary)',
+        duration: 0.3
+      });
+      
+      // Tag animation
+      gsap.to(tag, {
+        y: -4,
+        scale: 1.05,
+        duration: 0.3,
+        ease: 'back.out'
+      });
+      
+      // Link animation
+      gsap.to(link, {
+        x: 5,
+        fontWeight: 700,
+        duration: 0.3,
+        ease: 'power1.out'
+      });
+      
+      // Arrow animation
+      gsap.to(link.querySelector('svg'), {
+        x: 3,
+        duration: 0.3,
+        ease: 'power1.out'
+      });
+    };
+    
+    // Reset animations on mouse leave
+    const handleMouseLeave = () => {
+      gsap.to(card, {
+        y: 0,
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+      
+      gsap.to(imageContainer.querySelector('img'), {
+        scale: 1,
+        duration: 0.5,
+        ease: 'power1.out'
+      });
+      
+      gsap.to(title, {
+        color: isDarkMode ? 'white' : 'var(--foreground)',
+        duration: 0.3
+      });
+      
+      gsap.to(tag, {
+        y: 0,
+        scale: 1,
+        duration: 0.3,
+        ease: 'power1.inOut'
+      });
+      
+      gsap.to(link, {
+        x: 0,
+        fontWeight: 500,
+        duration: 0.3,
+        ease: 'power1.inOut'
+      });
+      
+      gsap.to(link.querySelector('svg'), {
+        x: 0,
+        duration: 0.3,
+        ease: 'power1.inOut'
+      });
+    };
+    
+    // Add event listeners
+    card.addEventListener('mouseenter', handleMouseEnter);
+    card.addEventListener('mouseleave', handleMouseLeave);
+    
+    // Clean up event listeners on unmount
+    return () => {
+      card.removeEventListener('mouseenter', handleMouseEnter);
+      card.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [isDarkMode]);
   
   useEffect(() => {
     // Check for dark mode preference
