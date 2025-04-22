@@ -11,6 +11,7 @@ import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler } fro
 import SEOHead from "@/components/SEOHead";
 import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
+import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
 
 export default function PropertyDetails({ id }: { id: number }) {
   const [, navigate] = useLocation();
