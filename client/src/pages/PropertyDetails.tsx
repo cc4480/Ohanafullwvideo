@@ -366,14 +366,21 @@ export default function PropertyDetails({ id }: { id: number }) {
                       Email Agent
                     </Button>
                   </a>
-                  <Button 
-                    className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
-                    variant="secondary"
-                    size="sm"
-                  >
-                    <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                    Schedule a Viewing
-                  </Button>
+                  {property && (
+                    <ScheduleViewingModal 
+                      property={property}
+                      trigger={
+                        <Button 
+                          className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
+                          variant="secondary"
+                          size="sm"
+                        >
+                          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                          Schedule a Viewing
+                        </Button>
+                      }
+                    />
+                  )}
                 </div>
               </div>
               

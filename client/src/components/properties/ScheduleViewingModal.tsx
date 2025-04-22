@@ -57,6 +57,17 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+// Type for the API request
+interface ViewingRequestData {
+  propertyId: number;
+  name: string;
+  email: string;
+  phone: string;
+  date: string; // This is a string in yyyy-MM-dd format
+  time: string;
+  notes?: string;
+}
+
 export default function ScheduleViewingModal({ property, trigger }: ScheduleViewingModalProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
@@ -72,7 +83,7 @@ export default function ScheduleViewingModal({ property, trigger }: ScheduleView
   });
   
   const mutation = useMutation({
-    mutationFn: async (values: FormValues & { propertyId: number }) => {
+    mutationFn: async (values: ViewingRequestData) => {
       const res = await apiRequest("POST", "/api/schedule-viewing", values);
       if (!res.ok) {
         const errorData = await res.json();
@@ -98,11 +109,28 @@ export default function ScheduleViewingModal({ property, trigger }: ScheduleView
   });
   
   const onSubmit = (values: FormValues) => {
-    mutation.mutate({
-      ...values,
+    // Only submit if we have a valid date
+    if (!values.date) {
+      toast({
+        title: "Error",
+        description: "Please select a date for your viewing",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Create the request data with the proper types
+    const requestData: ViewingRequestData = {
       propertyId: property.id,
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
       date: format(values.date, "yyyy-MM-dd"),
-    });
+      time: values.time,
+      notes: values.notes,
+    };
+    
+    mutation.mutate(requestData);
   };
   
   return (
