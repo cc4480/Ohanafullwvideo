@@ -28,45 +28,7 @@
 }
 
 :root {
-  /* Updated color palette to match logo */
-  --background: 0 0% 100%;
-  --foreground: 200 14% 14%;
-  --muted: 200 10% 95%;
-  --muted-foreground: 200 10% 45%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 200 14% 14%;
-  --card: 0 0% 100%;
-  --card-foreground: 200 14% 14%;
-  --border: 200 10% 90%;
-  --input: 200 10% 90%;
-  
-  /* Main brand color - Teal blue from logo */
-  --primary: 195 100% 29%;
-  --primary-foreground: 0 0% 100%;
-  
-  /* Secondary color - Orange accent from logo */
-  --secondary: 18 91% 55%;
-  --secondary-foreground: 0 0% 100%;
-  
-  /* Accent color - Green accent from logo */
-  --accent: 142 70% 45%;
-  --accent-foreground: 0 0% 100%;
-  
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  
-  --ring: 195 100% 29%;
-  --radius: 0.5rem;
-
-  /* Chart colors */
-  --chart-1: 195 100% 29%;
-  --chart-2: 18 91% 55%;
-  --chart-3: 142 70% 45%;
-  --chart-4: 55 92% 52%;
-  --chart-5: 250 85% 65%;
-}
-
-.dark {
+  /* Dark theme colors as default */
   --background: 200 30% 10%;
   --foreground: 0 0% 98%;
   --muted: 200 30% 15%;
@@ -78,7 +40,7 @@
   --border: 200 30% 18%;
   --input: 200 30% 18%;
   
-  /* Brighter versions for dark mode */
+  /* Optimized brand colors for dark theme */
   --primary: 195 85% 40%;
   --primary-foreground: 0 0% 100%;
   
@@ -92,6 +54,14 @@
   --destructive-foreground: 0 0% 100%;
   
   --ring: 195 85% 40%;
+  --radius: 0.5rem;
+
+  /* Chart colors */
+  --chart-1: 195 85% 40%;
+  --chart-2: 18 95% 60%;
+  --chart-3: 142 75% 50%;
+  --chart-4: 55 92% 60%;
+  --chart-5: 250 85% 70%;
 }
 
 @keyframes gentle-pulse {
@@ -309,108 +279,7 @@
     }
   }
   
-  /* Critical AI assistant styles - IMPORTANT: DO NOT REMOVE */
-  .ai-assistant-button {
-    position: fixed !important;
-    bottom: 24px !important;
-    right: 24px !important;
-    z-index: 999999 !important;
-    display: flex !important;
-    pointer-events: auto !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: 64px !important;
-    height: 64px !important;
-    border: none !important;
-    background-color: white !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    animation: pulse 2s infinite !important;
-    border-radius: 8px !important;
-    transform: translateZ(0) !important;
-    backface-visibility: hidden !important;
-    transform-style: preserve-3d !important;
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent !important;
-  }
-  
-  /* Mobile-specific AI assistant styles */
-  @media (max-width: 640px) {
-    .ai-assistant-button {
-      bottom: 16px !important;
-      right: 16px !important;
-      width: 56px !important;
-      height: 56px !important;
-      border: 2px solid hsl(var(--primary)) !important;
-      transform: translateZ(0) !important;
-      will-change: transform !important;
-      -webkit-user-select: none !important;
-      user-select: none !important;
-    }
-  }
-
-  /* Additional chat icon styles - CRITICAL: DO NOT REMOVE */
-  #ohana-chat-icon {
-    display: block !important;
-    position: fixed !important;
-    bottom: 24px !important;
-    right: 24px !important;
-    z-index: 999999 !important;
-    width: 64px !important;
-    height: 64px !important;
-    transform: translateZ(0) !important;
-    will-change: transform !important;
-    backface-visibility: hidden !important;
-    -webkit-tap-highlight-color: transparent !important;
-    touch-action: manipulation !important;
-    user-select: none !important;
-    border-radius: 8px !important;
-    border: 3px solid hsl(var(--primary)) !important;
-    background-color: white !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
-    animation: pulse 2s infinite !important;
-  }
-  
-  /* Mobile-specific chat icon - CRITICAL: DO NOT REMOVE OR MODIFY */
-  @media (max-width: 640px) {
-    #ohana-chat-icon {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      position: fixed !important;
-      bottom: 16px !important;
-      right: 16px !important;
-      width: 50px !important;
-      height: 50px !important;
-      z-index: 9999999 !important;
-      animation: pulse 2s infinite !important;
-      background-color: white !important;
-      border: 2px solid hsl(195, 100%, 29%) !important; 
-      border-radius: 8px !important;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
-    }
-    
-    #ohana-chat-icon img {
-      width: 90% !important;
-      height: 90% !important;
-      object-fit: contain !important;
-      margin: auto !important;
-    }
-    
-    /* Ensure the button is always shown on mobile */
-    button[aria-label="Chat with Ohana Assistant"] {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      z-index: 999999 !important;
-    }
-  }
-
-  /* Ensure the chat button is always on top and never hidden */
-  body::after {
-    content: "";
-    display: none;
-  }
+  /* AI assistant styles have been completely removed */
   
   /* ===== Enhanced Animations and Transitions with Hardware Acceleration ===== */
   /* Improved property card image animation with GPU acceleration */
