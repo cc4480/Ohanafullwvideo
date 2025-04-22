@@ -88,8 +88,8 @@ export default function PropertyListingMetadata({
     ? property.images[0] 
     : `${baseUrl}/placeholder-property.jpg`;
     
-  // Calculate property age if year built is available
-  const propertyAge = 2025 - parseInt(property.yearBuilt?.toString() || '2025');
+  // Calculate property age if year built is available (year built not in current schema)
+  const currentYear = new Date().getFullYear();
   
   // Get published and updated dates
   const publishedDate = new Date().toISOString();
@@ -186,7 +186,8 @@ export default function PropertyListingMetadata({
           value: property.squareFeet,
           unitCode: "SQFT"
         } : undefined}
-        yearBuilt={property.yearBuilt}
+        // Property doesn't have yearBuilt in the current schema
+        // yearBuilt={property.yearBuilt}
         amenities={property.features || []}
         broker={broker}
         datePosted={publishedDate}

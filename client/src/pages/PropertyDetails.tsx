@@ -8,7 +8,11 @@ import ContactSection from "@/components/ContactSection";
 import { useEffect, useState } from "react";
 import valentinCuellarImg from "../assets/valentin-realtor.png";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle, Maximize2 } from "lucide-react";
-import SEOHead from "@/components/SEOHead";
+// Enhanced SEO components
+import PropertyListingMetadata from "@/components/PropertyListingMetadata";
+import SEOBreadcrumbs from "@/components/SEOBreadcrumbs";
+import SEOImage from "@/components/SEOImage";
+import CanonicalURLs from "@/components/CanonicalURLs";
 import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
@@ -107,54 +111,34 @@ export default function PropertyDetails({ id }: { id: number }) {
 
   return (
     <>
-      <SEOHead 
-        title={`${property.address} | ${property.type === "RESIDENTIAL" ? `${property.bedrooms} Bed ${property.bathrooms} Bath Home` : propertyTypeName} | Ohana Realty`}
-        description={`${propertyDescription} View this exclusive ${property.type === "RESIDENTIAL" ? `${property.bedrooms} bedroom, ${property.bathrooms} bathroom home` : propertyTypeName.toLowerCase()} with ${property.squareFeet} sq ft in ${property.city}, TX. Contact Valentin Cuellar at Ohana Realty for more details.`}
-        canonicalUrl={`/property/${property.id}`}
-        ogImage={property.images && property.images.length ? property.images[0] : undefined}
-        ogType="article"
+      {/* Enhanced SEO for property listing */}
+      <PropertyListingMetadata
+        property={property}
+        baseUrl={websiteUrl}
+        broker={{
+          name: "Valentin Cuellar",
+          url: `${websiteUrl}/realtors/valentin-cuellar`,
+          image: valentinCuellarImg,
+          telephone: "+1-555-123-4567",
+          email: "valentin@ohanarealty.com"
+        }}
       />
-
-      {/* Property Structured Data */}
-      <PropertyStructuredData
-        name={property.address}
-        description={property.description || propertyDescription}
-        url={`${websiteUrl}/property/${property.id}`}
-        image={property.images}
-        price={property.price}
-        priceCurrency="USD"
-        addressLocality={property.city}
-        addressRegion={property.state}
-        postalCode={property.zipCode || ""}
-        streetAddress={property.address}
-        latitude={getPropertyLatitude(property)}
-        longitude={getPropertyLongitude(property)}
-        propertyType={property.type === "RESIDENTIAL" ? "Residential" : 
-                      property.type === "COMMERCIAL" ? "Commercial" : "Land"}
-        numberOfRooms={property.type === "RESIDENTIAL" ? getPropertyBedrooms(property) : undefined}
-        numberOfBathrooms={property.type === "RESIDENTIAL" ? getPropertyBathrooms(property) : undefined}
-        floorSize={property.squareFeet ? {
-          value: property.squareFeet,
-          unitCode: "SQFT"
-        } : undefined}
-      />
-
-      {/* Breadcrumb Structured Data */}
-      <BreadcrumbStructuredData
+      
+      {/* Enhanced SEO breadcrumbs with schema markup */}
+      <SEOBreadcrumbs
         items={[
-          {
-            name: "Home",
-            item: websiteUrl
-          },
-          {
-            name: "Properties",
-            item: `${websiteUrl}/properties`
-          },
-          {
-            name: property.address,
-            item: `${websiteUrl}/property/${property.id}`
-          }
+          { label: "Properties", path: "/properties" },
+          { label: property.address, path: `/properties/${property.id}` }
         ]}
+        baseUrl={websiteUrl}
+        includeHome={true}
+        includeStructuredData={true}
+      />
+      
+      {/* Canonical URL to prevent duplicate content */}
+      <CanonicalURLs 
+        baseUrl={websiteUrl}
+        overridePath={`/properties/${property.id}`}
       />
       <div className="min-h-screen">
         {/* Property Header */}
@@ -190,12 +174,29 @@ export default function PropertyDetails({ id }: { id: number }) {
                 aria-label="Property photo gallery"
               >
                 <div className="rounded-lg overflow-hidden mb-3 sm:mb-4 shadow-md relative group">
-                  <img 
-                    src={activeImage} 
-                    alt={`Main image of property at ${property.address}`} 
+                  {/* Enhanced SEO Image component with structured data */}
+                  <SEOImage
+                    src={activeImage}
+                    alt={`Main image of property at ${property.address}`}
                     className="w-full h-[250px] sm:h-[350px] md:h-[400px] object-cover transform-gpu cursor-pointer"
-                    style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
+                    width={800}
+                    height={600}
+                    loading="eager" 
+                    fetchPriority="high"
+                    isMainImage={true}
+                    decoding="async"
                     onClick={() => openFullScreenViewer(property.images.indexOf(activeImage))}
+                    style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
+                    structuredData={{
+                      "@context": "https://schema.org",
+                      "@type": "ImageObject",
+                      "contentUrl": activeImage,
+                      "name": `Photo of ${property.address}`,
+                      "description": `Image of ${property.type === "RESIDENTIAL" ? 
+                        "residential home" : property.type === "COMMERCIAL" ? 
+                        "commercial property" : "land"} at ${property.address}, ${property.city}, ${property.state}`,
+                      "representativeOfPage": true
+                    }}
                   />
                   
                   {/* Fullscreen button overlay */}
