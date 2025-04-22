@@ -10,6 +10,7 @@ import valentinCuellarImg from "../assets/valentin-realtor.png";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
+import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 
 export default function PropertyDetails({ id }: { id: number }) {
   const [, navigate] = useLocation();
@@ -106,12 +107,12 @@ export default function PropertyDetails({ id }: { id: number }) {
         addressRegion={property.state}
         postalCode={property.zipCode || ""}
         streetAddress={property.address}
-        latitude={property.lat}
-        longitude={property.lng}
+        latitude={getPropertyLatitude(property)}
+        longitude={getPropertyLongitude(property)}
         propertyType={property.type === "RESIDENTIAL" ? "Residential" : 
                       property.type === "COMMERCIAL" ? "Commercial" : "Land"}
-        numberOfRooms={property.type === "RESIDENTIAL" ? property.bedrooms : undefined}
-        numberOfBathrooms={property.type === "RESIDENTIAL" ? property.bathrooms : undefined}
+        numberOfRooms={property.type === "RESIDENTIAL" ? getPropertyBedrooms(property) : undefined}
+        numberOfBathrooms={property.type === "RESIDENTIAL" ? getPropertyBathrooms(property) : undefined}
         floorSize={property.squareFeet ? {
           value: property.squareFeet,
           unitCode: "SQFT"
@@ -291,13 +292,15 @@ export default function PropertyDetails({ id }: { id: number }) {
                   <div 
                     className="h-60 sm:h-80 bg-card dark:bg-slate-800 rounded-md mb-3 sm:mb-4 overflow-hidden shadow-sm mobile-optimized relative cursor-pointer"
                     onClick={() => {
-                      if (property.lat && property.lng) {
-                        const url = `https://www.google.com/maps/search/?api=1&query=${property.lat},${property.lng}&query_place_id=${encodeURIComponent(property.address)}`;
+                      const latitude = getPropertyLatitude(property);
+                      const longitude = getPropertyLongitude(property);
+                      if (latitude && longitude) {
+                        const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&query_place_id=${encodeURIComponent(property.address)}`;
                         window.open(url, '_blank', 'noopener,noreferrer');
                       }
                     }}
                   >
-                    {property.lat && property.lng ? (
+                    {getPropertyLatitude(property) && getPropertyLongitude(property) ? (
                       <>
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 z-10 flex flex-col items-center justify-center">
                           <div className="bg-white rounded-full p-3 shadow-lg mb-3 transform-gpu hover:scale-105 transition-transform">
