@@ -31,14 +31,15 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
   }, []);
   
   return (
-    <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group`}>
-      <div className="h-48 overflow-hidden relative bg-slate-100 dark:bg-slate-700">
+    <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group mobile-optimized transform-gpu`} style={{ backfaceVisibility: 'hidden' }}>
+      <div className="h-40 sm:h-48 overflow-hidden relative bg-slate-100 dark:bg-slate-700">
         {neighborhood.image ? (
           <img 
             src={neighborhood.image} 
             alt={neighborhood.name} 
-            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition duration-500 transform-gpu"
             loading="lazy"
+            style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
             onError={(e) => {
               // Fallback for failed images
               (e.target as HTMLImageElement).src = "https://placehold.co/600x400/slate/white?text=Ohana+Realty";
@@ -57,29 +58,33 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
           </span>
         </div>
       </div>
-      <div className="p-6">
-        <h3 className={`font-serif text-xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mb-2`}>
+      <div className="p-4 sm:p-6">
+        <h3 className={`font-serif text-lg sm:text-xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mb-1 sm:mb-2 line-clamp-1`}>
           {neighborhood.name}
         </h3>
-        <p className={`${isDarkMode ? 'text-slate-300' : 'text-muted-foreground'} mb-4`}>
+        <p className={`${isDarkMode ? 'text-slate-300' : 'text-muted-foreground'} mb-3 sm:mb-4 text-sm sm:text-base line-clamp-2`}>
           {neighborhood.description}
         </p>
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
           {neighborhood.features?.map((feature, index) => (
             <span 
               key={index} 
               className={`${isDarkMode 
                 ? 'bg-slate-700 text-slate-200' 
                 : 'bg-neutral-100 text-neutral-700'} 
-                text-sm px-3 py-1 rounded-full`}
+                text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full`}
             >
               {feature}
             </span>
           ))}
         </div>
-        <a href="#" className="flex items-center text-primary font-medium hover:text-primary-dark">
-          Learn More
-          <ArrowRight className="h-4 w-4 ml-1" />
+        <a 
+          href="#" 
+          className="flex items-center text-primary font-medium hover:text-primary-dark active:scale-95 transition-transform transform-gpu"
+          style={{ touchAction: 'manipulation' }}
+        >
+          <span className="text-sm sm:text-base">Learn More</span>
+          <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
         </a>
       </div>
     </div>
