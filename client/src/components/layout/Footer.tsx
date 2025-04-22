@@ -107,6 +107,8 @@ export default function Footer() {
                 <a 
                   key={item.icon}
                   href={item.url} 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   <i className={`bx ${item.icon} text-xl`}></i>

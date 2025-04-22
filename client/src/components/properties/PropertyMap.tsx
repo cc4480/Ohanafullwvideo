@@ -40,7 +40,7 @@ export default function PropertyMap() {
   const openInGoogleMaps = (lat: number | null, lng: number | null, address: string) => {
     if (lat && lng) {
       const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(address)}`;
-      window.open(url, '_blank');
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
   

@@ -228,7 +228,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                   onClick={() => {
                     if (property.lat && property.lng) {
                       const url = `https://www.google.com/maps/search/?api=1&query=${property.lat},${property.lng}&query_place_id=${encodeURIComponent(property.address)}`;
-                      window.open(url, '_blank');
+                      window.open(url, '_blank', 'noopener,noreferrer');
                     }
                   }}
                 >

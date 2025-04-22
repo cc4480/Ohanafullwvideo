@@ -188,7 +188,7 @@ export default function AIAssistant() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      sendMessage(0);
     }
   };
 
@@ -349,7 +349,7 @@ export default function AIAssistant() {
               disabled={isLoading}
             />
             <Button
-              onClick={sendMessage}
+              onClick={() => sendMessage(0)}
               disabled={!message.trim() || isLoading}
               size="icon"
               className="bg-primary hover:bg-primary/90"
