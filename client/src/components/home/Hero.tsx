@@ -1,6 +1,15 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import FloatingLogo from "./FloatingLogo";
+
+// Import logo for background effect
+import logoImg from "@assets/OIP.jfif";
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 // Define carousel images with high quality settings - improved for crystal clear images
 const carouselImages = [
@@ -25,6 +34,8 @@ const carouselImages = [
 export default function Hero() {
   const [currentImage, setCurrentImage] = useState(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   
   // Setup carousel with hardware acceleration
   useEffect(() => {
@@ -50,8 +61,91 @@ export default function Hero() {
     };
   }, [currentImage]);
   
+  // Setup parallax effect on scroll
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    
+    // Create parallax effect for the hero section
+    const parallaxEffect = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true
+      }
+    });
+    
+    // Add parallax movement to various elements
+    parallaxEffect.to(".parallax-bg", {
+      y: 100,
+      ease: "none"
+    }, 0);
+    
+    // Add subtle scale effect to the hero section
+    parallaxEffect.to(sectionRef.current, {
+      scale: 0.95,
+      ease: "none"
+    }, 0);
+    
+    // Scale and fade content on scroll
+    if (contentRef.current) {
+      parallaxEffect.to(contentRef.current, {
+        y: -30,
+        opacity: 0.5,
+        ease: "none"
+      }, 0);
+    }
+    
+    return () => {
+      // Clean up ScrollTrigger when component unmounts
+      if (parallaxEffect.scrollTrigger) {
+        parallaxEffect.scrollTrigger.kill();
+      }
+    };
+  }, []);
+  
+  // Setup hover effects
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    
+    // The hover zoom effect for the whole hero section
+    const handleMouseEnter = () => {
+      gsap.to(sectionRef.current, { 
+        scale: 1.02, 
+        duration: 0.5, 
+        ease: "power2.out" 
+      });
+    };
+    
+    const handleMouseLeave = () => {
+      gsap.to(sectionRef.current, { 
+        scale: 1, 
+        duration: 0.5, 
+        ease: "power2.out" 
+      });
+    };
+    
+    // Add event listeners
+    sectionRef.current.addEventListener('mouseenter', handleMouseEnter);
+    sectionRef.current.addEventListener('mouseleave', handleMouseLeave);
+    
+    // Cleanup
+    return () => {
+      if (sectionRef.current) {
+        sectionRef.current.removeEventListener('mouseenter', handleMouseEnter);
+        sectionRef.current.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, []);
+  
   return (
-    <section className="relative bg-neutral-900 h-screen flex items-center overflow-hidden">
+    <section 
+      ref={sectionRef}
+      className="relative bg-neutral-900 h-screen flex items-center overflow-hidden transition-transform duration-500 ease-out"
+      style={{ 
+        transformOrigin: 'center center',
+        willChange: 'transform, scale'
+      }}>
       {/* Background image carousel with crystal clear images and minimal overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {/* Simplified overlay for better image clarity */}
@@ -84,10 +178,9 @@ export default function Hero() {
                   alt={image.alt} 
                   loading="eager"
                   decoding="async"
-                  fetchpriority="high"
-                  className="w-full h-full object-cover transform-gpu"
+                  className="w-full h-full object-cover transform-gpu parallax-bg"
                   style={{ 
-                    imageRendering: 'high-quality',
+                    imageRendering: 'auto',
                     willChange: 'transform',
                     transform: 'translate3d(0,0,0)',
                     WebkitBackfaceVisibility: 'hidden',
@@ -136,8 +229,15 @@ export default function Hero() {
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
+      {/* Floating Logo in background */}
+      <FloatingLogo 
+        logoUrl={logoImg}
+        className="top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 z-5"
+        intensity={0.7}
+      />
+      
       {/* Content - completely rebuilt for mobile */}
-      <div className="container mx-auto px-4 relative z-20 py-2 md:py-8">
+      <div className="container mx-auto px-4 relative z-20 py-2 md:py-8" ref={contentRef}>
         <div className="max-w-3xl mt-12 sm:mt-0">
           <div className="mb-4 opacity-90">
             <span className="inline-block px-4 py-1 bg-secondary/90 text-white rounded-full text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm">
