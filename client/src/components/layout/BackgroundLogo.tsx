@@ -6,22 +6,24 @@ import React from 'react';
  */
 export default function BackgroundLogo() {
   return (
-    <div className="fixed inset-0 w-full h-full pointer-events-none z-[-1]">
-      {/* First, create the background image div */}
-      <div 
-        className="absolute inset-0"
+    <div className="fixed inset-0 w-full h-full pointer-events-none z-[-1] flex items-center justify-center">
+      {/* Dark overlay first (lower z-index) */}
+      <div className="absolute inset-0 bg-black opacity-90 z-[-1]" />
+      
+      {/* Image on top of the overlay */}
+      <img 
+        src="/assets/profile.jpg"
+        alt="Background Logo" 
+        className="fixed"
         style={{
-          backgroundImage: `url('/assets/profile.jpg')`,
-          backgroundSize: '500px',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0.15
+          width: '500px',
+          height: 'auto',
+          opacity: 0.15,
+          objectFit: 'contain',
+          filter: 'grayscale(50%)',
+          pointerEvents: 'none'
         }}
       />
-      
-      {/* Then add an overlay to ensure content is visible */}
-      <div className="absolute inset-0 bg-black bg-opacity-90" />
     </div>
   );
 }
