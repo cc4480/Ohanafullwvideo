@@ -118,8 +118,8 @@ export default function Header() {
         <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
           {[
             { path: '/', label: 'Home' },
-            { path: '/properties', label: 'Properties' }
-            /* All other links removed completely as requested */
+            { path: '/properties', label: 'Properties' },
+            { path: '/#about', label: 'About' }
           ].map((item, index) => (
             <Link 
               key={item.path} 
@@ -164,8 +164,8 @@ export default function Header() {
         <div className="flex flex-col space-y-2 max-h-[70vh] overflow-y-auto">
           {[
             { path: '/', label: 'Home', icon: 'bx-home' },
-            { path: '/properties', label: 'Properties', icon: 'bx-building-house' }
-            /* ALL other links removed completely as requested */
+            { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
+            { path: '/#about', label: 'About', icon: 'bx-user' }
           ].map((item, index) => (
             <Link 
               key={item.path} 
