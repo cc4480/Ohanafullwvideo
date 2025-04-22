@@ -38,25 +38,31 @@ const applyPerformanceOptimizations = () => {
   document.documentElement.style.scrollBehavior = "smooth";
   
   // Setup visual viewport optimizations for mobile
-  if ('visualViewport' in window) {
+  if ('visualViewport' in window && window.visualViewport) {
     window.visualViewport.addEventListener('resize', () => {
-      document.documentElement.style.height = `${window.visualViewport.height}px`;
+      document.documentElement.style.height = `${window.visualViewport?.height}px`;
     });
   }
   
   // Add global styles from external sources with preload
   const fontLink = document.createElement('link');
-  fontLink.rel = 'preload';
-  fontLink.as = 'style';
-  fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap';
-  fontLink.onload = function() { this.onload = null; this.rel = 'stylesheet'; };
+  fontLink.setAttribute('rel', 'preload');
+  fontLink.setAttribute('as', 'style');
+  fontLink.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+  fontLink.onload = function() { 
+    this.removeAttribute('onload'); 
+    this.setAttribute('rel', 'stylesheet');
+  };
   document.head.appendChild(fontLink);
   
   const boxiconsLink = document.createElement('link');
-  boxiconsLink.rel = 'preload';
-  boxiconsLink.as = 'style';
-  boxiconsLink.href = 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css';
-  boxiconsLink.onload = function() { this.onload = null; this.rel = 'stylesheet'; };
+  boxiconsLink.setAttribute('rel', 'preload');
+  boxiconsLink.setAttribute('as', 'style');
+  boxiconsLink.setAttribute('href', 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+  boxiconsLink.onload = function() {
+    this.removeAttribute('onload');
+    this.setAttribute('rel', 'stylesheet');
+  };
   document.head.appendChild(boxiconsLink);
   
   // Enable cooperative scheduling with main thread
@@ -70,8 +76,8 @@ const applyPerformanceOptimizations = () => {
       
       links.forEach(href => {
         const link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.href = href;
+        link.setAttribute('rel', 'prefetch');
+        link.setAttribute('href', href);
         document.head.appendChild(link);
       });
     });
