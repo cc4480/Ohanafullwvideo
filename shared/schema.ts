@@ -48,18 +48,11 @@ export const messages = pgTable("messages", {
   createdAt: text("createdAt").notNull(),
 });
 
-// Users table schema - enhanced for authentication
+// Users table schema
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  email: text("email").unique(),
-  firstName: text("first_name"),
-  lastName: text("last_name"),
-  role: text("role").default("USER").notNull(),
-  createdAt: text("created_at").notNull().default(new Date().toISOString()),
-  lastLogin: text("last_login"),
-  isVerified: integer("is_verified").default(0),
 });
 
 // Create insert schemas
@@ -77,9 +70,6 @@ export const insertMessageSchema = createInsertSchema(messages);
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
-  email: true,
-  firstName: true,
-  lastName: true,
 });
 
 // Export types
