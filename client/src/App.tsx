@@ -75,6 +75,8 @@ function App() {
             </Switch>
             <Footer />
             <AIAssistant />
+            {/* Add always visible backup chat icon for mobile - CRITICAL COMPONENT */}
+            <OhanaAssistantIcon />
           </>
         </TooltipProvider>
       </ThemeProvider>

@@ -3,34 +3,59 @@ import logoImg from "@assets/OIP.jfif";
 
 // This is an additional simple version of the AI assistant icon that will ALWAYS be visible
 export default function OhanaAssistantIcon() {
+  // State to track if this component should be displayed
+  const [shouldShow, setShouldShow] = React.useState(false);
+  
+  // Function to toggle the main AI chat component 
   const handleClick = () => {
-    // Try to find and click the original AI assistant button
-    const aiButton = document.querySelector('.ai-assistant-button') as HTMLButtonElement;
-    if (aiButton) {
-      aiButton.click();
+    // Find and click the main AI assistant button
+    const mainButton = document.querySelector('button[aria-label="Chat with Ohana Assistant"]') as HTMLButtonElement;
+    if (mainButton) {
+      mainButton.click();
     }
   };
-
+  
+  // Check for mobile screens
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setShouldShow(window.innerWidth < 768);
+    };
+    
+    // Set immediately
+    checkMobile();
+    
+    // Listen for resize
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Don't render on desktop as the main AI component handles it
+  if (!shouldShow) return null;
+  
   return (
     <div 
       id="ohana-chat-icon"
+      className="ai-assistant-button mobile-optimized"
       onClick={handleClick}
       style={{
         position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        width: '64px',
-        height: '64px',
+        bottom: '16px',
+        right: '16px', 
+        width: '56px',
+        height: '56px',
         borderRadius: '8px',
         backgroundColor: 'white',
         boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
-        border: '3px solid hsl(215, 80%, 50%)',
+        border: '3px solid hsl(195, 100%, 29%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
-        zIndex: 999999,
-        animation: 'pulse 2s ease-in-out infinite'
+        zIndex: 9999999,
+        transform: 'translateZ(0)',
+        backfaceVisibility: 'hidden',
+        touchAction: 'manipulation',
+        WebkitTapHighlightColor: 'transparent'
       }}
     >
       <img 
@@ -40,7 +65,9 @@ export default function OhanaAssistantIcon() {
           width: '100%',
           height: '100%',
           objectFit: 'contain',
-          padding: '4px'
+          padding: '4px',
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden'
         }}
       />
     </div>
