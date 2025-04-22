@@ -14,10 +14,21 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import AIAssistant from "@/components/AIAssistant";
 
 function App() {
-  // Scroll to top on route change
+  // Enhanced scroll to top with smooth behavior and page transition
   const ScrollToTop = () => {
     useEffect(() => {
-      window.scrollTo(0, 0);
+      // Apply smooth scrolling with animation
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      
+      // Add transition class to body for smoother theme changes
+      document.body.classList.add('theme-transition');
+      
+      return () => {
+        document.body.classList.remove('theme-transition');
+      };
     }, []);
 
     return null;
@@ -36,7 +47,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <Home />
+                      <div className="animate-fade-in" style={{ animationDuration: '0.5s' }}>
+                        <Home />
+                      </div>
                     </>
                   );
                 }}
@@ -46,7 +59,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <Properties />
+                      <div className="animate-fade-in" style={{ animationDuration: '0.5s' }}>
+                        <Properties />
+                      </div>
                     </>
                   );
                 }}
@@ -56,7 +71,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <PropertyDetails id={parseInt(params.id)} />
+                      <div className="animate-fade-in" style={{ animationDuration: '0.5s' }}>
+                        <PropertyDetails id={parseInt(params.id)} />
+                      </div>
                     </>
                   );
                 }}
@@ -66,7 +83,9 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <NotFound />
+                      <div className="animate-fade-in" style={{ animationDuration: '0.5s' }}>
+                        <NotFound />
+                      </div>
                     </>
                   );
                 }}
