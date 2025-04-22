@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useEffect, useState } from "react";
-import valentinCuellarImg from "../assets/valentin-realtor.png";
+import valentinCuellarImg from "../assets/valentin-high-quality.jfif";
 import { Phone, Mail, Award, Star, MapPin, Clock } from "lucide-react";
 
 export default function AboutRealtor() {
@@ -150,9 +150,10 @@ export default function AboutRealtor() {
                 <img 
                   src={valentinCuellarImg} 
                   alt="Valentin Cuellar - Ohana Realty" 
-                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                  width={500}
-                  height={400}
+                  className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
+                  width={600}
+                  height={600}
+                  style={{ objectFit: 'cover', aspectRatio: '1/1' }}
                 />
                 
                 {/* Name tag overlay */}
