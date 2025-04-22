@@ -3,6 +3,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
 import { LocalBusinessStructuredData, BreadcrumbStructuredData, FAQStructuredData } from "@/components/StructuredData";
+import brokerImage from "@assets/OIP (1).jfif";
+import propertyImage from "@assets/MLS15.jpg";
 
 export default function About() {
   const stats = [
@@ -188,7 +190,7 @@ export default function About() {
 
             <div className="rounded-lg overflow-hidden shadow-lg">
               <img 
-                src="@assets/MLS15.jpg" 
+                src={propertyImage} 
                 alt="Ohana Realty property" 
                 className="w-full h-full object-cover"
               />
