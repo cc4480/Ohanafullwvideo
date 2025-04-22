@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import valentinCuellarImg from "../assets/valentin-realtor.png";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
+import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 
 export default function PropertyDetails({ id }: { id: number }) {
   const [, navigate] = useLocation();
@@ -81,14 +82,58 @@ export default function PropertyDetails({ id }: { id: number }) {
   
   const propertyDescription = `${property.bedrooms ? `${property.bedrooms} bedroom ` : ''}${property.type === "RESIDENTIAL" ? "home" : "property"} located at ${property.address}, ${property.city}, ${property.state}. ${property.description?.substring(0, 100)}...`;
   
+  const websiteUrl = "https://ohanarealty.com";
+
   return (
     <>
       <SEOHead 
-        title={`${property.address} | ${property.city}, ${property.state} | Ohana Realty`}
-        description={propertyDescription}
+        title={`${property.address} | ${property.type === "RESIDENTIAL" ? `${property.bedrooms} Bed ${property.bathrooms} Bath Home` : propertyTypeName} | Ohana Realty`}
+        description={`${propertyDescription} View this exclusive ${property.type === "RESIDENTIAL" ? `${property.bedrooms} bedroom, ${property.bathrooms} bathroom home` : propertyTypeName.toLowerCase()} with ${property.squareFeet} sq ft in ${property.city}, TX. Contact Valentin Cuellar at Ohana Realty for more details.`}
         canonicalUrl={`/property/${property.id}`}
         ogImage={property.images && property.images.length ? property.images[0] : undefined}
         ogType="article"
+      />
+
+      {/* Property Structured Data */}
+      <PropertyStructuredData
+        name={property.address}
+        description={property.description || propertyDescription}
+        url={`${websiteUrl}/property/${property.id}`}
+        image={property.images}
+        price={property.price}
+        priceCurrency="USD"
+        addressLocality={property.city}
+        addressRegion={property.state}
+        postalCode={property.zipCode || ""}
+        streetAddress={property.address}
+        latitude={property.lat}
+        longitude={property.lng}
+        propertyType={property.type === "RESIDENTIAL" ? "Residential" : 
+                      property.type === "COMMERCIAL" ? "Commercial" : "Land"}
+        numberOfRooms={property.type === "RESIDENTIAL" ? property.bedrooms : undefined}
+        numberOfBathrooms={property.type === "RESIDENTIAL" ? property.bathrooms : undefined}
+        floorSize={property.squareFeet ? {
+          value: property.squareFeet,
+          unitCode: "SQFT"
+        } : undefined}
+      />
+
+      {/* Breadcrumb Structured Data */}
+      <BreadcrumbStructuredData
+        items={[
+          {
+            name: "Home",
+            item: websiteUrl
+          },
+          {
+            name: "Properties",
+            item: `${websiteUrl}/properties`
+          },
+          {
+            name: property.address,
+            item: `${websiteUrl}/property/${property.id}`
+          }
+        ]}
       />
       <div className="min-h-screen">
         {/* Property Header */}

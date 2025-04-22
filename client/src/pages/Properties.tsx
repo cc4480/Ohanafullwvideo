@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import SEOHead from "@/components/SEOHead";
+import { BreadcrumbStructuredData, FAQStructuredData } from "@/components/StructuredData";
 
 export default function Properties() {
   const [propertyType, setPropertyType] = useState<string>("All");
@@ -47,12 +48,55 @@ export default function Properties() {
     return true;
   });
   
+  const websiteUrl = "https://ohanarealty.com";
+
   return (
     <>
       <SEOHead 
-        title="Properties"
-        description="Browse our extensive collection of properties for sale in Laredo, TX. Find residential homes, commercial properties, and land with our easy-to-use search filters."
+        title="Laredo TX Properties For Sale | Homes, Commercial, Land | Ohana Realty"
+        description="Explore premium Laredo real estate listings. Find residential homes, commercial properties, and land for sale. Use our advanced search filters to find your ideal property in Laredo, Texas."
         canonicalUrl="/properties"
+        ogImage={`${websiteUrl}/og-image-properties.jpg`}
+      />
+      
+      {/* Breadcrumb Structured Data */}
+      <BreadcrumbStructuredData
+        items={[
+          {
+            name: "Home",
+            item: websiteUrl
+          },
+          {
+            name: "Properties",
+            item: `${websiteUrl}/properties`
+          }
+        ]}
+      />
+      
+      {/* FAQ Structured Data */}
+      <FAQStructuredData
+        questions={[
+          {
+            question: "What types of properties does Ohana Realty offer?",
+            answer: "Ohana Realty offers a diverse portfolio of properties in Laredo including residential homes, commercial buildings, and vacant land. Our residential listings include single-family homes, townhouses, and luxury properties, while our commercial options range from retail spaces to office buildings."
+          },
+          {
+            question: "How can I filter properties by my specific requirements?",
+            answer: "Our website provides powerful filtering tools that allow you to search by property type (residential, commercial, or land), price range, and location. You can also enter specific keywords to find properties with particular features or in specific neighborhoods of Laredo."
+          },
+          {
+            question: "Are virtual tours available for Ohana Realty properties?",
+            answer: "Yes, many of our property listings feature high-quality images and virtual tours. For properties without virtual tours, you can easily schedule an in-person viewing by contacting Valentin Cuellar directly through our website or by calling (956) 712-3000."
+          },
+          {
+            question: "How often are new properties added to the Ohana Realty listings?",
+            answer: "We update our property listings regularly, often adding new properties weekly. We recommend checking back frequently or signing up for our property alerts to be notified when new properties matching your criteria become available."
+          },
+          {
+            question: "What price ranges are available for Laredo properties?",
+            answer: "Ohana Realty offers properties across various price points to accommodate different budgets. Our listings range from affordable starter homes under $200,000 to luxury properties over $500,000, with commercial properties and land available at various price points as well."
+          }
+        ]}
       />
       <div className="min-h-screen">
         <div className="bg-primary text-white py-12 sm:py-16">
