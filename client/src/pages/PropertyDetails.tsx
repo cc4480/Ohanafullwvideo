@@ -13,6 +13,7 @@ import PropertyListingMetadata from "@/components/PropertyListingMetadata";
 import SEOBreadcrumbs from "@/components/SEOBreadcrumbs";
 import SEOImage from "@/components/SEOImage";
 import CanonicalURLs from "@/components/CanonicalURLs";
+import KeywordOptimizer from "@/components/KeywordOptimizer";
 import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
@@ -139,6 +140,52 @@ export default function PropertyDetails({ id }: { id: number }) {
       <CanonicalURLs 
         baseUrl={websiteUrl}
         overridePath={`/properties/${property.id}`}
+      />
+      
+      {/* Advanced Keyword Optimization */}
+      <KeywordOptimizer
+        primaryKeywords={[
+          `${property.type.toLowerCase()} for sale`,
+          property.type === "RESIDENTIAL" ? "house for sale" : property.type === "COMMERCIAL" ? "commercial property" : "land for sale",
+          property.city + " real estate",
+          `${property.bedrooms} bedroom ${property.type === "RESIDENTIAL" ? "home" : "property"}`,
+          `${property.city} ${property.type.toLowerCase()} ${property.price < 300000 ? "affordable" : "luxury"}`
+        ]}
+        secondaryKeywords={[
+          `${property.city} properties`,
+          `${property.address.split(' ').slice(-1)[0]} area homes`, // Uses street name for area targeting
+          property.type === "RESIDENTIAL" ? `${property.bedrooms} bed ${property.bathrooms} bath home` : "commercial space",
+          `${property.squareFeet} square foot ${property.type === "RESIDENTIAL" ? "house" : "property"}`,
+          property.features?.join(", ") || ""
+        ]}
+        longTailKeywords={[
+          `${property.bedrooms} bedroom home for sale in ${property.city} ${property.state}`,
+          `${property.type.toLowerCase()} for sale near ${property.city} downtown`,
+          `${property.city} ${property.state} ${property.type === "RESIDENTIAL" ? "family home" : "property"} under ${(property.price + 100000).toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0})}`,
+          `real estate agent for ${property.city} ${property.type.toLowerCase()}`,
+          `${property.zipCode} area ${property.type.toLowerCase()} for sale`
+        ]}
+        locationKeywords={[
+          property.city,
+          `${property.city} ${property.state}`,
+          property.state,
+          property.zipCode.toString(),
+          `${property.city} ${property.neighborhood || "area"}`
+        ]}
+        semanticKeywords={[
+          "property details",
+          "real estate listing",
+          "home features",
+          "property images",
+          "property tour",
+          "schedule viewing",
+          "contact realtor",
+          "property inquiry"
+        ]}
+        pageUrl={`${websiteUrl}/properties/${property.id}`}
+        pageType="property-detail"
+        enableLSI={true}
+        advancedNLP={true}
       />
       <div className="min-h-screen">
         {/* Property Header */}

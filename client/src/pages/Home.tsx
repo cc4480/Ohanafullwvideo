@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet';
 import SocialShareMetadata from "@/components/SocialShareMetadata";
 import CanonicalURLs from "@/components/CanonicalURLs";
 import { FAQStructuredData } from "@/components/StructuredData";
+import KeywordOptimizer from "@/components/KeywordOptimizer";
 
 export default function Home() {
   const websiteUrl = "https://ohanarealty.com";
@@ -65,6 +66,58 @@ export default function Home() {
           "es": `${websiteUrl}/es`,
           "en-GB": `${websiteUrl}/gb`
         }}
+      />
+      
+      {/* Advanced Keyword Optimization */}
+      <KeywordOptimizer
+        primaryKeywords={[
+          'real estate', 
+          'homes for sale', 
+          'property listings',
+          'real estate agent',
+          'Laredo realtor'
+        ]}
+        secondaryKeywords={[
+          'houses for sale',
+          'residential properties',
+          'commercial properties',
+          'real estate agency',
+          'property search',
+          'buy home'
+        ]}
+        longTailKeywords={[
+          'best real estate agent in Laredo TX',
+          'luxury homes for sale Laredo',
+          'affordable houses in Laredo Texas',
+          'downtown Laredo commercial properties',
+          'Laredo TX waterfront properties',
+          'how to buy a house in Laredo Texas',
+          'property investment opportunities in Laredo'
+        ]}
+        locationKeywords={[
+          'Laredo', 
+          'Laredo TX', 
+          'Laredo Texas',
+          'Webb County',
+          'South Texas',
+          'North Laredo',
+          'Downtown Laredo'
+        ]}
+        semanticKeywords={[
+          'real estate listings',
+          'property search',
+          'mortgage',
+          'home buyer',
+          'home seller',
+          'housing market',
+          'property values',
+          'real estate trends',
+          'property investments'
+        ]}
+        pageUrl={websiteUrl}
+        pageType="homepage"
+        enableLSI={true}
+        advancedNLP={true}
       />
       
       {/* FAQ Structured Data */}
