@@ -1,14 +1,88 @@
 import ContactSection from "@/components/features/ContactSection";
 import { Briefcase, Mail, MapPin, Phone } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
+import { LocalBusinessStructuredData, BreadcrumbStructuredData, FAQStructuredData } from "@/components/StructuredData";
 
 export default function Contact() {
+  const websiteUrl = "https://ohanarealty.com";
+
   return (
     <>
       <SEOHead 
-        title="Contact Us"
-        description="Contact Valentin Cuellar at Ohana Realty for all your real estate needs in Laredo, TX. Visit our office, call us at (956) 451-2013, or fill out our online form."
+        title="Contact Ohana Realty | Laredo TX Real Estate Agency | Valentin Cuellar"
+        description="Contact Valentin Cuellar at Ohana Realty for all your real estate needs in Laredo, TX. Visit our office at 5702 McPherson Rd, call us at (956) 451-2013, or fill out our online form for prompt assistance."
         canonicalUrl="/contact"
+        ogImage={`${websiteUrl}/og-image-contact.jpg`}
+      />
+      
+      {/* Business Structured Data with enhanced contact info */}
+      <LocalBusinessStructuredData
+        name="Ohana Realty"
+        description="Premier real estate agency in Laredo, TX offering personalized service for buying, selling, and renting properties. Contact Valentin Cuellar for expert assistance with residential and commercial real estate."
+        url={websiteUrl}
+        logo={`${websiteUrl}/logo.png`}
+        streetAddress="5702 McPherson Rd, Suite 9"
+        addressLocality="Laredo"
+        addressRegion="TX"
+        postalCode="78041"
+        telephone="+19564512013"
+        email="contact@ohanarealty.com"
+        priceRange="$$$"
+        latitude={27.5454625}
+        longitude={-99.4785054}
+        openingHours={[
+          "Monday 9:00-18:00",
+          "Tuesday 9:00-18:00",
+          "Wednesday 9:00-18:00",
+          "Thursday 9:00-18:00",
+          "Friday 9:00-18:00",
+          "Saturday 10:00-16:00"
+        ]}
+        sameAs={[
+          "https://www.facebook.com/ohanarealty",
+          "https://www.instagram.com/ohanarealty",
+          "https://www.linkedin.com/company/ohana-realty"
+        ]}
+      />
+      
+      {/* Breadcrumb Structured Data */}
+      <BreadcrumbStructuredData
+        items={[
+          {
+            name: "Home",
+            item: websiteUrl
+          },
+          {
+            name: "Contact",
+            item: `${websiteUrl}/contact`
+          }
+        ]}
+      />
+      
+      {/* FAQ Structured Data */}
+      <FAQStructuredData
+        questions={[
+          {
+            question: "What's the best way to contact Ohana Realty?",
+            answer: "The best way to contact Ohana Realty is by calling Valentin Cuellar directly at (956) 451-2013, sending an email to contact@ohanarealty.com, or using the contact form on our website. You can also visit our office at 5702 McPherson Rd, Suite 9, Laredo, TX 78041 during business hours."
+          },
+          {
+            question: "What are Ohana Realty's office hours?",
+            answer: "Ohana Realty is open Monday through Friday from 9AM to 6PM, Saturday from 10AM to 4PM, and Sunday by appointment only. We're flexible and can arrange meetings outside these hours when necessary to accommodate your schedule."
+          },
+          {
+            question: "How quickly will Ohana Realty respond to my inquiry?",
+            answer: "Ohana Realty prides itself on responsive service. We typically respond to all inquiries within 2 business hours during normal business hours. For inquiries received after hours, we'll respond by the next business day."
+          },
+          {
+            question: "Can I schedule a property viewing through the contact form?",
+            answer: "Yes, you can request a property viewing through our contact form. Simply mention the specific property address or MLS number you're interested in, along with your preferred dates and times, and Valentin will contact you to confirm the appointment."
+          },
+          {
+            question: "Do I need to make an appointment to visit your office?",
+            answer: "While walk-ins are welcome during regular business hours, we recommend scheduling an appointment to ensure Valentin is available to meet with you and can prepare relevant property information based on your specific needs and interests."
+          }
+        ]}
       />
       <div className="container mx-auto px-4 py-12">
         <div className="mb-12 text-center">

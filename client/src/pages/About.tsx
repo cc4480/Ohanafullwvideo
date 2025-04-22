@@ -2,6 +2,7 @@ import { Award, CheckCircle, Home, Star, User } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
+import { LocalBusinessStructuredData, BreadcrumbStructuredData, FAQStructuredData } from "@/components/StructuredData";
 
 export default function About() {
   const stats = [
@@ -55,12 +56,85 @@ export default function About() {
     }
   ];
 
+  const websiteUrl = "https://ohanarealty.com";
+
   return (
     <>
       <SEOHead 
-        title="About Us"
-        description="Learn about Ohana Realty and our expert agent Valentin Cuellar. With over 10 years of experience in Laredo's real estate market, we provide personalized service to help you find your dream home."
+        title="About Ohana Realty | Laredo TX Premier Real Estate | Valentin Cuellar"
+        description="Learn about Ohana Realty and expert agent Valentin Cuellar. With over 10 years of experience in Laredo's real estate market, we provide personalized service to find your dream property. Explore our story, values, and client testimonials."
         canonicalUrl="/about"
+        ogImage={`${websiteUrl}/og-image-about.jpg`}
+      />
+      
+      {/* Business Structured Data */}
+      <LocalBusinessStructuredData
+        name="Ohana Realty"
+        description="Premier real estate agency in Laredo, TX founded by Valentin Cuellar in 2014. Specializing in residential and commercial properties with personalized service and expert local knowledge."
+        url={websiteUrl}
+        logo={`${websiteUrl}/logo.png`}
+        streetAddress="5802 McPherson Rd"
+        addressLocality="Laredo"
+        addressRegion="TX"
+        postalCode="78041"
+        telephone="+19567123000"
+        email="info@ohanarealty.com"
+        priceRange="$$$"
+        latitude={27.5629}
+        longitude={-99.4805}
+        openingHours={[
+          "Monday 9:00-18:00",
+          "Tuesday 9:00-18:00",
+          "Wednesday 9:00-18:00",
+          "Thursday 9:00-18:00",
+          "Friday 9:00-18:00",
+          "Saturday 10:00-15:00"
+        ]}
+        sameAs={[
+          "https://www.facebook.com/ohanarealty",
+          "https://www.instagram.com/ohanarealty",
+          "https://www.linkedin.com/company/ohana-realty"
+        ]}
+      />
+      
+      {/* Breadcrumb Structured Data */}
+      <BreadcrumbStructuredData
+        items={[
+          {
+            name: "Home",
+            item: websiteUrl
+          },
+          {
+            name: "About",
+            item: `${websiteUrl}/about`
+          }
+        ]}
+      />
+      
+      {/* FAQ Structured Data */}
+      <FAQStructuredData
+        questions={[
+          {
+            question: "When was Ohana Realty founded?",
+            answer: "Ohana Realty was founded by Valentin Cuellar in 2014 after recognizing the need for a more personalized approach to real estate services in Laredo, Texas."
+          },
+          {
+            question: "What does 'Ohana' mean in your company name?",
+            answer: "The name 'Ohana' comes from the Hawaiian term for family, reflecting our belief that real estate is about helping people find their place in the world and creating a sense of family with our clients."
+          },
+          {
+            question: "What areas of real estate does Valentin Cuellar specialize in?",
+            answer: "Valentin Cuellar specializes in residential properties, luxury homes, and commercial investments in Laredo. With over a decade of experience, he has in-depth knowledge of Laredo's neighborhoods, property values, and development trends."
+          },
+          {
+            question: "What values does Ohana Realty operate by?",
+            answer: "Ohana Realty operates by four core values: Excellence (exceeding expectations in every transaction), Client Focus (prioritizing client needs), Integrity (maintaining honesty and transparency), and Community (supporting Laredo's growth and development)."
+          },
+          {
+            question: "Is Valentin Cuellar licensed in Texas?",
+            answer: "Yes, Valentin Cuellar is a licensed real estate broker in Texas (License #652371) and Ohana Realty is a licensed brokerage with the Texas Real Estate Commission (#9002464)."
+          }
+        ]}
       />
       <div>
         {/* Hero Section */}
