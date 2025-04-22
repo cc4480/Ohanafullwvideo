@@ -127,10 +127,10 @@ export default function AIAssistant() {
       return (
         <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-lg mb-4 max-w-[85%] ml-2">
           <p className="text-sm">
-            👋 Hi there! I'm Valentin AI, your real estate assistant. 
-            I can help you find properties, learn about neighborhoods, 
-            or answer questions about buying or selling a home in Laredo. 
-            How can I assist you today?
+            👋 Aloha! I'm Ohana Assistant from Ohana Realty. "Ohana" means family in Hawaiian,
+            and we're committed to treating our clients like family. I can help you find properties,
+            learn about Laredo neighborhoods, or answer questions about buying or selling a home.
+            How can I assist your real estate journey today?
           </p>
         </div>
       );
@@ -162,7 +162,7 @@ export default function AIAssistant() {
         <div className="bg-primary text-white p-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <MessageSquare className="h-5 w-5" />
-            <h3 className="font-medium">Valentin AI Assistant</h3>
+            <h3 className="font-medium">Ohana Assistant</h3>
           </div>
           <div className="flex space-x-1">
             <Button 
@@ -258,7 +258,7 @@ export default function AIAssistant() {
       >
         <div className="flex items-center space-x-2">
           <MessageSquare className="h-5 w-5 text-primary" />
-          <p className="text-sm font-medium">Chat with Valentin AI</p>
+          <p className="text-sm font-medium">Chat with Ohana Assistant</p>
         </div>
       </div>
     </>
