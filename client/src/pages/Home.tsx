@@ -6,51 +6,78 @@ import AboutRealtor from "@/components/home/AboutRealtor";
 import NeighborhoodInsights from "@/components/features/NeighborhoodInsights";
 import ContactSection from "@/components/features/ContactSection";
 import CallToAction from "@/components/home/CallToAction";
-import SEOHead from "@/components/SEOHead";
-import { LocalBusinessStructuredData, BreadcrumbStructuredData, FAQStructuredData } from "@/components/StructuredData";
+// Enhanced SEO components
+import SEOOrganizationSchema from "@/components/SEOOrganizationSchema";
+import { Helmet } from 'react-helmet';
+import SocialShareMetadata from "@/components/SocialShareMetadata";
+import CanonicalURLs from "@/components/CanonicalURLs";
+import { FAQStructuredData } from "@/components/StructuredData";
 
 export default function Home() {
   const websiteUrl = "https://ohanarealty.com";
   
   return (
     <>
-      <SEOHead 
-        title="Ohana Realty | Laredo TX Real Estate | Homes For Sale"
-        description="Discover premium properties in Laredo, TX with Ohana Realty. Expert real estate services for buying, selling, and renting residential and commercial properties. Valentin Cuellar offers unmatched local expertise for your real estate journey."
-        canonicalUrl="/"
-        ogImage={`${websiteUrl}/og-image-home.jpg`}
-      />
-      
-      {/* Business Structured Data */}
-      <LocalBusinessStructuredData
+      {/* Enhanced SEO Organization Schema */}
+      <SEOOrganizationSchema
         name="Ohana Realty"
-        description="Premier real estate agency in Laredo, TX specializing in residential and commercial properties, with personalized service and expert local knowledge."
         url={websiteUrl}
         logo={`${websiteUrl}/logo.png`}
-        streetAddress="5802 McPherson Rd"
-        addressLocality="Laredo"
-        addressRegion="TX"
-        postalCode="78041"
-        telephone="+19567123000"
-        email="info@ohanarealty.com"
-        priceRange="$$$"
-        latitude={27.5629}
-        longitude={-99.4805}
-        sameAs={[
-          "https://www.facebook.com/ohanarealty",
-          "https://www.instagram.com/ohanarealty",
-          "https://www.linkedin.com/company/ohana-realty"
+        description="Premier real estate agency in Laredo, TX specializing in residential and commercial properties, with personalized service and expert local knowledge."
+        socialProfiles={{
+          facebook: "https://www.facebook.com/ohanarealty",
+          instagram: "https://www.instagram.com/ohanarealty",
+          linkedin: "https://www.linkedin.com/company/ohana-realty"
+        }}
+        address={{
+          streetAddress: "5802 McPherson Rd",
+          addressLocality: "Laredo",
+          addressRegion: "TX",
+          postalCode: "78041",
+          addressCountry: "US"
+        }}
+        geo={{
+          latitude: 27.5629,
+          longitude: -99.4805
+        }}
+        contactPoint={{
+          telephone: "+19567123000",
+          email: "info@ohanarealty.com",
+          contactType: "Customer Support"
+        }}
+        openingHours={[
+          "Mo-Fr 09:00-18:00",
+          "Sa 10:00-16:00"
         ]}
+        areaServed={["Laredo", "Webb County", "South Texas"]}
+        priceRange="$$$"
       />
       
-      {/* Breadcrumb Structured Data */}
-      <BreadcrumbStructuredData
-        items={[
-          {
-            name: "Home",
-            item: websiteUrl
-          }
-        ]}
+      {/* Social Media Sharing Optimizations */}
+      <SocialShareMetadata
+        title="Ohana Realty | Laredo TX Real Estate | Homes For Sale"
+        description="Discover premium properties in Laredo, TX with Ohana Realty. Expert real estate services for buying, selling, and renting residential and commercial properties. Valentin Cuellar offers unmatched local expertise for your real estate journey."
+        url={websiteUrl}
+        image={`${websiteUrl}/og-image-home.jpg`}
+        imageAlt="Ohana Realty - Laredo, TX properties and homes"
+        type="website"
+        siteName="Ohana Realty"
+        locale="en_US"
+        twitter={{
+          card: "summary_large_image",
+          site: "@OhanaRealty",
+          creator: "@ValentinCuellar"
+        }}
+      />
+      
+      {/* Canonical URL Management */}
+      <CanonicalURLs
+        baseUrl={websiteUrl}
+        defaultLanguage="en-US"
+        alternateUrls={{
+          "es": `${websiteUrl}/es`,
+          "en-GB": `${websiteUrl}/gb`
+        }}
       />
       
       {/* FAQ Structured Data */}

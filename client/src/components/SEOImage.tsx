@@ -89,6 +89,16 @@ interface SEOImageProps {
    * Function called when image fails to load
    */
   onError?: () => void;
+  
+  /**
+   * Function called when image is clicked
+   */
+  onClick?: () => void;
+  
+  /**
+   * Additional inline styles
+   */
+  style?: React.CSSProperties;
 }
 
 /**
@@ -116,7 +126,9 @@ export default function SEOImage({
   attribution,
   structuredData,
   onLoad,
-  onError
+  onError,
+  onClick,
+  style
 }: SEOImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -172,6 +184,7 @@ export default function SEOImage({
     fetchPriority,
     onLoad: handleLoad,
     onError: handleError,
+    onClick: onClick,
     ref: imageRef,
     // Add schema.org markup if this is a main content image
     ...(isMainImage ? { itemprop: 'image' } : {}),
@@ -182,7 +195,9 @@ export default function SEOImage({
       aspectRatio: width && height ? `${width}/${height}` : undefined,
       // Use placeholder if provided and not yet loaded
       backgroundImage: placeholderSrc && !loaded ? `url(${placeholderSrc})` : undefined,
-      backgroundSize: placeholderSrc ? 'cover' : undefined
+      backgroundSize: placeholderSrc ? 'cover' : undefined,
+      // Merge with any custom styles
+      ...(style || {})
     }
   };
   

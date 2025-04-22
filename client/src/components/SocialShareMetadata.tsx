@@ -47,6 +47,15 @@ interface SocialShareMetadataProps {
   twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
   
   /**
+   * Twitter card configuration object
+   */
+  twitter?: {
+    card?: 'summary' | 'summary_large_image' | 'app' | 'player';
+    site?: string;
+    creator?: string;
+  };
+  
+  /**
    * The name of the app or site
    */
   siteName?: string;
