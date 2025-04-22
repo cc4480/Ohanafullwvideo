@@ -226,15 +226,23 @@ export default function PropertyDetails({ id }: { id: number }) {
                     aria-label="Property thumbnail images"
                   >
                     {property.images.map((image, index) => (
-                      <button 
+                      <div 
                         key={index}
                         className={`cursor-pointer rounded-md overflow-hidden border-2 ${
                           activeImage === image ? 'border-primary' : 'border-transparent'
                         } active:scale-95 transition-transform transform-gpu focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 relative group`}
                         onClick={() => setActiveImage(image)}
                         style={{ touchAction: 'manipulation' }}
+                        role="button"
+                        tabIndex={0}
                         aria-label={`View photo ${index + 1} of ${property.images.length}`}
                         aria-pressed={activeImage === image}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setActiveImage(image);
+                          }
+                        }}
                       >
                         <img 
                           src={image} 
@@ -246,21 +254,28 @@ export default function PropertyDetails({ id }: { id: number }) {
                         
                         {/* Thumbnail overlay with fullscreen option */}
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 bg-white/20 hover:bg-white/40 text-white rounded-full"
+                          <div 
+                            className="h-6 w-6 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
                               setActiveImage(image);
                               openFullScreenViewer(index);
                             }}
+                            role="button"
+                            tabIndex={0}
                             aria-label={`View photo ${index + 1} fullscreen`}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setActiveImage(image);
+                                openFullScreenViewer(index);
+                              }
+                            }}
                           >
                             <Maximize2 className="h-3 w-3" />
-                          </Button>
+                          </div>
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 )}

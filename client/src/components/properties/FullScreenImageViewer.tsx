@@ -58,7 +58,11 @@ export default function FullScreenImageViewer({
   // Enhanced full screen mode with proper controls and navigation
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-7xl w-full p-0 bg-black/95 border-none">
+      <DialogContent className="max-w-7xl w-full p-0 bg-black/95 border-none" aria-describedby="fullscreen-viewer-description">
+        <DialogTitle className="sr-only">Image Viewer - {propertyAddress}</DialogTitle>
+        <div id="fullscreen-viewer-description" className="sr-only">
+          Full screen image viewer for property at {propertyAddress}, showing image {currentIndex + 1} of {images.length}.
+        </div>
         <div className="relative w-full h-screen max-h-[90vh] flex flex-col">
           {/* Close button */}
           <div className="absolute top-2 right-2 z-50">
@@ -114,14 +118,22 @@ export default function FullScreenImageViewer({
           {/* Thumbnail navigation (optional for larger screens) */}
           <div className="mt-auto p-2 overflow-x-auto flex space-x-2 bg-black/20">
             {images.map((image, index) => (
-              <button
+              <div
                 key={index}
-                className={`flex-shrink-0 h-16 w-16 rounded overflow-hidden border-2 transition-all ${
+                className={`flex-shrink-0 h-16 w-16 rounded overflow-hidden border-2 transition-all cursor-pointer ${
                   currentIndex === index ? 'border-primary' : 'border-transparent'
                 }`}
                 onClick={() => setCurrentIndex(index)}
+                role="button"
+                tabIndex={0}
                 aria-label={`View image ${index + 1}`}
                 aria-current={currentIndex === index}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setCurrentIndex(index);
+                  }
+                }}
               >
                 <img
                   src={image}
@@ -129,7 +141,7 @@ export default function FullScreenImageViewer({
                   className="h-full w-full object-cover"
                   loading="eager"
                 />
-              </button>
+              </div>
             ))}
           </div>
         </div>
