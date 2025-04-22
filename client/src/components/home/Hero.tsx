@@ -51,7 +51,7 @@ export default function Hero() {
   }, [currentImage]);
   
   return (
-    <section className="relative bg-neutral-900 h-screen flex items-start md:items-center pt-14 md:pt-0 overflow-hidden">
+    <section className="relative bg-neutral-900 h-screen flex items-center overflow-hidden">
       {/* Background image carousel and overlays - COMPLETELY REBUILT FOR MOBILE */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {/* Enhanced gradient overlay with multiple layers */}
@@ -136,8 +136,8 @@ export default function Hero() {
       ></div>
       
       {/* Content - completely rebuilt for mobile */}
-      <div className="container mx-auto px-4 relative z-20 pt-2 md:pt-36 pb-16">
-        <div className="max-w-3xl mt-0 md:mt-12">
+      <div className="container mx-auto px-4 relative z-20 py-2 md:py-8">
+        <div className="max-w-3xl mt-12 sm:mt-0">
           <div className="mb-4 opacity-90">
             <span className="inline-block px-4 py-1 bg-secondary/90 text-white rounded-full text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm">
               OHANA REALTY - ESTABLISHED IN LAREDO
