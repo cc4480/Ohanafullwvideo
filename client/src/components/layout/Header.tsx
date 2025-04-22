@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "./ThemeToggle";
 
-// Load the provided logo image
+// Import logo from assets
 import logoImg from "@assets/OIP.jfif";
 
 export default function Header() {
@@ -121,20 +121,28 @@ export default function Header() {
   
   return (
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
-      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
+      <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
+        {/* Logo with reduced size on mobile */}
         <Link href="/" className="flex items-center relative group animate-fade-in">
-          <div className={`p-2 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"}`}>
-            <img 
-              src={logoImg} 
-              alt="Ohana Realty Logo" 
-              className="transform-gpu"
-              style={{ 
-                width: isMobile ? '75px' : '150px',
-                height: 'auto',
-                display: 'block',
-                maxWidth: '100%'
-              }}
-            />
+          <div className={`p-1 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"}`}>
+            {/* Custom mobile logo sizing */}
+            <div style={{ 
+              width: isMobile ? '60px' : '140px', 
+              height: isMobile ? '25px' : '55px', 
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <div style={{ 
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                backgroundImage: `url(${logoImg})`,
+                backgroundSize: 'contain',
+                backgroundPosition: isMobile ? 'center center' : 'center',
+              transform: isMobile ? 'scale(0.8)' : 'none',
+                backgroundRepeat: 'no-repeat'
+              }}></div>
+            </div>
           </div>
           {/* Subtle decoration */}
           <div className="absolute -bottom-2 -right-2 h-4 w-4 bg-secondary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
