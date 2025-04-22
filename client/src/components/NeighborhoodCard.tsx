@@ -151,7 +151,7 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
   return (
     <div 
       ref={cardRef}
-      className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group will-change-transform`}
+      className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group will-change-transform orange-glow-border`}
     >
       <div 
         ref={imageContainerRef}

@@ -27,6 +27,30 @@ html, body {
   50% { opacity: 0.15; }
 }
 
+/* Glowing orange border animation */
+@keyframes glowingOrangeBorder {
+  0%, 100% {
+    box-shadow: 0 0 5px 1px hsl(var(--logo-orange) / 0.4),
+                inset 0 0 5px 1px hsl(var(--logo-orange) / 0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px 2px hsl(var(--logo-orange) / 0.7),
+                inset 0 0 7px 1px hsl(var(--logo-orange) / 0.3);
+  }
+}
+
+/* More intense version of the glowing border for hover states */
+@keyframes glowingOrangeBorderIntense {
+  0%, 100% {
+    box-shadow: 0 0 5px 1px hsl(var(--logo-orange) / 0.5),
+                inset 0 0 5px 1px hsl(var(--logo-orange) / 0.25);
+  }
+  50% {
+    box-shadow: 0 0 15px 3px hsl(var(--logo-orange) / 0.8),
+                inset 0 0 10px 1px hsl(var(--logo-orange) / 0.4);
+  }
+}
+
 /* Utility class for subtle pulsating background elements */
 .bg-pulse-light {
   animation: pulsatingLight 8s ease-in-out infinite;
@@ -46,6 +70,31 @@ html, body {
   transform: translateZ(0);
 }
 
+/* Glowing orange border utility classes */
+.orange-glow-border {
+  border: 1px solid hsl(var(--logo-orange) / 0.5);
+  border-radius: var(--radius);
+  animation: glowingOrangeBorder 4s ease-in-out infinite;
+  will-change: box-shadow;
+  transform: translateZ(0);
+}
+
+.orange-glow-border-subtle {
+  border: 1px solid hsl(var(--logo-orange) / 0.3);
+  border-radius: var(--radius);
+  animation: glowingOrangeBorder 8s ease-in-out infinite;
+  will-change: box-shadow;
+  transform: translateZ(0);
+}
+
+.orange-glow-border-intense {
+  border: 1px solid hsl(var(--logo-orange) / 0.6);
+  border-radius: var(--radius);
+  animation: glowingOrangeBorderIntense 3s ease-in-out infinite;
+  will-change: box-shadow;
+  transform: translateZ(0);
+}
+
 /* Background glow effects - use with orbs in the BackgroundAnimation component */
 .bg-glow {
   filter: blur(80px);
@@ -61,6 +110,10 @@ html, body {
 
 .bg-glow-secondary {
   background: hsl(var(--secondary) / 0.3);
+}
+
+.bg-glow-orange {
+  background: hsl(var(--logo-orange) / 0.3);
 }
 
 .bg-glow-accent {
@@ -121,8 +174,12 @@ html, body {
   --primary: 195 85% 40%;
   --primary-foreground: 0 0% 100%;
   
+  /* Logo orange - secondary color */
   --secondary: 18 95% 60%;
   --secondary-foreground: 0 0% 100%;
+  
+  /* Orange from logo used for glowing effects */
+  --logo-orange: 28 100% 55%;
   
   --accent: 142 75% 50%;
   --accent-foreground: 0 0% 100%;
@@ -130,7 +187,8 @@ html, body {
   --destructive: 0 90% 50%;
   --destructive-foreground: 0 0% 100%;
   
-  --ring: 195 85% 40%;
+  /* Orange glow ring for focused elements */
+  --ring: 28 100% 55%;
   --radius: 0.5rem;
 
   /* Chart colors */

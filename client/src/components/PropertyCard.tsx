@@ -196,7 +196,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   return (
     <article 
       ref={cardRef}
-      className={`property-card ${isDarkMode ? 'bg-slate-800' : 'bg-card'} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 card-hover-effect border border-border/30`}
+      className={`property-card ${isDarkMode ? 'bg-slate-800' : 'bg-card'} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 card-hover-effect orange-glow-border`}
       aria-labelledby={`property-${property.id}-title`}
     >
       <Link href={`/properties/${property.id}`} aria-describedby={`property-${property.id}-description`}>

@@ -177,7 +177,7 @@ export default function Hero() {
             <Link href="/properties" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
-                className="w-full h-14 md:h-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu"
+                className="w-full h-14 md:h-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu orange-glow-border-intense"
               >
                 <span>Explore Listings</span>
                 <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1'></i>
@@ -187,7 +187,7 @@ export default function Hero() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="w-full h-14 md:h-auto border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu"
+                className="w-full h-14 md:h-auto border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu orange-glow-border-subtle"
               >
                 Contact Valentin
               </Button>
@@ -204,15 +204,15 @@ export default function Hero() {
               backfaceVisibility: 'hidden' 
             }}
           >
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center">
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border">
               <p className="text-secondary font-bold text-xl md:text-2xl">27+</p>
               <p className="text-white text-xs md:text-sm">Years Experience</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center">
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border">
               <p className="text-secondary font-bold text-xl md:text-2xl">150+</p>
               <p className="text-white text-xs md:text-sm">Properties Sold</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center">
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border">
               <p className="text-secondary font-bold text-xl md:text-2xl">100%</p>
               <p className="text-white text-xs md:text-sm">Client Satisfaction</p>
             </div>
@@ -231,7 +231,7 @@ export default function Hero() {
       >
         <a 
           href="#featured-properties" 
-          className="text-white bg-white/15 backdrop-blur-sm p-2.5 md:p-3 rounded-full hover:bg-white/25 transition-all duration-300 shadow-lg active:scale-95 transform-gpu"
+          className="text-white bg-white/15 backdrop-blur-sm p-2.5 md:p-3 rounded-full hover:bg-white/25 transition-all duration-300 shadow-lg active:scale-95 transform-gpu orange-glow-border-subtle"
           style={{
             touchAction: 'manipulation',
             WebkitTapHighlightColor: 'transparent'
