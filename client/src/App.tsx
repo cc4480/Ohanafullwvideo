@@ -11,7 +11,6 @@ import Properties from "@/pages/Properties";
 import PropertyDetails from "@/pages/PropertyDetails";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import SimpleChat from "@/components/assistant/SimpleChat";
 
 function App() {
   // Scroll to top on route change
@@ -73,7 +72,6 @@ function App() {
               </Route>
             </Switch>
             <Footer />
-            <SimpleChat />
           </>
         </TooltipProvider>
       </ThemeProvider>
