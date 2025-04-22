@@ -1,5 +1,6 @@
 import ContactSection from "@/components/features/ContactSection";
 import { Briefcase, Mail, MapPin, Phone } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
 
 export default function Contact() {
   return (
