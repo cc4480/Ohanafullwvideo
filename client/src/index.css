@@ -3,19 +3,32 @@
 @tailwind utilities;
 
 /* Global fixed background settings */
-body {
+html, body {
   background-image: url('/assets/background.jpg'); /* Path to your background image */
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed; /* Keeps the image static */
-  background-repeat: no-repeat;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important; /* Keeps the image static */
+  background-repeat: no-repeat !important;
   color: white; /* Ensure text contrasts well with dark background */
+  min-height: 100vh;
+  height: 100%;
+}
+
+/* Remove any other background settings that might be interfering */
+#root, main, .bg-background {
+  background-color: transparent !important;
+}
+
+/* Optional overlay for better content visibility - no bg color here */
+.overlay-content {
+  position: relative;
+  z-index: 10;
 }
 
 /* Optimize background for mobile devices */
 @media (max-width: 768px) {
-  body {
-    background-attachment: scroll; /* Better mobile scrolling performance */
+  html, body {
+    background-attachment: scroll !important; /* Better mobile scrolling performance */
   }
 }
 

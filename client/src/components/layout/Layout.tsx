@@ -7,14 +7,17 @@ interface LayoutProps {
 
 /**
  * Layout component that creates a consistent structure for all pages
- * with the fixed background parallax effect
+ * with the fixed background parallax effect, ensuring content scrolls over the background
  */
 export default function Layout({ children, transparentHeader = false }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-transparent">
       {/* Main content that scrolls over the fixed background */}
-      <main className="flex-grow relative z-10">
-        {children}
+      <main className="flex-grow relative z-10 bg-transparent">
+        {/* Content container */}
+        <div className="overlay-content">
+          {children}
+        </div>
       </main>
     </div>
   );

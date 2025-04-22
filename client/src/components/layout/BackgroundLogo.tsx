@@ -9,7 +9,7 @@ export default function BackgroundLogo() {
   return (
     <div className="fixed inset-0 w-full h-full pointer-events-none z-[-1] flex items-center justify-center">
       {/* Semi-transparent dark overlay to ensure content visibility */}
-      <div className="absolute inset-0 bg-black opacity-50 z-[-1]" />
+      <div className="absolute inset-0 bg-black opacity-70 z-[-1]" />
       
       {/* Logo on top of the overlay */}
       <img 
