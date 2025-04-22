@@ -88,12 +88,19 @@ export default function FullScreenImageViewer({
           
           {/* Main image container */}
           <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-            <img
-              src={images[currentIndex]}
-              alt={`Property image ${currentIndex + 1} of ${propertyAddress}`}
-              className="max-h-full max-w-full object-contain"
-              loading="eager"
-            />
+            {images && images.length > 0 && (
+              <img
+                src={images[currentIndex]}
+                alt={`Property image ${currentIndex + 1} of ${propertyAddress}`}
+                className="max-h-full max-w-full object-contain"
+                loading="eager"
+                onError={(e) => {
+                  // Handle image loading errors
+                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+                  (e.target as HTMLImageElement).alt = 'Image failed to load';
+                }}
+              />
+            )}
           </div>
 
           {/* Navigation controls */}
@@ -121,7 +128,7 @@ export default function FullScreenImageViewer({
 
           {/* Thumbnail navigation (optional for larger screens) */}
           <div className="mt-auto p-2 overflow-x-auto flex space-x-2 bg-black/20">
-            {images.map((image, index) => (
+            {images && images.length > 0 && images.map((image, index) => (
               <div
                 key={index}
                 className={`flex-shrink-0 h-16 w-16 rounded overflow-hidden border-2 transition-all cursor-pointer ${
@@ -144,6 +151,10 @@ export default function FullScreenImageViewer({
                   alt=""
                   className="h-full w-full object-cover"
                   loading="eager"
+                  onError={(e) => {
+                    // Handle thumbnail loading errors
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100x100?text=Thumbnail';
+                  }}
                 />
               </div>
             ))}
