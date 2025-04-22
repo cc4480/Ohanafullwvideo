@@ -2,12 +2,21 @@ import { pgTable, text, serial, integer, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Property Type enum
+// Property Type enum (as constant values)
 export const PropertyType = {
   RESIDENTIAL: 'RESIDENTIAL',
   COMMERCIAL: 'COMMERCIAL',
   LAND: 'LAND'
 } as const;
+
+// Define the Neighborhood table schema
+export const neighborhoods = pgTable("neighborhoods", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  image: text("image").notNull(),
+  features: text("features").array(),
+});
 
 // Define the Property table schema
 export const properties = pgTable("properties", {
@@ -28,23 +37,6 @@ export const properties = pgTable("properties", {
   lng: real("lng"),
 });
 
-export const insertPropertySchema = createInsertSchema(properties);
-export type InsertProperty = z.infer<typeof insertPropertySchema>;
-export type Property = typeof properties.$inferSelect;
-
-// Define the Neighborhood table schema
-export const neighborhoods = pgTable("neighborhoods", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  image: text("image").notNull(),
-  features: text("features").array(),
-});
-
-export const insertNeighborhoodSchema = createInsertSchema(neighborhoods);
-export type InsertNeighborhood = z.infer<typeof insertNeighborhoodSchema>;
-export type Neighborhood = typeof neighborhoods.$inferSelect;
-
 // Define the Contact Messages table schema
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
@@ -56,21 +48,39 @@ export const messages = pgTable("messages", {
   createdAt: text("createdAt").notNull(),
 });
 
-export const insertMessageSchema = createInsertSchema(messages);
-export type InsertMessage = z.infer<typeof insertMessageSchema>;
-export type Message = typeof messages.$inferSelect;
-
-// Users table schema remains as is
+// Users table schema
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
 
+// Create insert schemas
+export const insertPropertySchema = createInsertSchema(properties, {
+  images: z.array(z.string()),
+  features: z.array(z.string()).optional(),
+});
+
+export const insertNeighborhoodSchema = createInsertSchema(neighborhoods, {
+  features: z.array(z.string()).optional(),
+});
+
+export const insertMessageSchema = createInsertSchema(messages);
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
 });
+
+// Export types
+export type InsertProperty = z.infer<typeof insertPropertySchema>;
+export type Property = typeof properties.$inferSelect;
+
+export type InsertNeighborhood = z.infer<typeof insertNeighborhoodSchema>;
+export type Neighborhood = typeof neighborhoods.$inferSelect;
+
+export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type Message = typeof messages.$inferSelect;
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
