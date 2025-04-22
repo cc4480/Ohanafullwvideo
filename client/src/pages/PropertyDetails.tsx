@@ -14,6 +14,7 @@ import SEOBreadcrumbs from "@/components/SEOBreadcrumbs";
 import SEOImage from "@/components/SEOImage";
 import CanonicalURLs from "@/components/CanonicalURLs";
 import KeywordOptimizer from "@/components/KeywordOptimizer";
+import SEOLocationMap from "@/components/SEOLocationMap";
 import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
@@ -453,6 +454,18 @@ export default function PropertyDetails({ id }: { id: number }) {
                   >
                     {property.address}, {property.city}, {property.state} {property.zipCode}
                   </p>
+                  
+                  {/* Enhanced SEO Location Map with structured data */}
+                  <SEOLocationMap
+                    address={property.address}
+                    city={property.city}
+                    state={property.state}
+                    zipCode={property.zipCode}
+                    latitude={property.lat}
+                    longitude={property.lng}
+                    className="mb-4"
+                    height="350px"
+                  />
                   
                   <div 
                     role="button"

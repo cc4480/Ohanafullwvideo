@@ -2,6 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Property } from "@shared/schema";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { Helmet } from 'react-helmet';
+import { MapPin, ExternalLink } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 export default function PropertyMap() {
   const [isDark, setIsDark] = useState(false);
@@ -46,8 +49,67 @@ export default function PropertyMap() {
     }
   };
   
+  // Create Schema.org structured data for the map with properties
+  const createMapStructuredData = () => {
+    if (!properties || properties.length === 0) return null;
+    
+    // Main map schema
+    const mapSchema = {
+      "@context": "https://schema.org",
+      "@type": "Map",
+      "name": "Ohana Realty Laredo Properties Map",
+      "description": "Interactive map of properties for sale in Laredo, TX including residential homes, commercial properties, and land.",
+      "url": "https://ohanarealty.com/properties#map",
+      "hasMap": "https://www.google.com/maps/search/?api=1&query=Laredo+TX+real+estate",
+      "provider": {
+        "@type": "RealEstateAgent",
+        "name": "Ohana Realty",
+        "url": "https://ohanarealty.com"
+      },
+      "about": "Laredo, TX Real Estate"
+    };
+    
+    // Create location structured data for each property
+    const propertyLocations = properties.map(property => {
+      const hasCoordinates = property.lat && property.lng;
+      
+      return {
+        "@context": "https://schema.org",
+        "@type": "Place",
+        "name": property.address,
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": property.address,
+          "addressLocality": property.city,
+          "addressRegion": property.state,
+          "postalCode": property.zipCode,
+          "addressCountry": "US"
+        },
+        "geo": hasCoordinates ? {
+          "@type": "GeoCoordinates",
+          "latitude": property.lat,
+          "longitude": property.lng
+        } : undefined,
+        "url": `https://ohanarealty.com/properties/${property.id}`,
+        "hasMap": hasCoordinates ? `https://www.google.com/maps?q=${property.lat},${property.lng}` :
+                    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`)}`
+      };
+    });
+    
+    return [mapSchema, ...propertyLocations];
+  };
+  
   return (
-    <section className={`py-16 ${isDark ? 'bg-background text-foreground' : 'bg-white'}`}>
+    <section className={`py-16 ${isDark ? 'bg-background text-foreground' : 'bg-white'}`} id="map">
+      {/* Structured data for map and property locations */}
+      <Helmet>
+        {properties && properties.length > 0 && createMapStructuredData()?.map((schema, index) => (
+          <script key={`map-schema-${index}`} type="application/ld+json">
+            {JSON.stringify(schema)}
+          </script>
+        ))}
+      </Helmet>
+      
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className={`font-serif text-3xl md:text-4xl font-bold ${isDark ? 'text-white' : 'text-neutral-800'} mb-4`}>
@@ -141,15 +203,24 @@ export default function PropertyMap() {
                 <div className="mt-4 flex justify-between items-center">
                   <p className="font-bold text-lg text-secondary">${property.price.toLocaleString()}</p>
                   <div className="flex gap-2">
-                    <button
+                    <Button
+                      size="sm"
+                      variant="outline"
                       onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property) : null}
-                      className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors text-sm flex items-center"
+                      className="text-xs flex items-center gap-1"
+                      aria-label={`View ${property.address} on Google Maps`}
                     >
-                      <i className='bx bx-map text-primary mr-1'></i> Map
-                    </button>
-                    <Link href={`/properties/${property.id}`}
-                      className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90 transition-colors text-sm">
-                      Details
+                      <MapPin className="h-3 w-3" /> Google Maps
+                    </Button>
+                    <Link href={`/properties/${property.id}`}>
+                      <Button 
+                        size="sm"
+                        variant="default"
+                        className="text-xs"
+                        aria-label={`View details of ${property.address}`}
+                      >
+                        View Details
+                      </Button>
                     </Link>
                   </div>
                 </div>
