@@ -149,13 +149,20 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
   }, []);
   
   return (
-    <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group`}>
-      <div className="h-48 overflow-hidden relative bg-slate-100 dark:bg-slate-700">
+    <div 
+      ref={cardRef}
+      className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group will-change-transform`}
+    >
+      <div 
+        ref={imageContainerRef}
+        className="h-48 overflow-hidden relative bg-slate-100 dark:bg-slate-700"
+      >
         {neighborhood.image ? (
           <img 
             src={neighborhood.image} 
             alt={neighborhood.name} 
-            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+            className="w-full h-full object-cover transform-gpu will-change-transform"
+            style={{ transformOrigin: 'center center' }}
             loading="lazy"
             onError={(e) => {
               // Fallback for failed images
@@ -169,14 +176,21 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent h-16"></div>
-        <div className="absolute bottom-2 left-2">
+        <div 
+          ref={tagRef}
+          className="absolute bottom-2 left-2 will-change-transform"
+          style={{ transformOrigin: 'center center' }}
+        >
           <span className={`bg-primary text-white text-xs px-2 py-1 rounded-sm`}>
             {neighborhood.features?.[0] || "Laredo"}
           </span>
         </div>
       </div>
-      <div className="p-6">
-        <h3 className={`font-serif text-xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mb-2`}>
+      <div ref={contentRef} className="p-6">
+        <h3 
+          ref={titleRef}
+          className={`font-serif text-xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mb-2 transition-colors`}
+        >
           {neighborhood.name}
         </h3>
         <p className={`${isDarkMode ? 'text-slate-300' : 'text-muted-foreground'} mb-4`}>
@@ -189,15 +203,20 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
               className={`${isDarkMode 
                 ? 'bg-slate-700 text-slate-200' 
                 : 'bg-neutral-100 text-neutral-700'} 
-                text-sm px-3 py-1 rounded-full`}
+                text-sm px-3 py-1 rounded-full transition-all duration-300`}
             >
               {feature}
             </span>
           ))}
         </div>
-        <a href="#" className="flex items-center text-primary font-medium hover:text-primary-dark">
+        <a 
+          ref={linkRef}
+          href="#" 
+          className="flex items-center text-primary font-medium hover:text-primary-dark will-change-transform"
+          style={{ transformOrigin: 'left center' }}
+        >
           Learn More
-          <ArrowRight className="h-4 w-4 ml-1" />
+          <ArrowRight className="h-4 w-4 ml-1 will-change-transform" />
         </a>
       </div>
     </div>

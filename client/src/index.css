@@ -2,65 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global fixed background settings with logo as background */
+/* Clean background settings without background image */
 html, body {
-  background-image: url('/assets/background.jpg'); /* Path to your background image */
-  background-size: cover !important;
-  background-position: center !important;
-  background-attachment: fixed !important; /* Keeps the image static */
-  background-repeat: no-repeat !important;
-  color: white; /* Ensure text contrasts well with dark background */
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground)); /* Ensure text contrasts well with background */
   min-height: 100vh;
   height: 100%;
   position: relative; /* Ensure position context for fixed elements */
 }
 
-/* Logo background for the entire site */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url('/assets/logo.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 90vw auto; /* Much larger size relative to viewport */
-  opacity: 0.9; /* Higher opacity for better visibility */
-  z-index: 2; /* Slightly higher z-index to ensure visibility */
-  pointer-events: none; /* Allows clicking through the logo */
+/* New subtle pulsating light animations */
+@keyframes pulsatingLight {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.2; }
 }
 
-/* Remove any other background settings that might be interfering */
-#root, main, .bg-background {
-  background-color: transparent !important;
+@keyframes pulsatingLightSlow {
+  0%, 100% { opacity: 0.08; transform: scale(1) translateZ(0); }
+  50% { opacity: 0.18; transform: scale(1.05) translateZ(0); }
 }
 
-/* Optional overlay for better content visibility - no bg color here */
+@keyframes pulsatingLightFast {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.15; }
+}
+
+/* Utility class for subtle pulsating background elements */
+.bg-pulse-light {
+  animation: pulsatingLight 8s ease-in-out infinite;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+.bg-pulse-light-slow {
+  animation: pulsatingLightSlow 15s ease-in-out infinite;
+  will-change: opacity, transform;
+  transform: translateZ(0);
+}
+
+.bg-pulse-light-fast {
+  animation: pulsatingLightFast 6s ease-in-out infinite;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+/* Background glow effects - use with orbs in the BackgroundAnimation component */
+.bg-glow {
+  filter: blur(80px);
+  opacity: 0.2;
+  transform: translateZ(0);
+  will-change: opacity, transform;
+  border-radius: 50%;
+}
+
+.bg-glow-primary {
+  background: hsl(var(--primary) / 0.3);
+}
+
+.bg-glow-secondary {
+  background: hsl(var(--secondary) / 0.3);
+}
+
+.bg-glow-accent {
+  background: hsl(var(--accent) / 0.3);
+}
+
+/* Optional overlay for better content visibility */
 .overlay-content {
   position: relative;
   z-index: 10;
 }
 
-/* Optimize background for mobile devices */
-@media (max-width: 768px) {
-  html, body {
-    background-attachment: scroll !important; /* Better mobile scrolling performance */
-  }
-}
-
-/* Utility class for transparent sections that show the background */
-.bg-transparent-section {
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
-  backdrop-filter: blur(5px); /* Subtle blur for better text readability */
-  -webkit-backdrop-filter: blur(5px);
-}
-
-/* Ensure content scrolls over the fixed background */
+/* Ensure content scrolls smoothly */
 #root {
   position: relative;
-  z-index: 5; /* Higher z-index to ensure content is above the background logo */
+  z-index: 5;
 }
 
 @keyframes sunray-pulse {
