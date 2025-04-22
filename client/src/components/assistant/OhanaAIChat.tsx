@@ -155,25 +155,28 @@ export default function OhanaAIChat() {
         </Button>
       </div>
       
-      {/* Chat dialog */}
+      {/* Mobile-optimized chat dialog */}
       {isOpen && (
         <div 
           style={{
             position: 'fixed',
             bottom: '24px',
             right: '24px',
-            width: '380px',
-            height: '500px',
+            width: 'min(380px, calc(100vw - 48px))', // Responsive width
+            height: 'min(500px, calc(100vh - 100px))', // Responsive height
             backgroundColor: 'white',
-            borderRadius: '8px',
+            borderRadius: '12px',
             boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
             border: '2px solid hsl(215, 80%, 50%)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            zIndex: 99999
+            zIndex: 99999,
+            transform: 'translateZ(0)', // Hardware acceleration
+            backfaceVisibility: 'hidden',
+            touchAction: 'manipulation'
           }}
-          className="dark:bg-slate-900"
+          className="dark:bg-slate-900 animate-fade-in"
         >
           {/* Chat header */}
           <div 
@@ -216,15 +219,20 @@ export default function OhanaAIChat() {
             </Button>
           </div>
           
-          {/* Chat messages */}
+          {/* Mobile-optimized chat messages */}
           <div 
             style={{ 
               flex: 1, 
               overflowY: 'auto', 
-              padding: '12px',
+              overflowX: 'hidden',
+              WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+              padding: '14px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '12px'
+              gap: '12px',
+              scrollBehavior: 'smooth',
+              transform: 'translateZ(0)', // Hardware acceleration
+              backfaceVisibility: 'hidden'
             }}
             className="bg-gray-50 dark:bg-slate-950"
           >
@@ -314,23 +322,32 @@ export default function OhanaAIChat() {
             <div ref={messagesEndRef} />
           </div>
           
-          {/* Chat input */}
+          {/* Mobile-optimized chat input */}
           <div 
             style={{ 
               padding: '12px', 
               borderTop: '1px solid rgba(0,0,0,0.1)',
-              backgroundColor: 'white'
+              backgroundColor: 'white',
+              transform: 'translateZ(0)', // Hardware acceleration
+              backfaceVisibility: 'hidden'
             }}
             className="dark:bg-slate-900 dark:border-slate-800"
           >
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <Input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type your message..."
-                style={{ flex: 1 }}
+                style={{ 
+                  flex: 1,
+                  height: '42px', // Taller input for touch targets
+                  fontSize: '15px',
+                  borderRadius: '20px'
+                }}
+                className="focus:ring-primary"
                 disabled={isLoading}
+                autoComplete="off" // Prevent keyboard suggestions from covering view
               />
               <Button
                 onClick={sendMessage}
@@ -338,16 +355,20 @@ export default function OhanaAIChat() {
                 style={{ 
                   backgroundColor: 'hsl(215, 80%, 50%)', 
                   color: 'white',
-                  width: '36px',
-                  height: '36px',
+                  width: '42px',
+                  height: '42px',
                   padding: 0,
-                  minWidth: 'unset'
+                  minWidth: 'unset',
+                  borderRadius: '50%',
+                  transform: 'translateZ(0)',
+                  touchAction: 'manipulation'
                 }}
+                className="hover:brightness-110 active:scale-95 transition-transform shadow-md"
               >
                 {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <Send className="h-4 w-4" />
+                  <Send className="h-5 w-5" />
                 )}
               </Button>
             </div>
