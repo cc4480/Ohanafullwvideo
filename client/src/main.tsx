@@ -49,9 +49,11 @@ const applyPerformanceOptimizations = () => {
   fontLink.setAttribute('rel', 'preload');
   fontLink.setAttribute('as', 'style');
   fontLink.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
-  fontLink.onload = function() { 
-    this.removeAttribute('onload'); 
-    this.setAttribute('rel', 'stylesheet');
+  
+  // Type assertion to handle the event properly
+  (fontLink as any).onload = function(this: HTMLLinkElement) {
+    this.onload = null;
+    this.rel = 'stylesheet';
   };
   document.head.appendChild(fontLink);
   
@@ -59,9 +61,11 @@ const applyPerformanceOptimizations = () => {
   boxiconsLink.setAttribute('rel', 'preload');
   boxiconsLink.setAttribute('as', 'style');
   boxiconsLink.setAttribute('href', 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
-  boxiconsLink.onload = function() {
-    this.removeAttribute('onload');
-    this.setAttribute('rel', 'stylesheet');
+  
+  // Type assertion to handle the event properly
+  (boxiconsLink as any).onload = function(this: HTMLLinkElement) {
+    this.onload = null;
+    this.rel = 'stylesheet';
   };
   document.head.appendChild(boxiconsLink);
   
