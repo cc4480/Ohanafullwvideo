@@ -166,50 +166,65 @@ export default function PropertyDetails({ id }: { id: number }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               {/* Photo Gallery */}
-              <div className="mb-6 sm:mb-8 mobile-optimized">
+              <div 
+                className="mb-6 sm:mb-8 mobile-optimized" 
+                role="region" 
+                aria-label="Property photo gallery"
+              >
                 <div className="rounded-lg overflow-hidden mb-3 sm:mb-4 shadow-md">
                   <img 
                     src={activeImage} 
-                    alt={property.address} 
+                    alt={`Main image of property at ${property.address}`} 
                     className="w-full h-[250px] sm:h-[350px] md:h-[400px] object-cover transform-gpu"
                     style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
                   />
                 </div>
                 
                 {property.images.length > 1 && (
-                  <div className="grid grid-cols-4 gap-1 sm:gap-2 transform-gpu">
+                  <div 
+                    className="grid grid-cols-4 gap-1 sm:gap-2 transform-gpu"
+                    role="group"
+                    aria-label="Property thumbnail images"
+                  >
                     {property.images.map((image, index) => (
-                      <div 
+                      <button 
                         key={index}
                         className={`cursor-pointer rounded-md overflow-hidden border-2 ${
                           activeImage === image ? 'border-primary' : 'border-transparent'
-                        } active:scale-95 transition-transform transform-gpu`}
+                        } active:scale-95 transition-transform transform-gpu focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
                         onClick={() => setActiveImage(image)}
                         style={{ touchAction: 'manipulation' }}
+                        aria-label={`View photo ${index + 1} of ${property.images.length}`}
+                        aria-pressed={activeImage === image}
                       >
                         <img 
                           src={image} 
-                          alt={`${property.address} - ${index + 1}`} 
+                          alt="" 
                           className="w-full h-14 sm:h-20 object-cover transform-gpu"
                           style={{ backfaceVisibility: 'hidden' }}
+                          aria-hidden="true"
                         />
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
               </div>
               
               {/* Property Details Tabs */}
-              <Tabs defaultValue="overview" className="mt-6 sm:mt-8 mobile-optimized">
-                <TabsList className="w-full mb-3 sm:mb-4 h-10 sm:h-auto">
-                  <TabsTrigger value="overview" className="flex-1 text-xs sm:text-sm">Overview</TabsTrigger>
-                  <TabsTrigger value="features" className="flex-1 text-xs sm:text-sm">Features</TabsTrigger>
-                  <TabsTrigger value="location" className="flex-1 text-xs sm:text-sm">Location</TabsTrigger>
+              <Tabs defaultValue="overview" className="mt-6 sm:mt-8 mobile-optimized" aria-label="Property information tabs">
+                <TabsList className="w-full mb-3 sm:mb-4 h-10 sm:h-auto" aria-label="Property information sections">
+                  <TabsTrigger value="overview" className="flex-1 text-xs sm:text-sm" aria-controls="overview-tab">Overview</TabsTrigger>
+                  <TabsTrigger value="features" className="flex-1 text-xs sm:text-sm" aria-controls="features-tab">Features</TabsTrigger>
+                  <TabsTrigger value="location" className="flex-1 text-xs sm:text-sm" aria-controls="location-tab">Location</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="overview" className="pt-3 sm:pt-4">
-                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-neutral-800 dark:text-white mb-3 sm:mb-4">Property Overview</h2>
-                  <p className="text-neutral-600 dark:text-neutral-300 mb-5 sm:mb-6 text-sm sm:text-base">{property.description}</p>
+                <TabsContent value="overview" className="pt-3 sm:pt-4" id="overview-tab">
+                  <h2 id="overview-heading" className="font-serif text-xl sm:text-2xl font-bold text-neutral-800 dark:text-white mb-3 sm:mb-4">
+                    Property Overview
+                  </h2>
+                  <p className="text-neutral-600 dark:text-neutral-300 mb-5 sm:mb-6 text-sm sm:text-base" aria-labelledby="overview-heading">
+                    {property.description}
+                  </p>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-5 sm:mb-6 mobile-optimized">
                     {property.type === "RESIDENTIAL" && (
@@ -264,35 +279,56 @@ export default function PropertyDetails({ id }: { id: number }) {
                   </div>
                 </TabsContent>
                 
-                <TabsContent value="features" className="pt-3 sm:pt-4">
-                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-neutral-800 dark:text-white mb-3 sm:mb-4">Property Features</h2>
+                <TabsContent value="features" className="pt-3 sm:pt-4" id="features-tab">
+                  <h2 id="features-heading" className="font-serif text-xl sm:text-2xl font-bold text-neutral-800 dark:text-white mb-3 sm:mb-4">
+                    Property Features
+                  </h2>
                   
                   {property.features && property.features.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-5 sm:mb-6 mobile-optimized">
+                    <div 
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-5 sm:mb-6 mobile-optimized"
+                      role="list"
+                      aria-labelledby="features-heading"
+                    >
                       {property.features.map((feature, index) => (
-                        <div key={index} className="flex items-center bg-card dark:bg-slate-800 p-2.5 sm:p-3 rounded-md shadow-sm transform-gpu">
+                        <div 
+                          key={index} 
+                          className="flex items-center bg-card dark:bg-slate-800 p-2.5 sm:p-3 rounded-md shadow-sm transform-gpu"
+                          role="listitem"
+                        >
                           <div className="bg-primary/10 dark:bg-primary/20 p-1.5 sm:p-2 rounded-full mr-2 sm:mr-3">
-                            <Check className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                            <Check className="h-3 w-3 sm:h-4 sm:w-4 text-primary" aria-hidden="true" />
                           </div>
                           <span className="text-foreground dark:text-white text-sm sm:text-base">{feature}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground bg-card dark:bg-slate-800 p-3 sm:p-4 rounded-md shadow-sm text-sm sm:text-base">
+                    <p 
+                      className="text-muted-foreground bg-card dark:bg-slate-800 p-3 sm:p-4 rounded-md shadow-sm text-sm sm:text-base"
+                      aria-labelledby="features-heading"
+                    >
                       No additional features listed for this property.
                     </p>
                   )}
                 </TabsContent>
                 
-                <TabsContent value="location" className="pt-3 sm:pt-4">
-                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-neutral-800 dark:text-white mb-3 sm:mb-4">Location</h2>
-                  <p className="text-neutral-600 dark:text-neutral-300 mb-3 sm:mb-4 text-sm sm:text-base">
+                <TabsContent value="location" className="pt-3 sm:pt-4" id="location-tab">
+                  <h2 id="location-heading" className="font-serif text-xl sm:text-2xl font-bold text-neutral-800 dark:text-white mb-3 sm:mb-4">
+                    Location
+                  </h2>
+                  <p 
+                    className="text-neutral-600 dark:text-neutral-300 mb-3 sm:mb-4 text-sm sm:text-base"
+                    aria-labelledby="location-heading"
+                  >
                     {property.address}, {property.city}, {property.state} {property.zipCode}
                   </p>
                   
                   <div 
-                    className="h-60 sm:h-80 bg-card dark:bg-slate-800 rounded-md mb-3 sm:mb-4 overflow-hidden shadow-sm mobile-optimized relative cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`View ${property.address} on Google Maps`}
+                    className="h-60 sm:h-80 bg-card dark:bg-slate-800 rounded-md mb-3 sm:mb-4 overflow-hidden shadow-sm mobile-optimized relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                     onClick={() => {
                       const latitude = getPropertyLatitude(property);
                       const longitude = getPropertyLongitude(property);
@@ -303,18 +339,31 @@ export default function PropertyDetails({ id }: { id: number }) {
                         window.open(url, '_blank', 'noopener,noreferrer');
                       }
                     }}
+                    onKeyDown={(e) => {
+                      // Handle keyboard accessibility - activate on Enter or Space
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const latitude = getPropertyLatitude(property);
+                        const longitude = getPropertyLongitude(property);
+                        if (latitude && longitude) {
+                          const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
+                          const url = `https://www.google.com/maps/search/?api=1&query=${formattedAddress}`;
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }
+                      }
+                    }}
                   >
                     {getPropertyLatitude(property) && getPropertyLongitude(property) ? (
                       <>
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 z-10 flex flex-col items-center justify-center">
                           <div className="bg-white rounded-full p-3 shadow-lg mb-3 transform-gpu hover:scale-105 transition-transform">
-                            <MapPin className="h-6 w-6 text-primary" />
+                            <MapPin className="h-6 w-6 text-primary" aria-hidden="true" />
                           </div>
                           <p className="text-white font-medium text-sm sm:text-base">Click to view in Google Maps</p>
                         </div>
                         <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-200">
                           <div className="text-center px-6">
-                            <i className='bx bxs-map text-6xl text-primary/30 mb-4'></i>
+                            <i className='bx bxs-map text-6xl text-primary/30 mb-4' aria-hidden="true"></i>
                             <h3 className="text-xl font-medium text-slate-500 mb-2">Interactive Map</h3>
                             <p className="text-slate-400 text-sm">Click to open this location in Google Maps</p>
                           </div>
@@ -322,10 +371,17 @@ export default function PropertyDetails({ id }: { id: number }) {
                       </>
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full">
-                        <MapPin className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground/50 mb-2" />
+                        <MapPin className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground/50 mb-2" aria-hidden="true" />
                         <p className="text-muted-foreground text-sm sm:text-base">Map location not available</p>
                       </div>
                     )}
+                    {/* Hidden but screen reader accessible description */}
+                    <span className="sr-only">
+                      Property located at {property.address}, {property.city}, {property.state} {property.zipCode}. 
+                      {getPropertyLatitude(property) && getPropertyLongitude(property) 
+                        ? 'Click to view this location on Google Maps.' 
+                        : 'Detailed location map is not available.'}
+                    </span>
                   </div>
                   
                   <div className="bg-card dark:bg-slate-800 p-3 sm:p-4 rounded-md shadow-sm transform-gpu">
@@ -348,22 +404,43 @@ export default function PropertyDetails({ id }: { id: number }) {
             
             {/* Sidebar */}
             <div>
-              <div className="bg-card dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md mb-5 sm:mb-6 mobile-optimized">
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground dark:text-white mb-3 sm:mb-4">Interested in this property?</h3>
+              <div 
+                className="bg-card dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md mb-5 sm:mb-6 mobile-optimized"
+                aria-labelledby="contact-heading"
+              >
+                <h3 
+                  id="contact-heading" 
+                  className="font-serif text-lg sm:text-xl font-bold text-foreground dark:text-white mb-3 sm:mb-4"
+                >
+                  Interested in this property?
+                </h3>
                 <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base">
                   Contact Valentin Cuellar for more information or to schedule a viewing of this {property.type.toLowerCase()} property.
                 </p>
                 
                 <div className="space-y-3 sm:space-y-4">
-                  <a href="tel:+19567123000">
-                    <Button className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" size="sm">
-                      <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                  <a 
+                    href="tel:+19567123000" 
+                    aria-label="Call Ohana Realty office at (956) 712-3000"
+                  >
+                    <Button 
+                      className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
+                      size="sm"
+                    >
+                      <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" aria-hidden="true" />
                       Call (956) 712-3000
                     </Button>
                   </a>
-                  <a href="mailto:info@ohanarealty.com">
-                    <Button className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" variant="outline" size="sm">
-                      <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                  <a 
+                    href="mailto:info@ohanarealty.com" 
+                    aria-label="Email Ohana Realty at info@ohanarealty.com"
+                  >
+                    <Button 
+                      className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
+                      variant="outline" 
+                      size="sm"
+                    >
+                      <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" aria-hidden="true" />
                       Email Agent
                     </Button>
                   </a>
@@ -375,8 +452,9 @@ export default function PropertyDetails({ id }: { id: number }) {
                           className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
                           variant="secondary"
                           size="sm"
+                          aria-label={`Schedule a viewing for property at ${property.address}`}
                         >
-                          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" aria-hidden="true" />
                           Schedule a Viewing
                         </Button>
                       }
@@ -390,8 +468,9 @@ export default function PropertyDetails({ id }: { id: number }) {
                           className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
                           variant="outline"
                           size="sm"
+                          aria-label={`Ask questions about property at ${property.address}`}
                         >
-                          <HelpCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                          <HelpCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" aria-hidden="true" />
                           Ask About This Property
                         </Button>
                       }
@@ -400,19 +479,27 @@ export default function PropertyDetails({ id }: { id: number }) {
                 </div>
               </div>
               
-              <div className="bg-card dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md mb-5 sm:mb-6 mobile-optimized">
+              <div 
+                className="bg-card dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md mb-5 sm:mb-6 mobile-optimized"
+                aria-labelledby="realtor-heading"
+              >
                 <div className="flex items-center mb-3 sm:mb-4">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden mr-3 sm:mr-4 shrink-0">
                     <img 
                       src={valentinCuellarImg} 
-                      alt="Valentin Cuellar" 
+                      alt="Valentin Cuellar - Lead Realtor" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div>
-                    <h3 className="font-serif text-base sm:text-lg font-bold text-foreground dark:text-white">Valentin Cuellar</h3>
+                    <h3 
+                      id="realtor-heading" 
+                      className="font-serif text-base sm:text-lg font-bold text-foreground dark:text-white"
+                    >
+                      Valentin Cuellar
+                    </h3>
                     <p className="text-muted-foreground text-xs sm:text-sm">
-                      <i className="bx bx-medal mr-1 text-primary"></i> 
+                      <i className="bx bx-medal mr-1 text-primary" aria-hidden="true"></i> 
                       Lead Realtor
                     </p>
                   </div>
@@ -424,25 +511,47 @@ export default function PropertyDetails({ id }: { id: number }) {
                 
                 <div className="flex space-x-2">
                   <Link href="/about">
-                    <Button variant="outline" className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3" size="sm">
-                      <i className="bx bx-user mr-1"></i>
+                    <Button 
+                      variant="outline" 
+                      className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3" 
+                      size="sm"
+                      aria-label="View Valentin Cuellar's profile"
+                    >
+                      <i className="bx bx-user mr-1" aria-hidden="true"></i>
                       View Profile
                     </Button>
                   </Link>
                   <Link href="/contact">
-                    <Button variant="outline" className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3" size="sm">
-                      <i className="bx bx-envelope mr-1"></i>
+                    <Button 
+                      variant="outline" 
+                      className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3" 
+                      size="sm"
+                      aria-label="Contact Valentin Cuellar"
+                    >
+                      <i className="bx bx-envelope mr-1" aria-hidden="true"></i>
                       Contact
                     </Button>
                   </Link>
                 </div>
               </div>
               
-              <div className="bg-card dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md mobile-optimized">
+              <div 
+                className="bg-card dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md mobile-optimized"
+                aria-labelledby="similar-properties-heading"
+              >
                 <div className="flex items-center justify-between mb-4 sm:mb-5">
-                  <h3 className="font-serif text-base sm:text-lg font-bold text-foreground dark:text-white">Similar Properties</h3>
-                  <Link href="/properties">
-                    <span className="text-primary hover:underline text-xs sm:text-sm cursor-pointer">View All</span>
+                  <h3 
+                    id="similar-properties-heading" 
+                    className="font-serif text-base sm:text-lg font-bold text-foreground dark:text-white"
+                  >
+                    Similar Properties
+                  </h3>
+                  <Link href="/properties" aria-label="View all properties">
+                    <span 
+                      className="text-primary hover:underline text-xs sm:text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-1"
+                    >
+                      View All
+                    </span>
                   </Link>
                 </div>
                 
@@ -454,8 +563,9 @@ export default function PropertyDetails({ id }: { id: number }) {
                   className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform"
                   variant="outline"
                   onClick={() => navigate('/properties')}
+                  aria-label={`Browse more ${propertyTypeName.toLowerCase()} properties in Laredo`}
                 >
-                  <i className="bx bx-search mr-1.5 sm:mr-2"></i>
+                  <i className="bx bx-search mr-1.5 sm:mr-2" aria-hidden="true"></i>
                   Browse More Properties
                 </Button>
               </div>
