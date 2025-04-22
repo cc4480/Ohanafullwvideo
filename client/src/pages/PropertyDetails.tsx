@@ -4,7 +4,7 @@ import { Property } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import ContactSection from "@/components/ContactSection";
+import ContactSection from "@/components/features/ContactSection";
 import { useEffect, useState } from "react";
 import valentinCuellarImg from "../assets/valentin-realtor.png";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle, Maximize2 } from "lucide-react";
