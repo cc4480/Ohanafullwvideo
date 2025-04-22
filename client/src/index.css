@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global fixed background settings */
+body {
+  background-image: url('/assets/background.jpg'); /* Path to your background image */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Keeps the image static */
+  background-repeat: no-repeat;
+  color: white; /* Ensure text contrasts well with dark background */
+}
+
+/* Optimize background for mobile devices */
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll; /* Better mobile scrolling performance */
+  }
+}
+
 /* Ensure content scrolls over the fixed background */
 #root {
   position: relative;
@@ -212,7 +229,8 @@
   }
 
   body {
-    @apply antialiased bg-background text-foreground;
+    @apply antialiased text-foreground;
+    /* Background is already set in global styles outside of tailwind layers */
   }
   
   html {
