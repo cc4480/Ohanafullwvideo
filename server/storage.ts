@@ -5,13 +5,10 @@ import { eq, sql } from 'drizzle-orm';
 
 // Add more CRUD methods for the storage interface
 export interface IStorage {
-  // User methods
+  // User methods (simplified)
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUserSavedProperties(userId: number, savedProperties: string[]): Promise<User>;
-  updateUserProfile(userId: number, profileData: Partial<User>): Promise<User>;
   
   // Property methods
   getProperties(): Promise<Property[]>;
@@ -42,37 +39,10 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
-  }
-
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values({
-        ...insertUser,
-        createdAt: new Date().toISOString(),
-        savedProperties: []
-      })
-      .returning();
-    return user;
-  }
-
-  async updateUserSavedProperties(userId: number, savedProperties: string[]): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({ savedProperties })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
-
-  async updateUserProfile(userId: number, profileData: Partial<User>): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set(profileData)
-      .where(eq(users.id, userId))
+      .values(insertUser)
       .returning();
     return user;
   }

@@ -13,8 +13,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   } catch (error) {
     console.error("Error initializing database:", error);
   }
-  
-  // Create API routes
   const apiRouter = express.Router();
 
   // Get all properties
