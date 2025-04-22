@@ -10,7 +10,7 @@ export default function FeaturedProperties() {
   });
   
   // Create placeholder data for loading state
-  const loadingPlaceholders = Array(3).fill(0).map((_, index) => ({
+  const loadingPlaceholders = Array(4).fill(0).map((_, index) => ({
     id: index,
     isLoading: true
   }));
@@ -26,7 +26,7 @@ export default function FeaturedProperties() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {isLoading ? (
             loadingPlaceholders.map((placeholder) => (
               <div key={placeholder.id} className="bg-card rounded-lg shadow-md p-4 h-96 animate-pulse">
@@ -42,7 +42,7 @@ export default function FeaturedProperties() {
               </div>
             ))
           ) : (
-            properties?.slice(0, 3).map((property) => (
+            properties?.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))
           )}
