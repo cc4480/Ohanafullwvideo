@@ -120,8 +120,8 @@ export default function Header() {
   };
   
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
-      <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`} style={{ maxHeight: '60px' }}>
+      <div className="container mx-auto px-3 sm:px-4 py-1 sm:py-2 flex items-center justify-between">
         {/* Logo with reduced size on mobile */}
         <Link href="/" className="flex items-center relative group animate-fade-in">
           <div className={`p-1 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"}`}>
@@ -131,9 +131,9 @@ export default function Header() {
                 src={logoImg}
                 alt="Ohana Realty Logo"
                 style={{
-                  width: '40px',
+                  width: '30px',
                   height: 'auto',
-                  maxHeight: '25px',
+                  maxHeight: '20px',
                   objectFit: 'contain',
                   display: 'block'
                 }}
@@ -176,7 +176,7 @@ export default function Header() {
           ))}
         </nav>
         
-        <div className="flex items-center gap-4 animate-fade-in">
+        <div className="flex items-center gap-2 sm:gap-4 animate-fade-in">
           <ThemeToggle />
           
           <Link href="/#contact">
@@ -194,14 +194,14 @@ export default function Header() {
             <Button 
               variant="secondary" 
               size="icon"
-              className="h-10 w-10 rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95"
+              className="h-8 w-8 rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95"
               style={{
                 transform: 'translateZ(0)',
                 backfaceVisibility: 'hidden',
                 willChange: 'transform'
               }}
             >
-              <i className='bx bx-envelope text-xl'></i>
+              <i className='bx bx-envelope text-sm'></i>
             </Button>
           </Link>
           
@@ -210,7 +210,7 @@ export default function Header() {
             id="menuButton"
             onClick={toggleMobileMenu}
           >
-            <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} text-3xl`}></i>
+            <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} text-2xl`}></i>
           </button>
         </div>
       </div>
