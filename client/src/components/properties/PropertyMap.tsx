@@ -36,7 +36,7 @@ export default function PropertyMap() {
     queryKey: ['/api/properties'],
   });
   
-  // Function to open Google Maps with the property location
+  // Function to open Google Maps with the property location and formatted address
   const openInGoogleMaps = (lat: number | null, lng: number | null, property: Property) => {
     if (lat && lng) {
       // Format the full address for the map search
@@ -85,7 +85,7 @@ export default function PropertyMap() {
                     <div 
                       key={property.id}
                       className={`p-3 rounded-lg cursor-pointer transition-all ${isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-white hover:bg-slate-50'} shadow-sm hover:shadow`}
-                      onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property.address) : null}
+                      onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property) : null}
                     >
                       <div className="flex justify-between items-start">
                         <div>
@@ -142,7 +142,7 @@ export default function PropertyMap() {
                   <p className="font-bold text-lg text-secondary">${property.price.toLocaleString()}</p>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property.address) : null}
+                      onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property) : null}
                       className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors text-sm flex items-center"
                     >
                       <i className='bx bx-map text-primary mr-1'></i> Map
