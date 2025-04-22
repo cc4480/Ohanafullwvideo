@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 
 // Import logo from assets
-import logoImg from "@assets/OIP.jfif";
+import logoImg from "../../assets/logo.svg";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
