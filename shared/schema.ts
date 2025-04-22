@@ -60,16 +60,27 @@ export const insertMessageSchema = createInsertSchema(messages);
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type Message = typeof messages.$inferSelect;
 
-// Users table schema remains as is
+// Users table schema with enhanced fields
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
   password: text("password").notNull(),
+  firstName: text("firstName"),
+  lastName: text("lastName"),
+  phone: text("phone"),
+  role: text("role").default("client").notNull(),
+  createdAt: text("createdAt").notNull(),
+  savedProperties: text("savedProperties").array(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
+  email: true,
   password: true,
+  firstName: true,
+  lastName: true,
+  phone: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage, initializeSampleData } from "./storage";
 import { insertMessageSchema } from "@shared/schema";
 import { z } from "zod";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database with sample data
@@ -13,6 +14,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   } catch (error) {
     console.error("Error initializing database:", error);
   }
+  
+  // Setup authentication
+  setupAuth(app);
   
   // Create API routes
   const apiRouter = express.Router();

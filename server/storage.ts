@@ -8,13 +8,18 @@ export interface IStorage {
   // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserSavedProperties(userId: number, savedProperties: string[]): Promise<User>;
+  updateUserProfile(userId: number, profileData: Partial<User>): Promise<User>;
   
   // Property methods
   getProperties(): Promise<Property[]>;
   getProperty(id: number): Promise<Property | undefined>;
   getPropertiesByType(type: string): Promise<Property[]>;
   createProperty(property: InsertProperty): Promise<Property>;
+  updateProperty(id: number, property: Partial<Property>): Promise<Property | undefined>;
+  deleteProperty(id: number): Promise<boolean>;
   
   // Neighborhood methods
   getNeighborhoods(): Promise<Neighborhood[]>;
@@ -23,6 +28,7 @@ export interface IStorage {
   
   // Message methods
   createMessage(message: InsertMessage): Promise<Message>;
+  getMessages(): Promise<Message[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -36,10 +42,37 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(insertUser)
+      .values({
+        ...insertUser,
+        createdAt: new Date().toISOString(),
+        savedProperties: []
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUserSavedProperties(userId: number, savedProperties: string[]): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ savedProperties })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updateUserProfile(userId: number, profileData: Partial<User>): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set(profileData)
+      .where(eq(users.id, userId))
       .returning();
     return user;
   }
@@ -65,6 +98,22 @@ export class DatabaseStorage implements IStorage {
     return property;
   }
 
+  async updateProperty(id: number, propertyData: Partial<Property>): Promise<Property | undefined> {
+    const [property] = await db
+      .update(properties)
+      .set(propertyData)
+      .where(eq(properties.id, id))
+      .returning();
+    return property;
+  }
+
+  async deleteProperty(id: number): Promise<boolean> {
+    const result = await db
+      .delete(properties)
+      .where(eq(properties.id, id));
+    return !!result;
+  }
+
   async getNeighborhoods(): Promise<Neighborhood[]> {
     return await db.select().from(neighborhoods);
   }
@@ -88,6 +137,10 @@ export class DatabaseStorage implements IStorage {
       .values(insertMessage)
       .returning();
     return message;
+  }
+
+  async getMessages(): Promise<Message[]> {
+    return await db.select().from(messages).orderBy(sql`${messages.createdAt} DESC`);
   }
 }
 
