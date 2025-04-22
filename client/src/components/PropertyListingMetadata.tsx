@@ -84,7 +84,7 @@ export default function PropertyListingMetadata({
   const url = `${baseUrl}/properties/${property.id}`;
   
   // Main image for the property
-  const mainImage = property.images && property.images.length > 0 
+  const mainImage = property.images && Array.isArray(property.images) && property.images.length > 0 
     ? property.images[0] 
     : `${baseUrl}/placeholder-property.jpg`;
     
@@ -170,7 +170,7 @@ export default function PropertyListingMetadata({
         name={title}
         description={property.description}
         url={url}
-        image={property.images || [mainImage]}
+        image={Array.isArray(property.images) ? property.images : [mainImage]}
         price={property.price}
         priceCurrency="USD"
         addressLocality={property.city}
@@ -188,7 +188,7 @@ export default function PropertyListingMetadata({
         } : undefined}
         // Property doesn't have yearBuilt in the current schema
         // yearBuilt={property.yearBuilt}
-        amenities={property.features || []}
+        amenities={Array.isArray(property.features) ? property.features : []}
         broker={broker}
         datePosted={publishedDate}
         dateModified={modifiedDate}

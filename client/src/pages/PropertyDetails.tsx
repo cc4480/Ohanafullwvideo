@@ -37,7 +37,7 @@ export default function PropertyDetails({ id }: { id: number }) {
   });
   
   useEffect(() => {
-    if (property && property.images && property.images.length > 0) {
+    if (property && Array.isArray(property.images) && property.images.length > 0) {
       setActiveImage(property.images[0]);
     }
   }, [property]);
@@ -233,7 +233,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                     fetchPriority="high"
                     isMainImage={true}
                     decoding="async"
-                    onClick={() => openFullScreenViewer(property.images.indexOf(activeImage))}
+                    onClick={() => Array.isArray(property.images) && openFullScreenViewer(property.images.indexOf(activeImage))}
                     style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
                     structuredData={{
                       "@context": "https://schema.org",
@@ -255,7 +255,9 @@ export default function PropertyDetails({ id }: { id: number }) {
                       className="absolute top-3 right-3 rounded-full p-2 shadow-lg bg-white/80 hover:bg-white"
                       onClick={(e) => {
                         e.stopPropagation();
-                        openFullScreenViewer(property.images.indexOf(activeImage));
+                        if (Array.isArray(property.images)) {
+                          openFullScreenViewer(property.images.indexOf(activeImage));
+                        }
                       }}
                       aria-label="View image fullscreen"
                     >
@@ -268,7 +270,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                   </div>
                 </div>
                 
-                {property.images.length > 1 && (
+                {Array.isArray(property.images) && property.images.length > 1 && (
                   <div 
                     className="grid grid-cols-4 gap-1 sm:gap-2 transform-gpu"
                     role="group"
@@ -330,7 +332,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                 )}
                 
                 {/* Full screen image viewer */}
-                {property.images.length > 0 && (
+                {Array.isArray(property.images) && property.images.length > 0 && (
                   <FullScreenImageViewer
                     images={property.images}
                     initialImageIndex={fullScreenImageIndex}
@@ -415,7 +417,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                     Property Features
                   </h2>
                   
-                  {property.features && property.features.length > 0 ? (
+                  {property.features && Array.isArray(property.features) && property.features.length > 0 ? (
                     <div 
                       className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-5 sm:mb-6 mobile-optimized"
                       role="list"
