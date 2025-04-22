@@ -177,7 +177,7 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-2 sm:gap-4 animate-fade-in">
-          <Link href="/#contact">
+          <Link href="/contact">
             <Button 
               variant="secondary" 
               className="hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white transition-all duration-300 shadow-md hover:shadow-lg animate-slide-up"
@@ -188,7 +188,7 @@ export default function Header() {
           </Link>
           
           {/* Mobile contact button - ALWAYS VISIBLE ON MOBILE */}
-          <Link href="/#contact" className="md:hidden">
+          <Link href="/contact" className="md:hidden">
             <Button 
               variant="secondary" 
               size="icon"
@@ -224,8 +224,9 @@ export default function Header() {
           {[
             { path: '/', label: 'Home', icon: 'bx-home' },
             { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
-            { path: '/#about', label: 'About', icon: 'bx-user' },
-            { path: '/#contact', label: 'Contact', icon: 'bx-envelope' }
+            { path: '/neighborhoods', label: 'Neighborhoods', icon: 'bx-map-alt' },
+            { path: '/about', label: 'About', icon: 'bx-user' },
+            { path: '/contact', label: 'Contact', icon: 'bx-envelope' }
           ].map((item, index) => (
             <Link 
               key={item.path} 
@@ -244,7 +245,7 @@ export default function Header() {
           ))}
           
           <div className="pt-2">
-            <Link href="/#contact">
+            <Link href="/contact">
               <Button 
                 variant="secondary" 
                 className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2"

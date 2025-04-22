@@ -17,7 +17,7 @@ export default function CallToAction() {
               Explore Properties
             </Button>
           </Link>
-          <Link href="/#contact">
+          <Link href="/contact">
             <Button variant="secondary" className="w-full sm:w-auto">
               Contact Valentin
             </Button>

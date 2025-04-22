@@ -39,9 +39,9 @@ export default function Footer() {
               {[
                 { path: '/', label: 'Home', icon: 'bx-home' },
                 { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
-                { path: '/#about', label: 'About', icon: 'bx-user' },
-                { path: '/#contact', label: 'Contact', icon: 'bx-envelope' },
-                { path: '#', label: 'Privacy Policy', icon: 'bx-shield' }
+                { path: '/neighborhoods', label: 'Neighborhoods', icon: 'bx-map-alt' },
+                { path: '/about', label: 'About', icon: 'bx-user' },
+                { path: '/contact', label: 'Contact', icon: 'bx-envelope' }
               ].map((item, index) => (
                 <li key={item.path} className="group">
                   <Link href={item.path} className="flex items-center hover:text-white text-white/80 transition-all duration-300">
