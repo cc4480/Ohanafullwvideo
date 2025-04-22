@@ -13,6 +13,11 @@ export default function PropertyDetails({ id }: { id: number }) {
   const [, navigate] = useLocation();
   const [activeImage, setActiveImage] = useState<string>("");
   
+  // Ensure we scroll to the top when the component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const { data: property, isLoading, error } = useQuery<Property>({
     queryKey: [`/api/properties/${id}`],
   });

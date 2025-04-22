@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,15 +12,19 @@ import PropertyDetails from "@/pages/PropertyDetails";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 
-function App() {
-  // Scroll to top on route change
-  const ScrollToTop = () => {
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+// ScrollToTop component that watches for route changes
+const ScrollToTop = () => {
+  const [location] = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]); // Dependency on location means this runs on every route change
+  
+  return null;
+};
 
-    return null;
-  };
+function App() {
+  // Main App component
 
   return (
     <QueryClientProvider client={queryClient}>

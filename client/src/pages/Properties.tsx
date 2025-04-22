@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import PropertyCard from "@/components/PropertyCard";
+import PropertyCard from "@/components/properties/PropertyCard";
 import { Property } from "@shared/schema";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,11 @@ export default function Properties() {
   const [propertyType, setPropertyType] = useState<string>("All");
   const [priceRange, setPriceRange] = useState<string>("Any");
   const [searchText, setSearchText] = useState<string>("");
+  
+  // Ensure we scroll to the top when the component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   
   const { data: properties, isLoading } = useQuery<Property[]>({
     queryKey: ['/api/properties'],
