@@ -129,10 +129,9 @@ export default function AIAssistant() {
       return (
         <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-lg mb-4 max-w-[85%] ml-2">
           <p className="text-sm">
-            👋 Aloha! I'm Ohana Assistant from Ohana Realty. "Ohana" means family in Hawaiian,
-            and we're committed to treating our clients like family. I can help you find properties,
+            👋 Hello! I'm your real estate assistant from Ohana Realty. I can help you find properties,
             learn about Laredo neighborhoods, or answer questions about buying or selling a home.
-            How can I assist your real estate journey today?
+            How can I assist with your real estate needs today?
           </p>
         </div>
       );
