@@ -4,14 +4,18 @@
 
 /* Global fixed background settings with logo as background */
 html, body {
-  background-color: #050A15 !important; /* Dark background color instead of image */
+  background-image: url('/assets/background.jpg'); /* Path to your background image */
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important; /* Keeps the image static */
+  background-repeat: no-repeat !important;
   color: white; /* Ensure text contrasts well with dark background */
   min-height: 100vh;
   height: 100%;
   position: relative; /* Ensure position context for fixed elements */
 }
 
-/* Logo background for the entire site - now using SVG for better performance */
+/* Logo background for the entire site */
 body::after {
   content: "";
   position: fixed;
@@ -19,11 +23,11 @@ body::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/src/assets/logo.svg');
+  background-image: url('/assets/logo.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: 90vw auto; /* Much larger size relative to viewport */
-  opacity: 0.05; /* Lower opacity so it's subtle */
+  opacity: 0.9; /* Higher opacity for better visibility */
   z-index: 2; /* Slightly higher z-index to ensure visibility */
   pointer-events: none; /* Allows clicking through the logo */
 }
