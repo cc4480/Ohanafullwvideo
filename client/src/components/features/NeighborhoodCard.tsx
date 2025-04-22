@@ -2,6 +2,7 @@ import { Neighborhood } from "@shared/schema";
 import { ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import northLaredoImg from "../../assets/north-laredo-industrial-park.png";
+import downtownLaredoImg from "../../assets/downtown-laredo.png";
 
 interface NeighborhoodCardProps {
   neighborhood: Neighborhood;
@@ -39,6 +40,14 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
             src={northLaredoImg} 
             alt={neighborhood.name} 
             className="w-full h-full object-contain bg-white p-2 group-hover:scale-105 transition duration-500 transform-gpu"
+            loading="lazy"
+            style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
+          />
+        ) : neighborhood.name === "Downtown Laredo" ? (
+          <img 
+            src={downtownLaredoImg} 
+            alt={neighborhood.name} 
+            className="w-full h-full object-cover group-hover:scale-105 transition duration-500 transform-gpu"
             loading="lazy"
             style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
           />
