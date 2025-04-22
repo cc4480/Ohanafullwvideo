@@ -197,17 +197,7 @@ export default function Header() {
             </Link>
           ))}
           
-          <div className="pt-2">
-            <Link href="/#contact">
-              <Button 
-                variant="secondary" 
-                className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2"
-              >
-                <i className='bx bx-envelope-open text-xl'></i>
-                <span>Contact Valentin</span>
-              </Button>
-            </Link>
-          </div>
+{/* Contact button removed as requested */}
         </div>
       </div>
     </header>
