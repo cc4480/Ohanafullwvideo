@@ -1,9 +1,8 @@
 import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import { storage, initializeSampleData } from "./storage";
-import { insertMessageSchema, insertChatMessageSchema } from "@shared/schema";
+import { insertMessageSchema } from "@shared/schema";
 import { z } from "zod";
-import { getDeepSeekResponse } from "./deepSeekAssistant";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database with sample data
@@ -268,100 +267,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Chat with AI assistant using DeepSeek
-  apiRouter.post("/chat", async (req, res) => {
-    try {
-      // Check for DeepSeek API credentials
-      const apiKey = process.env.DEEPSEEK_API_KEY;
-      const baseUrl = process.env.DEEPSEEK_BASE_URL;
-      
-      if (!apiKey || !baseUrl) {
-        console.warn('DEEPSEEK_API_KEY or DEEPSEEK_BASE_URL environment variables are missing. AI assistant will use fallback responses.');
-      }
-      
-      // Validate the request body
-      const messageValidation = z.object({
-        sessionId: z.string(),
-        message: z.string(),
-      }).safeParse(req.body);
-
-      if (!messageValidation.success) {
-        return res.status(400).json({ 
-          message: "Invalid chat message", 
-          errors: messageValidation.error.errors 
-        });
-      }
-
-      const { sessionId, message } = messageValidation.data;
-
-      // Save user message
-      const userMessage = await storage.createChatMessage({
-        sessionId,
-        message,
-        isUser: true,
-        createdAt: new Date().toISOString()
-      });
-
-      // Get AI response from DeepSeek API (with fallback handling)
-      const aiResponse = await getDeepSeekResponse(message);
-
-      // Save AI response
-      const botMessage = await storage.createChatMessage({
-        sessionId,
-        message: aiResponse,
-        isUser: false,
-        createdAt: new Date().toISOString()
-      });
-
-      // Get conversation history
-      const chatHistory = await storage.getChatMessages(sessionId);
-
-      res.json({
-        reply: aiResponse,
-        history: chatHistory
-      });
-    } catch (error) {
-      console.error("Error in chat endpoint:", error);
-      res.status(500).json({ message: "Failed to process chat message" });
-    }
-  });
-  
-  // DeepSeek API endpoint
-  apiRouter.post("/deepseek", async (req, res) => {
-    try {
-      // Check for DeepSeek API credentials
-      const apiKey = process.env.DEEPSEEK_API_KEY;
-      const baseUrl = process.env.DEEPSEEK_BASE_URL;
-      
-      if (!apiKey || !baseUrl) {
-        console.warn('DEEPSEEK_API_KEY or DEEPSEEK_BASE_URL environment variables are missing. AI assistant will use fallback responses.');
-      }
-      
-      const { message } = req.body;
-      
-      if (!message) {
-        return res.status(400).json({ message: "Message is required" });
-      }
-      
-      // Get response (will use fallback if API key is missing)
-      const reply = await getDeepSeekResponse(message);
-      res.json({ reply });
-    } catch (error) {
-      console.error("DeepSeek API endpoint error:", error);
-      res.status(500).json({ message: "Failed to get AI response" });
-    }
-  });
-
-  // Get chat history
-  apiRouter.get("/chat/:sessionId", async (req, res) => {
-    try {
-      const { sessionId } = req.params;
-      const chatHistory = await storage.getChatMessages(sessionId);
-      res.json(chatHistory);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch chat history" });
-    }
-  });
+  // No AI chat features as requested
 
   // Register the API router
   app.use("/api", apiRouter);

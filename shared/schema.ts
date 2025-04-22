@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb, real } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -59,19 +59,6 @@ export const messages = pgTable("messages", {
 export const insertMessageSchema = createInsertSchema(messages);
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type Message = typeof messages.$inferSelect;
-
-// Define the AI Chat Messages table schema
-export const chatMessages = pgTable("chatMessages", {
-  id: serial("id").primaryKey(),
-  sessionId: text("sessionId").notNull(),
-  message: text("message").notNull(),
-  isUser: boolean("isUser").notNull(),
-  createdAt: text("createdAt").notNull(),
-});
-
-export const insertChatMessageSchema = createInsertSchema(chatMessages);
-export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
-export type ChatMessage = typeof chatMessages.$inferSelect;
 
 // Users table schema remains as is
 export const users = pgTable("users", {

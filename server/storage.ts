@@ -1,5 +1,5 @@
-import { properties, neighborhoods, messages, chatMessages, users } from "@shared/schema";
-import type { Property, InsertProperty, Neighborhood, InsertNeighborhood, Message, InsertMessage, ChatMessage, InsertChatMessage, User, InsertUser } from "@shared/schema";
+import { properties, neighborhoods, messages, users } from "@shared/schema";
+import type { Property, InsertProperty, Neighborhood, InsertNeighborhood, Message, InsertMessage, User, InsertUser } from "@shared/schema";
 import { db } from './db';
 import { eq, sql } from 'drizzle-orm';
 
@@ -23,10 +23,6 @@ export interface IStorage {
   
   // Message methods
   createMessage(message: InsertMessage): Promise<Message>;
-  
-  // Chat methods
-  getChatMessages(sessionId: string): Promise<ChatMessage[]>;
-  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -92,21 +88,6 @@ export class DatabaseStorage implements IStorage {
       .values(insertMessage)
       .returning();
     return message;
-  }
-
-  async getChatMessages(sessionId: string): Promise<ChatMessage[]> {
-    return await db
-      .select()
-      .from(chatMessages)
-      .where(eq(chatMessages.sessionId, sessionId));
-  }
-
-  async createChatMessage(insertChatMessage: InsertChatMessage): Promise<ChatMessage> {
-    const [chatMessage] = await db
-      .insert(chatMessages)
-      .values(insertChatMessage)
-      .returning();
-    return chatMessage;
   }
 }
 
@@ -219,22 +200,6 @@ export async function initializeSampleData() {
     }
   ];
 
-  // Sample chat messages
-  const sampleChatMessages = [
-    {
-      sessionId: "demo-session",
-      message: "Show me affordable properties near Shiloh Drive.",
-      isUser: true,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      sessionId: "demo-session",
-      message: "I found 3 properties near Shiloh Drive under $400,000. The closest one is 3720 Flores Ave at $359,000, just 1.5 miles away. Would you like to see the details?",
-      isUser: false,
-      createdAt: new Date().toISOString(),
-    }
-  ];
-
   // Insert sample data
   try {
     // Insert neighborhoods first
@@ -242,9 +207,6 @@ export async function initializeSampleData() {
     
     // Then insert properties
     await db.insert(properties).values(sampleProperties);
-    
-    // Insert chat messages
-    await db.insert(chatMessages).values(sampleChatMessages);
     
     console.log("Sample data initialized successfully");
   } catch (error) {
