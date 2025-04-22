@@ -7,11 +7,12 @@ import { Separator } from "@/components/ui/separator";
 import ContactSection from "@/components/ContactSection";
 import { useEffect, useState } from "react";
 import valentinCuellarImg from "../assets/valentin-realtor.png";
-import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler } from "lucide-react";
+import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
+import PropertyInquiryModal from "@/components/properties/PropertyInquiryModal";
 
 export default function PropertyDetails({ id }: { id: number }) {
   const [, navigate] = useLocation();
@@ -377,6 +378,21 @@ export default function PropertyDetails({ id }: { id: number }) {
                         >
                           <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                           Schedule a Viewing
+                        </Button>
+                      }
+                    />
+                  )}
+                  {property && (
+                    <PropertyInquiryModal
+                      property={property}
+                      trigger={
+                        <Button 
+                          className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
+                          variant="outline"
+                          size="sm"
+                        >
+                          <HelpCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                          Ask About This Property
                         </Button>
                       }
                     />
