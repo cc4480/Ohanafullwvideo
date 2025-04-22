@@ -322,12 +322,33 @@
     width: 64px !important;
     height: 64px !important;
     border: none !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
+    background-color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
     animation: pulse 2s infinite !important;
+    border-radius: 8px !important;
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    transform-style: preserve-3d !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  
+  /* Mobile-specific AI assistant styles */
+  @media (max-width: 640px) {
+    .ai-assistant-button {
+      bottom: 16px !important;
+      right: 16px !important;
+      width: 56px !important;
+      height: 56px !important;
+      border: 2px solid hsl(var(--primary)) !important;
+      transform: translateZ(0) !important;
+      will-change: transform !important;
+      -webkit-user-select: none !important;
+      user-select: none !important;
+    }
   }
 
-  /* Additional chat icon styles */
+  /* Additional chat icon styles - CRITICAL: DO NOT REMOVE */
   #ohana-chat-icon {
     display: block !important;
     position: fixed !important;
@@ -336,6 +357,28 @@
     z-index: 999999 !important;
     width: 64px !important;
     height: 64px !important;
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+    backface-visibility: hidden !important;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+    user-select: none !important;
+    border-radius: 8px !important;
+    border: 3px solid hsl(var(--primary)) !important;
+    background-color: white !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
+    animation: pulse 2s infinite !important;
+  }
+  
+  /* Mobile-specific chat icon */
+  @media (max-width: 640px) {
+    #ohana-chat-icon {
+      bottom: 16px !important;
+      right: 16px !important;
+      width: 56px !important;
+      height: 56px !important;
+      z-index: 9999999 !important;
+    }
   }
 
   /* Ensure the chat button is always on top and never hidden */

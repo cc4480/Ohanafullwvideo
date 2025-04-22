@@ -180,6 +180,22 @@ export default function Header() {
             </Button>
           </Link>
           
+          {/* Mobile contact button - ALWAYS VISIBLE ON MOBILE */}
+          <Link href="/#contact" className="md:hidden">
+            <Button 
+              variant="secondary" 
+              size="icon"
+              className="h-10 w-10 rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95"
+              style={{
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                willChange: 'transform'
+              }}
+            >
+              <i className='bx bx-envelope text-xl'></i>
+            </Button>
+          </Link>
+          
           <button 
             className={`md:hidden focus:outline-none ${scrolled || location !== "/" ? 'text-foreground' : 'text-white'}`}
             id="menuButton"

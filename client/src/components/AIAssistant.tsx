@@ -144,29 +144,54 @@ export default function AIAssistant() {
       {/* Chat toggle button - CRITICAL COMPONENT: DO NOT REMOVE */}
       <Button
         onClick={toggleChat}
-        className={`fixed bottom-6 right-6 rounded-lg h-16 w-16 p-0 flex items-center justify-center bg-transparent hover:bg-transparent transition-all duration-300 z-50
+        className={`fixed bottom-6 right-6 rounded-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/95 transition-all duration-300 z-[9999]
           ${isOpen && !isMinimized ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}
-          border-0 overflow-hidden
+          border-2 border-primary shadow-xl
+          transform-gpu active:scale-95
+          mobile-optimized
         `}
+        style={{
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+          willChange: 'transform',
+          touchAction: 'manipulation',
+          WebkitTapHighlightColor: 'transparent'
+        }}
         aria-label="Chat with Ohana Assistant"
       >
-        <div className="flex items-center justify-center w-full h-full bg-transparent">
+        <div className="flex items-center justify-center w-full h-full bg-white rounded-md overflow-hidden">
           {/* Company logo instead of message icon */}
           <img 
             src={logoImg} 
             alt="Ohana Realty" 
-            className="w-full h-full object-contain p-1 bg-transparent" 
+            className="w-full h-full object-contain p-1 transform-gpu" 
+            style={{
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
+              willChange: 'transform'
+            }}
           />
         </div>
+        
+        {/* Pulsing effect around the button */}
+        <div className="absolute -inset-1 rounded-lg bg-primary/20 animate-ping opacity-75 z-[-1]"></div>
       </Button>
       
       {/* Chat window - CRITICAL COMPONENT: DO NOT REMOVE */}
       <div 
         className={`
-          fixed bottom-6 right-6 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg shadow-2xl flex flex-col overflow-hidden transition-all duration-500 z-50 
+          fixed sm:bottom-6 sm:right-6 w-full sm:w-96 h-[95vh] sm:h-[500px] bg-white dark:bg-slate-900 rounded-lg sm:shadow-2xl flex flex-col overflow-hidden transition-all duration-500 z-[9998]
           border border-primary/30 backdrop-blur-sm
-          ${isOpen && !isMinimized ? 'opacity-100 scale-100 h-[500px]' : 'opacity-0 scale-95 h-0 pointer-events-none'}
+          sm:max-w-md
+          ${isOpen && !isMinimized ? 'opacity-100 bottom-0 left-0 sm:left-auto right-0 sm:scale-100' : 'opacity-0 scale-95 h-0 pointer-events-none'}
+          transform-gpu
         `}
+        style={{
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+          willChange: 'transform',
+          touchAction: 'manipulation'
+        }}
       >
         {/* Decorative gradients */}
         <div className="absolute inset-0 overflow-hidden rounded-lg pointer-events-none">

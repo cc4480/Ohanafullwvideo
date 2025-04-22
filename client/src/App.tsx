@@ -4,14 +4,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import Home from "@/pages/Home";
 import Properties from "@/pages/Properties";
 import PropertyDetails from "@/pages/PropertyDetails";
 import NotFound from "@/pages/not-found";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import AIAssistant from "@/components/AIAssistant";
+import OhanaAssistantIcon from "@/components/assistant/OhanaAssistantIcon";
 
 function App() {
   // Scroll to top on route change
