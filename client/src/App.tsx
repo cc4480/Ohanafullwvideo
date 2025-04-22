@@ -12,6 +12,7 @@ import PropertyDetails from "@/pages/PropertyDetails";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import AIAssistant from "@/components/AIAssistant";
+import OhanaAssistantIcon from "@/components/OhanaAssistantIcon";
 
 function App() {
   // Enhanced scroll to top with smooth behavior and page transition
@@ -93,6 +94,7 @@ function App() {
             </Switch>
             <Footer />
             <AIAssistant />
+            <OhanaAssistantIcon />
           </>
         </TooltipProvider>
       </ThemeProvider>

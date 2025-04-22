@@ -14,6 +14,7 @@ type Message = {
   createdAt: string;
 };
 
+// CRITICAL COMPONENT - DO NOT REMOVE OR MODIFY THE FLOATING CHAT ICON
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
