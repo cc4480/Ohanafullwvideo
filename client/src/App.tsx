@@ -9,6 +9,9 @@ import Footer from "@/components/layout/Footer";
 import Home from "@/pages/Home";
 import Properties from "@/pages/Properties";
 import PropertyDetails from "@/pages/PropertyDetails";
+import Neighborhoods from "@/pages/Neighborhoods";
+import About from "@/pages/About";
+import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 
@@ -60,6 +63,36 @@ function App() {
                     <>
                       <ScrollToTop />
                       <PropertyDetails id={parseInt(params.id)} />
+                    </>
+                  );
+                }}
+              </Route>
+              <Route path="/neighborhoods">
+                {() => {
+                  return (
+                    <>
+                      <ScrollToTop />
+                      <Neighborhoods />
+                    </>
+                  );
+                }}
+              </Route>
+              <Route path="/about">
+                {() => {
+                  return (
+                    <>
+                      <ScrollToTop />
+                      <About />
+                    </>
+                  );
+                }}
+              </Route>
+              <Route path="/contact">
+                {() => {
+                  return (
+                    <>
+                      <ScrollToTop />
+                      <Contact />
                     </>
                   );
                 }}

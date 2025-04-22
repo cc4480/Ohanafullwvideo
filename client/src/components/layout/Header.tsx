@@ -160,8 +160,9 @@ export default function Header() {
           {[
             { path: '/', label: 'Home' },
             { path: '/properties', label: 'Properties' },
-            { path: '/#about', label: 'About' },
-            { path: '/#contact', label: 'Contact' }
+            { path: '/neighborhoods', label: 'Neighborhoods' },
+            { path: '/about', label: 'About' },
+            { path: '/contact', label: 'Contact' }
           ].map((item, index) => (
             <Link 
               key={item.path} 
