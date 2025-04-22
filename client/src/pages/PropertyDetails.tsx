@@ -170,7 +170,7 @@ export default function PropertyDetails({ id }: { id: number }) {
           `${property.city} ${property.state}`,
           property.state,
           property.zipCode.toString(),
-          `${property.city} ${property.neighborhood || "area"}`
+          `${property.city} area`
         ]}
         semanticKeywords={[
           "property details",

@@ -8,6 +8,7 @@ import ContactSection from "@/components/features/ContactSection";
 import CallToAction from "@/components/home/CallToAction";
 // Enhanced SEO components
 import SEOOrganizationSchema from "@/components/SEOOrganizationSchema";
+import LocalBusinessSchema from "@/components/LocalBusinessSchema";
 import { Helmet } from 'react-helmet';
 import SocialShareMetadata from "@/components/SocialShareMetadata";
 import CanonicalURLs from "@/components/CanonicalURLs";
@@ -34,6 +35,58 @@ export default function Home() {
         }}
         phone="+19567123000"
         email="info@ohanarealty.com"
+        socialLinks={[
+          "https://www.facebook.com/ohanarealty",
+          "https://www.instagram.com/ohanarealty",
+          "https://www.linkedin.com/company/ohana-realty"
+        ]}
+      />
+      
+      {/* Enhanced Local Business Schema for local SEO */}
+      <LocalBusinessSchema
+        name="Ohana Realty"
+        description="Premier real estate agency in Laredo, TX specializing in residential and commercial properties, with personalized service and expert local market knowledge. We help buyers find their dream homes and sellers maximize their property value."
+        businessType="RealEstateAgent"
+        location={{
+          streetAddress: "5802 McPherson Rd",
+          city: "Laredo",
+          state: "TX",
+          zipCode: "78041",
+          latitude: 27.5629,
+          longitude: -99.4805
+        }}
+        url={websiteUrl}
+        logo={`${websiteUrl}/logo.png`}
+        image={`${websiteUrl}/office-exterior.jpg`}
+        telephone="+19567123000"
+        email="info@ohanarealty.com"
+        priceRange="$$$"
+        rating={4.9}
+        hours={[
+          { dayOfWeek: "Monday", opens: "09:00", closes: "18:00" },
+          { dayOfWeek: "Tuesday", opens: "09:00", closes: "18:00" },
+          { dayOfWeek: "Wednesday", opens: "09:00", closes: "18:00" },
+          { dayOfWeek: "Thursday", opens: "09:00", closes: "18:00" },
+          { dayOfWeek: "Friday", opens: "09:00", closes: "18:00" },
+          { dayOfWeek: "Saturday", opens: "10:00", closes: "16:00" }
+        ]}
+        areasServed={[
+          "Laredo", 
+          "Webb County", 
+          "South Texas",
+          "North Laredo",
+          "Downtown Laredo"
+        ]}
+        services={[
+          "Residential Property Sales",
+          "Commercial Property Sales",
+          "Property Management",
+          "Investment Properties",
+          "Land Sales",
+          "Real Estate Consulting",
+          "Property Valuation"
+        ]}
+        yearEstablished={2008}
         socialLinks={[
           "https://www.facebook.com/ohanarealty",
           "https://www.instagram.com/ohanarealty",
