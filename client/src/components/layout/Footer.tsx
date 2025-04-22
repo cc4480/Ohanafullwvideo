@@ -18,7 +18,7 @@ export default function Footer() {
           {/* Company Info */}
           <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-32 h-12 overflow-hidden bg-white rounded-md shadow-lg border border-white/20">
+              <div className="w-32 h-12 overflow-hidden rounded-md shadow-lg border border-white/20">
                 <img src={logo} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
               </div>
             </div>
