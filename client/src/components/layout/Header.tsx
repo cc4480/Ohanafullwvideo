@@ -106,10 +106,19 @@ export default function Header() {
   
   return (
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center relative group animate-fade-in">
-          <div className={`w-40 h-16 overflow-hidden ${location === "/" && !scrolled ? "bg-transparent" : "bg-white"} rounded-md transition-all duration-300`}>
-            <img src={logoImg} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
+          <div className={`w-48 h-20 flex items-center justify-center ${location === "/" && !scrolled ? "bg-transparent" : "bg-white"} rounded-md transition-all duration-300`}>
+            <img 
+              src={logoImg} 
+              alt="Ohana Realty Logo" 
+              className="w-auto h-auto max-w-full max-h-full transform-gpu" 
+              style={{ 
+                padding: '2px',
+                objectFit: 'contain',
+                display: 'block'
+              }}
+            />
           </div>
           {/* Subtle decoration */}
           <div className="absolute -bottom-2 -right-2 h-4 w-4 bg-secondary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
