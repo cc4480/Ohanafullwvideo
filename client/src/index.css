@@ -326,15 +326,21 @@
     perspective: 1000px;
   }
   
-  /* Hardware accelerated transform classes */
+  /* Advanced hardware accelerated transform classes */
   .transform-gpu {
-    transform: translateZ(0);
+    transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
     perspective: 1000px;
     will-change: transform;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Enhanced carousel transition */
+  /* Enhanced carousel and opacity transitions */
+  .will-change-opacity {
+    will-change: opacity;
+  }
+  
   .transition-opacity {
     transition-property: opacity;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -343,6 +349,24 @@
   
   .duration-1500 {
     transition-duration: 1500ms;
+  }
+  
+  /* Global hardware acceleration */
+  img, svg, video {
+    transform: translate3d(0, 0, 0);
+  }
+  
+  /* Reduce animations for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-delay: -1ms !important;
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      background-attachment: initial !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0s !important;
+      transition-delay: 0s !important;
+    }
   }
   
   /* Faster loading by preloading theme transitions with better performance */

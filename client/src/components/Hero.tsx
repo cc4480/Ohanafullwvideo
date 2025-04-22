@@ -2,22 +2,22 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 
-// Define carousel images
+// Define carousel images with optimized sizes and loading
 const carouselImages = [
   {
-    url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1973&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=75&w=1280&auto=format&fit=crop",
     alt: "Luxury home exterior"
   },
   {
-    url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=75&w=1280&auto=format&fit=crop",
     alt: "Modern residential house"
   },
   {
-    url: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2070&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=75&w=1280&auto=format&fit=crop",
     alt: "Elegant property with pool"
   },
   {
-    url: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=2070&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=75&w=1280&auto=format&fit=crop",
     alt: "Contemporary home design"
   }
 ];
@@ -61,32 +61,49 @@ export default function Hero() {
         {/* Animated grain texture */}
         <div className="absolute inset-0 opacity-30 z-10 bg-noise"></div>
         
-        {/* Carousel container with hardware acceleration */}
+        {/* Optimized carousel container with hardware acceleration */}
         <div className="absolute inset-0 transform-gpu">
-          {carouselImages.map((image, index) => (
-            <div 
-              key={index}
-              className={`
-                absolute inset-0 transition-opacity duration-1500 ease-in-out transform-gpu
-                ${index === currentImage ? 'opacity-100 z-5' : 'opacity-0 z-0'}
-              `}
-              style={{ 
-                willChange: 'opacity, transform',
-                backfaceVisibility: 'hidden'
-              }}
-            >
-              <img 
-                src={image.url} 
-                alt={image.alt} 
-                className="w-full h-full object-cover scale-[1.02] animate-slow-zoom"
+          {/* Only render current and next images for better performance */}
+          {[currentImage, (currentImage + 1) % carouselImages.length].map((imageIndex) => {
+            const image = carouselImages[imageIndex];
+            return (
+              <div 
+                key={imageIndex}
+                className={`
+                  absolute inset-0 transition-opacity will-change-opacity transform-gpu
+                  ${imageIndex === currentImage ? 'opacity-100 z-5' : 'opacity-0 z-0'}
+                `}
                 style={{ 
-                  willChange: 'transform',
-                  transform: 'translateZ(0)',
-                  backfaceVisibility: 'hidden'
+                  transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  willChange: 'opacity',
+                  backfaceVisibility: 'hidden',
+                  transform: 'translate3d(0,0,0)'
                 }}
-              />
-            </div>
-          ))}
+              >
+                <img 
+                  src={image.url} 
+                  alt={image.alt} 
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-full object-cover transform-gpu"
+                  style={{ 
+                    willChange: 'transform',
+                    transform: 'translate3d(0,0,0)',
+                    backfaceVisibility: 'hidden'
+                  }}
+                />
+              </div>
+            );
+          })}
+          
+          {/* Preload remaining images */}
+          <div className="hidden">
+            {carouselImages
+              .filter((_, idx) => idx !== currentImage && idx !== (currentImage + 1) % carouselImages.length)
+              .map((image, idx) => (
+                <img key={idx} src={image.url} alt="" loading="lazy" className="hidden" />
+              ))}
+          </div>
         </div>
         
         {/* Carousel indicators */}
