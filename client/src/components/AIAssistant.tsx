@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, MessageSquare, Send, X } from "lucide-react";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import logoImg from "@assets/OIP.jfif";
 
 type Message = {
   id: number;
@@ -143,15 +144,19 @@ export default function AIAssistant() {
       {/* Chat toggle button */}
       <Button
         onClick={toggleChat}
-        className={`fixed bottom-6 right-6 rounded-full shadow-xl h-14 w-14 p-0 flex items-center justify-center bg-primary hover:bg-primary/90 transition-all duration-300 z-50
+        className={`fixed bottom-6 right-6 rounded-lg shadow-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/90 transition-all duration-300 z-50
           ${isOpen && !isMinimized ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}
-          animate-gentle-pulse border-2 border-white/80 backdrop-blur-sm
+          border border-primary/20 overflow-hidden
         `}
-        aria-label="Chat with AI assistant"
+        aria-label="Chat with Ohana Assistant"
       >
-        <div className="relative">
-          <MessageSquare className="h-6 w-6 text-white" />
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-secondary rounded-full animate-ping"></span>
+        <div className="flex items-center justify-center w-full h-full">
+          {/* Company logo instead of message icon */}
+          <img 
+            src={logoImg} 
+            alt="Ohana Realty" 
+            className="w-full h-full object-contain p-1" 
+          />
         </div>
       </Button>
       
@@ -172,11 +177,13 @@ export default function AIAssistant() {
         {/* Chat header */}
         <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-3 flex items-center justify-between relative z-10">
           <div className="flex items-center space-x-2">
-            <div className="relative">
-              <MessageSquare className="h-5 w-5" />
-              <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-secondary rounded-full"></span>
+            <div className="w-8 h-8 bg-white rounded-md overflow-hidden">
+              <img src={logoImg} alt="Ohana Realty" className="w-full h-full object-contain" />
             </div>
-            <h3 className="font-medium">Ohana Assistant</h3>
+            <div>
+              <h3 className="font-medium">Ohana Assistant</h3>
+              <p className="text-xs text-white/80">Your real estate guide</p>
+            </div>
           </div>
           <div className="flex space-x-1">
             <Button 
@@ -279,13 +286,16 @@ export default function AIAssistant() {
       {/* Minimized chat */}
       <div 
         className={`
-          fixed bottom-24 right-6 bg-white dark:bg-slate-900 rounded-lg shadow-lg p-3 pr-10 transition-all duration-300 z-50 border border-border cursor-pointer
+          fixed bottom-24 right-6 bg-white dark:bg-slate-900 rounded-lg shadow-lg p-3 pr-10 transition-all duration-300 z-50 
+          border border-primary/20 cursor-pointer
           ${isMinimized ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}
         `}
         onClick={() => setIsMinimized(false)}
       >
-        <div className="flex items-center space-x-2">
-          <MessageSquare className="h-5 w-5 text-primary" />
+        <div className="flex items-center space-x-3">
+          <div className="w-6 h-6 bg-white rounded-md overflow-hidden border border-primary/20">
+            <img src={logoImg} alt="Ohana Realty" className="w-full h-full object-contain" />
+          </div>
           <p className="text-sm font-medium">Chat with Ohana Assistant</p>
         </div>
       </div>
