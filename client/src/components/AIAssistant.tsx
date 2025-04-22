@@ -144,18 +144,18 @@ export default function AIAssistant() {
       {/* Chat toggle button - CRITICAL COMPONENT: DO NOT REMOVE */}
       <Button
         onClick={toggleChat}
-        className={`fixed bottom-6 right-6 rounded-lg shadow-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/90 transition-all duration-300 z-50
+        className={`fixed bottom-6 right-6 rounded-lg h-16 w-16 p-0 flex items-center justify-center bg-transparent hover:bg-transparent transition-all duration-300 z-50
           ${isOpen && !isMinimized ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}
-          border border-primary/20 overflow-hidden
+          border-0 overflow-hidden
         `}
         aria-label="Chat with Ohana Assistant"
       >
-        <div className="flex items-center justify-center w-full h-full">
+        <div className="flex items-center justify-center w-full h-full bg-transparent">
           {/* Company logo instead of message icon */}
           <img 
             src={logoImg} 
             alt="Ohana Realty" 
-            className="w-full h-full object-contain p-1" 
+            className="w-full h-full object-contain p-1 bg-transparent" 
           />
         </div>
       </Button>
@@ -177,8 +177,8 @@ export default function AIAssistant() {
         {/* Chat header */}
         <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-3 flex items-center justify-between relative z-10">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white rounded-md overflow-hidden">
-              <img src={logoImg} alt="Ohana Realty" className="w-full h-full object-contain" />
+            <div className="w-8 h-8 bg-transparent rounded-md overflow-hidden">
+              <img src={logoImg} alt="Ohana Realty" className="w-full h-full object-contain bg-transparent" />
             </div>
             <div>
               <h3 className="font-medium">Ohana Assistant</h3>
@@ -286,15 +286,15 @@ export default function AIAssistant() {
       {/* Minimized chat - CRITICAL COMPONENT: DO NOT REMOVE */}
       <div 
         className={`
-          fixed bottom-24 right-6 bg-white dark:bg-slate-900 rounded-lg shadow-lg p-3 pr-10 transition-all duration-300 z-50 
-          border border-primary/20 cursor-pointer
+          fixed bottom-24 right-6 bg-transparent rounded-lg p-3 pr-10 transition-all duration-300 z-50 
+          border-0 cursor-pointer
           ${isMinimized ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}
         `}
         onClick={() => setIsMinimized(false)}
       >
         <div className="flex items-center space-x-3">
-          <div className="w-6 h-6 bg-white rounded-md overflow-hidden border border-primary/20">
-            <img src={logoImg} alt="Ohana Realty" className="w-full h-full object-contain" />
+          <div className="w-6 h-6 bg-transparent rounded-md overflow-hidden border-0">
+            <img src={logoImg} alt="Ohana Realty" className="w-full h-full object-contain bg-transparent" />
           </div>
           <p className="text-sm font-medium">Chat with Ohana Assistant</p>
         </div>

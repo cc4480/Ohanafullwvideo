@@ -230,8 +230,9 @@
     opacity: 1 !important;
     width: 64px !important;
     height: 64px !important;
-    border: 3px solid hsl(var(--primary)) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
     animation: pulse 2s infinite !important;
   }
 
