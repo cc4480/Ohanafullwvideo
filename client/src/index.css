@@ -91,12 +91,23 @@
 
 @keyframes gentle-pulse {
   0%, 100% {
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
     box-shadow: 0 10px 25px -5px rgba(var(--primary), 0.5);
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.05) translateZ(0);
     box-shadow: 0 15px 30px -5px rgba(var(--primary), 0.7);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    transform: scale(1) translateZ(0);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    transform: scale(1.03) translateZ(0);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
   }
 }
 
@@ -409,6 +420,22 @@
     will-change: transform;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Mobile-optimized animation utility class */
+  .mobile-optimized {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
   }
   
   /* Enhanced carousel and opacity transitions */

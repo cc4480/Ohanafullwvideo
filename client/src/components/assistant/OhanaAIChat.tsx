@@ -129,28 +129,36 @@ export default function OhanaAIChat() {
 
   return (
     <div id="ohana-ai-assistant" style={{ position: 'fixed', zIndex: 99999 }}>
-      {/* Float button that's always visible */}
+      {/* Mobile-optimized float button with hardware acceleration */}
       <div 
         style={{
           position: 'fixed',
           bottom: '24px',
           right: '24px',
           zIndex: 99999,
-          display: isOpen ? 'none' : 'block'
+          display: isOpen ? 'none' : 'block',
+          transform: 'translateZ(0)', // Hardware acceleration
+          backfaceVisibility: 'hidden'
         }}
       >
         <Button
           onClick={() => setIsOpen(true)}
-          className="rounded-lg shadow-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/90"
+          className="rounded-lg shadow-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/90 active:scale-95 transition-transform transform-gpu animate-[pulse-slow_2s_infinite] mobile-optimized"
           style={{ 
             border: '2px solid hsl(215, 80%, 50%)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent'
           }}
         >
           <img 
             src={logoImg} 
             alt="Ohana Realty" 
-            className="w-full h-full object-contain p-1" 
+            className="w-full h-full object-contain p-1 transform-gpu hover:scale-105 transition-transform" 
+            style={{
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden'
+            }}
           />
         </Button>
       </div>
@@ -176,7 +184,7 @@ export default function OhanaAIChat() {
             backfaceVisibility: 'hidden',
             touchAction: 'manipulation'
           }}
-          className="dark:bg-slate-900 animate-fade-in"
+          className="dark:bg-slate-900 animate-fade-in mobile-optimized"
         >
           {/* Chat header */}
           <div 
