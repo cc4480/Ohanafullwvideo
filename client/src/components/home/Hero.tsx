@@ -4,6 +4,9 @@ import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+// Import logo for background effect
+import logoImg from "@assets/OIP.jfif";
+
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
@@ -325,7 +328,20 @@ export default function Hero() {
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
-      {/* Removed the logo as requested */}
+      {/* Large background logo with effects */}
+      <div className="absolute inset-0 flex items-center justify-center z-5 overflow-hidden pointer-events-none">
+        <div className="absolute w-[800px] h-[800px] opacity-20 animate-pulse">
+          <img 
+            src={logoImg} 
+            alt="Ohana Realty Logo Background" 
+            className="w-full h-full object-contain transform-gpu" 
+            style={{ 
+              filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.2))',
+              animation: 'floatSlow 15s infinite ease-in-out'
+            }}
+          />
+        </div>
+      </div>
       
       {/* Content - completely rebuilt for mobile */}
       <div className="container mx-auto px-4 relative z-20 py-2 md:py-8" ref={contentRef}>

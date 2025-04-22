@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import BackgroundLogo from "@/components/layout/BackgroundLogo";
 import Home from "@/pages/Home";
 import Properties from "@/pages/Properties";
 import PropertyDetails from "@/pages/PropertyDetails";

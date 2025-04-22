@@ -96,6 +96,25 @@
   }
 }
 
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0) translateZ(0) rotate(0deg);
+    opacity: 0.15;
+  }
+  25% {
+    transform: translateY(-15px) translateZ(0) rotate(1deg);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateY(0) translateZ(0) rotate(0deg);
+    opacity: 0.2;
+  }
+  75% {
+    transform: translateY(15px) translateZ(0) rotate(-1deg);
+    opacity: 0.15;
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: -1000px 0;

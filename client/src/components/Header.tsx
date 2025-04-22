@@ -3,8 +3,8 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "./ThemeToggle";
 
-// Load the provided logo image
-import logoImg from "@assets/OIP.jfif";
+// Load Valentin Cuellar's profile image
+import profileImg from "@assets/thprofile_autox145.jpg";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -107,17 +107,24 @@ export default function Header() {
   return (
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center relative group animate-fade-in hover:scale-105 transition-transform duration-300">
-          <div className={`w-48 h-16 overflow-hidden ${location === "/" && !scrolled ? "bg-white/90 backdrop-blur-sm shadow-md" : "bg-white shadow-lg"} rounded-md transition-all duration-300 flex items-center justify-center`}>
-            <img 
-              src={logoImg} 
-              alt="Ohana Realty Logo" 
-              className="w-full h-full object-contain p-1 transform-gpu hover:scale-[1.02] transition-transform" 
-              style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))' }}
-            />
+        <Link href="/" className="flex items-center group animate-fade-in">
+          <div className="flex items-center gap-3 hover:scale-105 transition-transform duration-300">
+            <div className="w-16 h-16 overflow-hidden rounded-full border-2 border-secondary shadow-lg transition-all duration-300">
+              <img 
+                src={profileImg} 
+                alt="Valentin Cuellar - Ohana Realty" 
+                className="w-full h-full object-cover transform-gpu transition-transform" 
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className={`font-serif font-bold text-lg ${location === "/" && !scrolled ? "text-white" : "text-primary"}`}>
+                Valentin Cuellar
+              </span>
+              <span className={`text-xs ${location === "/" && !scrolled ? "text-white/90" : "text-muted-foreground"}`}>
+                Ohana Realty
+              </span>
+            </div>
           </div>
-          {/* Animated glow effect */}
-          <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
