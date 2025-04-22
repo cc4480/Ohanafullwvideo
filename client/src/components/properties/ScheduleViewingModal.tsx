@@ -143,10 +143,13 @@ export default function ScheduleViewingModal({ property, trigger }: ScheduleView
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] p-0">
+      <DialogContent 
+        className="sm:max-w-[500px] p-0"
+        aria-describedby="schedule-viewing-description"
+      >
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="text-xl font-serif">Schedule a Viewing</DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="schedule-viewing-description">
             {property.address}, {property.city}, {property.state} {property.zipCode}
           </DialogDescription>
         </DialogHeader>

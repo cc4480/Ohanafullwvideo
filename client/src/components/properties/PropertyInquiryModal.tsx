@@ -107,10 +107,13 @@ export default function PropertyInquiryModal({ property, trigger }: PropertyInqu
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] p-0">
+      <DialogContent 
+        className="sm:max-w-[500px] p-0"
+        aria-describedby="property-inquiry-description"
+      >
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="text-xl font-serif">Property Inquiry</DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="property-inquiry-description">
             {property.address}, {property.city}, {property.state} {property.zipCode}
           </DialogDescription>
         </DialogHeader>
