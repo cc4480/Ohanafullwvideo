@@ -223,16 +223,31 @@ export default function PropertyDetails({ id }: { id: number }) {
                   {property.address}, {property.city}, {property.state} {property.zipCode}
                 </p>
                 
-                <div className="h-60 sm:h-80 bg-card dark:bg-slate-800 rounded-md mb-3 sm:mb-4 overflow-hidden shadow-sm mobile-optimized">
+                <div 
+                  className="h-60 sm:h-80 bg-card dark:bg-slate-800 rounded-md mb-3 sm:mb-4 overflow-hidden shadow-sm mobile-optimized relative cursor-pointer"
+                  onClick={() => {
+                    if (property.lat && property.lng) {
+                      const url = `https://www.google.com/maps/search/?api=1&query=${property.lat},${property.lng}&query_place_id=${encodeURIComponent(property.address)}`;
+                      window.open(url, '_blank');
+                    }
+                  }}
+                >
                   {property.lat && property.lng ? (
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0, transform: 'translateZ(0)' }}
-                      loading="lazy"
-                      allowFullScreen
-                      src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyD_5wX6LM0b-L0M3VEIpDe3QAfllQ72YuE&q=${property.lat},${property.lng}`}
-                    ></iframe>
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 z-10 flex flex-col items-center justify-center">
+                        <div className="bg-white rounded-full p-3 shadow-lg mb-3 transform-gpu hover:scale-105 transition-transform">
+                          <MapPin className="h-6 w-6 text-primary" />
+                        </div>
+                        <p className="text-white font-medium text-sm sm:text-base">Click to view in Google Maps</p>
+                      </div>
+                      <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-200">
+                        <div className="text-center px-6">
+                          <i className='bx bxs-map text-6xl text-primary/30 mb-4'></i>
+                          <h3 className="text-xl font-medium text-slate-500 mb-2">Interactive Map</h3>
+                          <p className="text-slate-400 text-sm">Click to open this location in Google Maps</p>
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full">
                       <MapPin className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground/50 mb-2" />

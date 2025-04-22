@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Property } from "@shared/schema";
 import { useEffect, useState } from "react";
+import { Link } from "wouter";
 
 export default function PropertyMap() {
   const [isDark, setIsDark] = useState(false);
@@ -31,9 +32,17 @@ export default function PropertyMap() {
     return () => observer.disconnect();
   }, []);
   
-  const { data: properties } = useQuery<Property[]>({
+  const { data: properties, isLoading } = useQuery<Property[]>({
     queryKey: ['/api/properties'],
   });
+  
+  // Function to open Google Maps with the property location
+  const openInGoogleMaps = (lat: number | null, lng: number | null, address: string) => {
+    if (lat && lng) {
+      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(address)}`;
+      window.open(url, '_blank');
+    }
+  };
   
   return (
     <section className={`py-16 ${isDark ? 'bg-background text-foreground' : 'bg-white'}`}>
@@ -43,11 +52,57 @@ export default function PropertyMap() {
             Explore Laredo Properties
           </h2>
           <p className={`${isDark ? 'text-slate-300' : 'text-neutral-600'} max-w-2xl mx-auto`}>
-            Discover properties throughout Laredo with our curated property listings.
+            Discover properties throughout Laredo with our interactive map and curated property listings.
           </p>
         </div>
         
-        {/* Map placeholder with property cards instead */}
+        {/* Interactive map area */}
+        <div className={`mb-12 p-4 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+          <div className="flex flex-col md:flex-row items-start gap-6">
+            <div className="w-full md:w-2/3 h-[400px] bg-slate-200 rounded-lg overflow-hidden relative">
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                <i className='bx bxs-map text-6xl text-primary mb-4'></i>
+                <h3 className="text-xl font-bold mb-2">Interactive Property Map</h3>
+                <p className="mb-4 text-slate-600">View our properties on an interactive map of Laredo.</p>
+                <p className="text-sm text-slate-500 mb-6">Select a property below to view its exact location.</p>
+              </div>
+            </div>
+            
+            <div className="w-full md:w-1/3 overflow-auto max-h-[400px] pr-2">
+              <h3 className="text-lg font-bold mb-4">Select a Property</h3>
+              
+              {isLoading ? (
+                <div className="animate-pulse space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-16 bg-slate-300 rounded"></div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {properties?.map(property => (
+                    <div 
+                      key={property.id}
+                      className={`p-3 rounded-lg cursor-pointer transition-all ${isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-white hover:bg-slate-50'} shadow-sm hover:shadow`}
+                      onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property.address) : null}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-bold">{property.address}</h4>
+                          <p className="text-xs text-slate-500">{property.city}, {property.state}</p>
+                        </div>
+                        <div className="text-xs px-2 py-1 rounded bg-primary text-white">
+                          View on Map
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Property cards listing */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {properties?.map(property => (
             <div 
@@ -83,12 +138,19 @@ export default function PropertyMap() {
                 
                 <div className="mt-4 flex justify-between items-center">
                   <p className="font-bold text-lg text-secondary">${property.price.toLocaleString()}</p>
-                  <a 
-                    href={`/properties/${property.id}`}
-                    className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90 transition-colors text-sm"
-                  >
-                    View Details
-                  </a>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property.address) : null}
+                      className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors text-sm flex items-center"
+                    >
+                      <i className='bx bx-map text-primary mr-1'></i> Map
+                    </button>
+                    <Link href={`/properties/${property.id}`}>
+                      <a className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90 transition-colors text-sm">
+                        Details
+                      </a>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
