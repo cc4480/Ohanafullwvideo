@@ -9,9 +9,9 @@ import propertyImage from "@assets/MLS15.jpg";
 export default function About() {
   const stats = [
     { value: "27+", label: "Years Experience" },
-    { value: "650+", label: "Properties Sold" },
-    { value: "850+", label: "Happy Clients" },
+    { value: "150+", label: "Properties Sold" },
     { value: "100%", label: "Client Satisfaction" },
+    { value: "4.9", label: "Average Rating" },
   ];
 
   const testimonials = [
