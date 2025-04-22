@@ -70,7 +70,7 @@ export default function About() {
       {/* Business Structured Data */}
       <LocalBusinessStructuredData
         name="Ohana Realty"
-        description="Premier real estate agency in Laredo, TX founded by Valentin Cuellar in 2014. Specializing in residential and commercial properties with personalized service and expert local knowledge."
+        description="Premier real estate agency in Laredo, TX founded by Valentin Cuellar in 1998. Specializing in residential and commercial properties with personalized service and expert local knowledge with over 27 years of experience."
         url={websiteUrl}
         logo={`${websiteUrl}/logo.png`}
         streetAddress="5802 McPherson Rd"
@@ -116,7 +116,7 @@ export default function About() {
         questions={[
           {
             question: "When was Ohana Realty founded?",
-            answer: "Ohana Realty was founded by Valentin Cuellar in 2014 after recognizing the need for a more personalized approach to real estate services in Laredo, Texas."
+            answer: "Ohana Realty was founded by Valentin Cuellar in 1998 after recognizing the need for a more personalized approach to real estate services in Laredo, Texas. We have been proudly serving the Laredo community for over 27 years."
           },
           {
             question: "What does 'Ohana' mean in your company name?",
@@ -162,7 +162,7 @@ export default function About() {
             <div>
               <h2 className="text-3xl font-serif font-semibold mb-6">Our Story</h2>
               <p className="text-muted-foreground mb-4">
-                Founded by Valentin Cuellar, Ohana Realty has been serving the Laredo community since 2014. 
+                Founded by Valentin Cuellar, Ohana Realty has been serving the Laredo community since 1998. 
                 The name "Ohana" comes from the Hawaiian term for family, reflecting our belief that real 
                 estate is about helping people find their place in the world.
               </p>
@@ -188,8 +188,8 @@ export default function About() {
 
             <div className="rounded-lg overflow-hidden shadow-lg">
               <img 
-                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3" 
-                alt="Ohana Realty team" 
+                src="@assets/MLS15.jpg" 
+                alt="Ohana Realty property" 
                 className="w-full h-full object-cover"
               />
             </div>
@@ -238,8 +238,8 @@ export default function About() {
               <div className="order-1 lg:order-2 flex justify-center">
                 <div className="w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden border-4 border-primary/20">
                   <img 
-                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3" 
-                    alt="Valentin Cuellar" 
+                    src="@assets/OIP (1).jfif" 
+                    alt="Valentin Cuellar - Broker and Owner" 
                     className="w-full h-full object-cover"
                   />
                 </div>
