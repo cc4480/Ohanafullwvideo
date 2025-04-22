@@ -160,26 +160,44 @@ export default function Header() {
       {/* Mobile menu */}
       <div 
         id="mobileMenu" 
-        className={`bg-background py-4 px-4 md:hidden shadow-lg ${mobileMenuOpen ? 'block' : 'hidden'}`}
+        className={`bg-background/95 backdrop-blur-md py-4 px-4 md:hidden shadow-xl border-t border-border/10 transition-all duration-300 ${
+          mobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+        }`}
       >
         <div className="flex flex-col space-y-4">
-          <Link href="/" className="text-foreground hover:text-primary font-medium py-2">
-            Home
-          </Link>
-          <Link href="/properties" className="text-foreground hover:text-primary font-medium py-2">
-            Properties
-          </Link>
-          <Link href="/#about" className="text-foreground hover:text-primary font-medium py-2">
-            About
-          </Link>
-          <Link href="/#contact" className="text-foreground hover:text-primary font-medium py-2">
-            Contact
-          </Link>
-          <Link href="/#contact">
-            <Button variant="secondary" className="w-full">
-              Contact Valentin
-            </Button>
-          </Link>
+          {[
+            { path: '/', label: 'Home', icon: 'bx-home' },
+            { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
+            { path: '/#about', label: 'About', icon: 'bx-user' },
+            { path: '/#contact', label: 'Contact', icon: 'bx-envelope' }
+          ].map((item, index) => (
+            <Link 
+              key={item.path} 
+              href={item.path} 
+              className={`group flex items-center gap-3 text-foreground hover:text-primary font-medium py-3 px-2 rounded-lg hover:bg-primary/5 transition-all duration-300 ${
+                location === item.path ? 'bg-primary/10 text-primary' : ''
+              }`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <i className={`bx ${item.icon} text-xl ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
+              <span>{item.label}</span>
+              {location === item.path && (
+                <div className="ml-auto w-1.5 h-6 bg-primary rounded-full"></div>
+              )}
+            </Link>
+          ))}
+          
+          <div className="pt-2">
+            <Link href="/#contact">
+              <Button 
+                variant="secondary" 
+                className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2"
+              >
+                <i className='bx bx-envelope-open text-xl'></i>
+                <span>Contact Valentin</span>
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </header>
