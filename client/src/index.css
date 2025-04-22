@@ -27,27 +27,31 @@ html, body {
   50% { opacity: 0.15; }
 }
 
-/* Glowing orange border animation */
+/* Glowing orange border animation - MUCH MORE VISIBLE */
 @keyframes glowingOrangeBorder {
   0%, 100% {
-    box-shadow: 0 0 5px 1px hsl(var(--logo-orange) / 0.4),
-                inset 0 0 5px 1px hsl(var(--logo-orange) / 0.2);
+    box-shadow: 0 0 8px 2px rgba(255, 117, 24, 0.7),
+                inset 0 0 5px 1px rgba(255, 117, 24, 0.4);
+    border-color: rgba(255, 117, 24, 0.8);
   }
   50% {
-    box-shadow: 0 0 10px 2px hsl(var(--logo-orange) / 0.7),
-                inset 0 0 7px 1px hsl(var(--logo-orange) / 0.3);
+    box-shadow: 0 0 15px 4px rgba(255, 117, 24, 0.9),
+                inset 0 0 8px 2px rgba(255, 117, 24, 0.6);
+    border-color: rgba(255, 117, 24, 1);
   }
 }
 
 /* More intense version of the glowing border for hover states */
 @keyframes glowingOrangeBorderIntense {
   0%, 100% {
-    box-shadow: 0 0 5px 1px hsl(var(--logo-orange) / 0.5),
-                inset 0 0 5px 1px hsl(var(--logo-orange) / 0.25);
+    box-shadow: 0 0 10px 3px rgba(255, 117, 24, 0.8),
+                inset 0 0 8px 2px rgba(255, 117, 24, 0.5);
+    border-color: rgba(255, 117, 24, 0.9);
   }
   50% {
-    box-shadow: 0 0 15px 3px hsl(var(--logo-orange) / 0.8),
-                inset 0 0 10px 1px hsl(var(--logo-orange) / 0.4);
+    box-shadow: 0 0 20px 5px rgba(255, 117, 24, 1),
+                inset 0 0 12px 3px rgba(255, 117, 24, 0.7);
+    border-color: rgba(255, 117, 24, 1);
   }
 }
 
@@ -70,28 +74,28 @@ html, body {
   transform: translateZ(0);
 }
 
-/* Glowing orange border utility classes */
+/* Glowing orange border utility classes - USING DIRECT RGB VALUES */
 .orange-glow-border {
-  border: 1px solid hsl(var(--logo-orange) / 0.5);
+  border: 2px solid rgba(255, 117, 24, 0.9);
   border-radius: var(--radius);
   animation: glowingOrangeBorder 4s ease-in-out infinite;
-  will-change: box-shadow;
+  will-change: box-shadow, border-color;
   transform: translateZ(0);
 }
 
 .orange-glow-border-subtle {
-  border: 1px solid hsl(var(--logo-orange) / 0.3);
+  border: 2px solid rgba(255, 117, 24, 0.7);
   border-radius: var(--radius);
   animation: glowingOrangeBorder 8s ease-in-out infinite;
-  will-change: box-shadow;
+  will-change: box-shadow, border-color;
   transform: translateZ(0);
 }
 
 .orange-glow-border-intense {
-  border: 1px solid hsl(var(--logo-orange) / 0.6);
+  border: 2px solid rgba(255, 117, 24, 1);
   border-radius: var(--radius);
   animation: glowingOrangeBorderIntense 3s ease-in-out infinite;
-  will-change: box-shadow;
+  will-change: box-shadow, border-color;
   transform: translateZ(0);
 }
 
