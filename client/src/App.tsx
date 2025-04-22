@@ -12,24 +12,12 @@ import PropertyDetails from "@/pages/PropertyDetails";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import AIAssistant from "@/components/AIAssistant";
-import OhanaAssistantIcon from "@/components/OhanaAssistantIcon";
 
 function App() {
-  // Enhanced scroll to top with smooth behavior and page transition
+  // Scroll to top on route change
   const ScrollToTop = () => {
     useEffect(() => {
-      // Apply smooth scrolling with animation
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-      
-      // Add transition class to body for smoother theme changes
-      document.body.classList.add('theme-transition');
-      
-      return () => {
-        document.body.classList.remove('theme-transition');
-      };
+      window.scrollTo(0, 0);
     }, []);
 
     return null;
@@ -48,9 +36,7 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <div className="animate-fade-in" style={{ animationDuration: '0.5s' }}>
-                        <Home />
-                      </div>
+                      <Home />
                     </>
                   );
                 }}
@@ -60,9 +46,7 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <div className="animate-fade-in" style={{ animationDuration: '0.5s' }}>
-                        <Properties />
-                      </div>
+                      <Properties />
                     </>
                   );
                 }}
@@ -72,9 +56,7 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <div className="animate-fade-in" style={{ animationDuration: '0.5s' }}>
-                        <PropertyDetails id={parseInt(params.id)} />
-                      </div>
+                      <PropertyDetails id={parseInt(params.id)} />
                     </>
                   );
                 }}
@@ -84,9 +66,7 @@ function App() {
                   return (
                     <>
                       <ScrollToTop />
-                      <div className="animate-fade-in" style={{ animationDuration: '0.5s' }}>
-                        <NotFound />
-                      </div>
+                      <NotFound />
                     </>
                   );
                 }}
@@ -94,7 +74,6 @@ function App() {
             </Switch>
             <Footer />
             <AIAssistant />
-            <OhanaAssistantIcon />
           </>
         </TooltipProvider>
       </ThemeProvider>

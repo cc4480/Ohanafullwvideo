@@ -35,35 +35,27 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   }, []);
 
-  // Enhanced function to set theme with smooth transitions
+  // Separate function to set theme that can be called externally
   const setTheme = (newTheme: Theme) => {
-    // Add transition class before theme change for smoother transition
-    document.documentElement.classList.add('theme-transition');
+    setThemeState(newTheme);
     
-    // Small delay to ensure transition class is applied before theme change
-    setTimeout(() => {
-      setThemeState(newTheme);
-      
-      // Update localStorage
-      localStorage.setItem("theme", newTheme);
-      
-      // Update DOM with smoother transition
-      if (newTheme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-      
-      // Remove transition class after theme change is complete
-      setTimeout(() => {
-        document.documentElement.classList.remove('theme-transition');
-      }, 300); // Match this with your CSS transition duration
-    }, 10);
+    // Update localStorage
+    localStorage.setItem("theme", newTheme);
+    
+    // Update DOM
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   };
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
+    
+    // Log for debugging
+    console.log(`Theme toggled to: ${newTheme}`);
   };
 
   // Avoid rendering anything until mounted to prevent hydration issues

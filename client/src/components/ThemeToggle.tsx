@@ -36,37 +36,25 @@ export default function ThemeToggle() {
     return () => observer.disconnect();
   }, []);
 
-  // Enhanced toggle with smooth transition for all page elements
+  // Handle toggle manually by adding/removing dark class
   const handleToggle = () => {
     setIsTransitioning(true);
     const newIsDarkMode = !isDarkMode;
     
-    // Add transition class to entire document before theme change
-    document.documentElement.classList.add('theme-transition');
+    if (newIsDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
     
-    // Brief delay to ensure transition class is applied
+    setIsDarkMode(newIsDarkMode);
+    
+    // Reset the transition state after animation
     setTimeout(() => {
-      // Apply theme change
-      if (newIsDarkMode) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
-      
-      setIsDarkMode(newIsDarkMode);
-      
-      // Remove transition class after change is complete
-      setTimeout(() => {
-        document.documentElement.classList.remove('theme-transition');
-        
-        // Reset the icon transition state after animation
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 300);
-      }, 300); // Match this with your CSS transition duration
-    }, 10);
+      setIsTransitioning(false);
+    }, 400);
   };
 
   return (

@@ -145,11 +145,10 @@ export default function AIAssistant() {
       {/* Chat toggle button - CRITICAL COMPONENT: DO NOT REMOVE */}
       <Button
         onClick={toggleChat}
-        className={`ai-assistant-button fixed bottom-6 right-6 rounded-lg shadow-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/90 transition-all duration-300 z-[9999]
+        className={`fixed bottom-6 right-6 rounded-lg shadow-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/90 transition-all duration-300 z-50
           ${isOpen && !isMinimized ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}
-          border-2 border-primary/30 overflow-hidden
+          border border-primary/20 overflow-hidden
         `}
-        style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999 }}
         aria-label="Chat with Ohana Assistant"
       >
         <div className="flex items-center justify-center w-full h-full">
@@ -165,11 +164,10 @@ export default function AIAssistant() {
       {/* Chat window - CRITICAL COMPONENT: DO NOT REMOVE */}
       <div 
         className={`
-          fixed bottom-6 right-6 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg shadow-2xl flex flex-col overflow-hidden transition-all duration-500 z-[9999] 
-          border-2 border-primary/30 backdrop-blur-sm
-          ${isOpen && !isMinimized ? 'opacity-100 scale-100 h-[500px] animate-scale-in' : 'opacity-0 scale-95 h-0 pointer-events-none'}
+          fixed bottom-6 right-6 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg shadow-2xl flex flex-col overflow-hidden transition-all duration-500 z-50 
+          border border-primary/30 backdrop-blur-sm
+          ${isOpen && !isMinimized ? 'opacity-100 scale-100 h-[500px]' : 'opacity-0 scale-95 h-0 pointer-events-none'}
         `}
-        style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999 }}
       >
         {/* Decorative gradients */}
         <div className="absolute inset-0 overflow-hidden rounded-lg pointer-events-none">
@@ -289,11 +287,10 @@ export default function AIAssistant() {
       {/* Minimized chat - CRITICAL COMPONENT: DO NOT REMOVE */}
       <div 
         className={`
-          fixed bottom-24 right-6 bg-white dark:bg-slate-900 rounded-lg shadow-lg p-3 pr-10 transition-all duration-300 z-[9999] 
-          border-2 border-primary/30 cursor-pointer
+          fixed bottom-24 right-6 bg-white dark:bg-slate-900 rounded-lg shadow-lg p-3 pr-10 transition-all duration-300 z-50 
+          border border-primary/20 cursor-pointer
           ${isMinimized ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}
         `}
-        style={{ position: 'fixed', bottom: '96px', right: '24px', zIndex: 9999 }}
         onClick={() => setIsMinimized(false)}
       >
         <div className="flex items-center space-x-3">
