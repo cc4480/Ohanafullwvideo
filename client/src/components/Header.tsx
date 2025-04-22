@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "@/components/layout/ThemeToggle";
+import ThemeToggle from "./ThemeToggle";
 
 // Load Valentin Cuellar's profile image
 import profileImg from "@assets/thprofile_autox145.jpg";

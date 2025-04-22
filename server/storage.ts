@@ -136,6 +136,8 @@ export async function initializeSampleData() {
       squareFeet: 2800,
       description: "Beautiful home in prime location. This spacious property features hardwood floors, updated kitchen with granite countertops, and a large backyard perfect for entertaining. The master suite includes a walk-in closet and spa-like bathroom. Located in a quiet neighborhood close to schools, parks, and shopping centers.",
       type: "RESIDENTIAL",
+      status: "ACTIVE",
+      yearBuilt: 2015,
       features: ["Hardwood floors", "Granite countertops", "Stainless steel appliances", "Attached garage", "Central AC", "Fenced yard"],
       images: [
         "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
@@ -144,7 +146,8 @@ export async function initializeSampleData() {
         "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
       ],
       lat: 27.523389,
-      lng: -99.487146
+      lng: -99.487146,
+      neighborhood: 1
     },
     {
       address: "1318 & 1314 Iturbide St",
@@ -155,6 +158,8 @@ export async function initializeSampleData() {
       squareFeet: 5400,
       description: "Prime commercial opportunity in downtown Laredo. This property offers excellent visibility and high foot traffic, making it ideal for retail or office space. The building features large display windows, updated electrical, and plenty of parking. Great investment potential with steady appreciation in this rapidly developing area.",
       type: "COMMERCIAL",
+      status: "ACTIVE",
+      yearBuilt: 1995,
       features: ["High visibility location", "Corner lot", "Renovated interior", "Ample parking", "Separate storage space", "Security system"],
       images: [
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
@@ -162,7 +167,8 @@ export async function initializeSampleData() {
         "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
       ],
       lat: 27.507068,
-      lng: -99.507283
+      lng: -99.507283,
+      neighborhood: 2
     },
     {
       address: "245 Brumoso Ct",
@@ -175,6 +181,8 @@ export async function initializeSampleData() {
       squareFeet: 3200,
       description: "Luxurious family home in exclusive gated community. This elegant residence features high ceilings, custom finishes, and an open floor plan perfect for entertaining. The gourmet kitchen includes premium appliances and a large island. Master suite with spa bathroom and walk-in closets. Beautiful landscaped yard with covered patio and built-in BBQ area.",
       type: "RESIDENTIAL",
+      status: "ACTIVE",
+      yearBuilt: 2018,
       features: ["Gated community", "Smart home system", "Custom cabinetry", "Quartz countertops", "Walk-in closets", "Energy-efficient appliances", "Covered patio"],
       images: [
         "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
@@ -182,7 +190,8 @@ export async function initializeSampleData() {
         "https://images.unsplash.com/photo-1600047509358-9dc75507daeb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
       ],
       lat: 27.542321,
-      lng: -99.480752
+      lng: -99.480752,
+      neighborhood: 1
     }
   ];
 
@@ -192,19 +201,25 @@ export async function initializeSampleData() {
       name: "North Laredo",
       description: "A growing residential area with plenty of amenities including shopping centers, parks, and top-rated schools. North Laredo offers a suburban feel while still being close to all city conveniences.",
       image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      features: ["Family-friendly", "Top schools", "Shopping centers", "Parks and recreation", "Modern developments"]
+      features: ["Family-friendly", "Top schools", "Shopping centers", "Parks and recreation", "Modern developments"],
+      lat: 27.5419,
+      lng: -99.4815
     },
     {
       name: "Downtown Laredo",
       description: "Historic downtown area with rich cultural heritage, government offices, and emerging businesses. The area is experiencing revitalization with new restaurants, shops, and entertainment venues.",
       image: "https://images.unsplash.com/photo-1581280525830-33b94edc8707?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      features: ["Historic architecture", "Cultural attractions", "Business district", "Rio Grande views", "Emerging nightlife"]
+      features: ["Historic architecture", "Cultural attractions", "Business district", "Rio Grande views", "Emerging nightlife"],
+      lat: 27.507,
+      lng: -99.5075
     },
     {
       name: "Del Mar",
       description: "Established neighborhood known for its beautiful homes, tree-lined streets, and excellent location. Del Mar offers a mix of older character homes and newer constructions, with easy access to schools and shopping.",
       image: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      features: ["Mature trees", "Character homes", "Strong community", "Convenient location", "Well-maintained properties"]
+      features: ["Mature trees", "Character homes", "Strong community", "Convenient location", "Well-maintained properties"],
+      lat: 27.5315,
+      lng: -99.4765
     }
   ];
 
