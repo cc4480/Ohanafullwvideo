@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global fixed background settings */
+/* Global fixed background settings with logo as background */
 html, body {
   background-image: url('/assets/background.jpg'); /* Path to your background image */
   background-size: cover !important;
@@ -13,6 +13,23 @@ html, body {
   min-height: 100vh;
   height: 100%;
   position: relative; /* Ensure position context for fixed elements */
+}
+
+/* Logo background for the entire site */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/assets/logo.jfif');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 70vw auto; /* Size relative to viewport */
+  opacity: 0.8;
+  z-index: 1; /* Lower z-index so content appears on top */
+  pointer-events: none; /* Allows clicking through the logo */
 }
 
 /* Remove any other background settings that might be interfering */
