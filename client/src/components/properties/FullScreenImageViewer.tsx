@@ -3,8 +3,8 @@ import {
   Dialog, 
   DialogContent,
   DialogTitle
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from "../../components/ui/dialog";
+import { Button } from "../../components/ui/button";
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface FullScreenImageViewerProps {
@@ -31,6 +31,14 @@ export default function FullScreenImageViewer({
     }
   }, [initialImageIndex, isOpen]);
 
+  const navigateNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  }, [images.length]);
+
+  const navigatePrevious = useCallback(() => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  }, [images.length]);
+  
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!isOpen) return;
@@ -42,7 +50,7 @@ export default function FullScreenImageViewer({
     } else if (e.key === 'Escape') {
       onClose();
     }
-  }, [isOpen, currentIndex, images.length]);
+  }, [isOpen, onClose, navigatePrevious, navigateNext]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -50,14 +58,6 @@ export default function FullScreenImageViewer({
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleKeyDown]);
-
-  const navigateNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-
-  const navigatePrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
 
   // Enhanced full screen mode with proper controls and navigation
   return (
