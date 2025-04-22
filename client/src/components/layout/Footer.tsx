@@ -122,10 +122,8 @@ export default function Footer() {
         <div className="border-t border-white/10 pt-6 mt-6">
           <div className="flex flex-col md:flex-row justify-between items-center text-white/70">
             <p className="text-sm">&copy; {new Date().getFullYear()} Ohana Realty. All rights reserved.</p>
-            <p className="text-sm mt-2 md:mt-0 flex items-center">
-              Website designed and developed with 
-              <span className="text-secondary mx-1 animate-pulse">❤️</span>
-              for Valentin Cuellar
+            <p className="text-sm mt-2 md:mt-0">
+              Laredo's Premier Real Estate Agency
             </p>
           </div>
         </div>
