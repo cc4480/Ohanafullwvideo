@@ -207,50 +207,46 @@ export default function OhanaAIChat() {
   };
 
   return (
-    <div id="ohana-ai-assistant" style={{ position: 'fixed', zIndex: 99999 }}>
-      {/* Mobile-optimized float button with hardware acceleration */}
-      <div 
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          zIndex: 99999,
-          display: isOpen ? 'none' : 'block',
-          transform: 'translateZ(0)', // Hardware acceleration
-          backfaceVisibility: 'hidden'
-        }}
-      >
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="rounded-lg shadow-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/90 active:scale-95 transition-transform transform-gpu animate-[pulse-slow_2s_infinite] mobile-optimized"
-          style={{ 
-            border: '2px solid hsl(215, 80%, 50%)',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent'
+    <div style={{ position: 'static' }}>
+      {/* Static float button container */}
+      {!isOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 99999,
+            transform: 'translateZ(0)',
+            pointerEvents: 'auto'
           }}
         >
-          <img 
-            src={logoImg} 
-            alt="Ohana Realty" 
-            className="w-full h-full object-contain p-1 transform-gpu hover:scale-105 transition-transform" 
-            style={{
-              transform: 'translateZ(0)',
-              backfaceVisibility: 'hidden'
+          <Button
+            onClick={() => setIsOpen(true)}
+            className="rounded-lg shadow-lg h-16 w-16 p-0 flex items-center justify-center bg-white hover:bg-white/90 transition-transform"
+            style={{ 
+              border: '2px solid hsl(215, 80%, 50%)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+              touchAction: 'manipulation'
             }}
-          />
-        </Button>
-      </div>
+          >
+            <img 
+              src={logoImg} 
+              alt="Ohana Realty" 
+              className="w-full h-full object-contain p-1" 
+            />
+          </Button>
+        </div>
+      )}
       
-      {/* Mobile-optimized chat dialog */}
+      {/* Chat dialog */}
       {isOpen && (
         <div 
           style={{
             position: 'fixed',
             bottom: '24px',
             right: '24px',
-            width: 'min(380px, calc(100vw - 48px))', // Responsive width
-            height: 'min(500px, calc(100vh - 100px))', // Responsive height
+            width: '380px',
+            height: '500px',
             backgroundColor: 'white',
             borderRadius: '12px',
             boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
@@ -258,12 +254,9 @@ export default function OhanaAIChat() {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            zIndex: 99999,
-            transform: 'translateZ(0)', // Hardware acceleration
-            backfaceVisibility: 'hidden',
-            touchAction: 'manipulation'
+            zIndex: 99999
           }}
-          className="dark:bg-slate-900 animate-fade-in mobile-optimized"
+          className="dark:bg-slate-900"
         >
           {/* Chat header */}
           <div 

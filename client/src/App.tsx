@@ -11,8 +11,7 @@ import Properties from "@/pages/Properties";
 import PropertyDetails from "@/pages/PropertyDetails";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import AIAssistant from "@/components/AIAssistant";
-import OhanaAssistantIcon from "@/components/assistant/OhanaAssistantIcon";
+import SimpleChat from "@/components/assistant/SimpleChat";
 
 function App() {
   // Scroll to top on route change
@@ -74,9 +73,7 @@ function App() {
               </Route>
             </Switch>
             <Footer />
-            <AIAssistant />
-            {/* Add always visible backup chat icon for mobile - CRITICAL COMPONENT */}
-            <OhanaAssistantIcon />
+            <SimpleChat />
           </>
         </TooltipProvider>
       </ThemeProvider>
