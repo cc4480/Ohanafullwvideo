@@ -145,10 +145,9 @@ export default function PropertyMap() {
                     >
                       <i className='bx bx-map text-primary mr-1'></i> Map
                     </button>
-                    <Link href={`/properties/${property.id}`}>
-                      <a className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90 transition-colors text-sm">
-                        Details
-                      </a>
+                    <Link href={`/properties/${property.id}`}
+                      className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90 transition-colors text-sm">
+                      Details
                     </Link>
                   </div>
                 </div>

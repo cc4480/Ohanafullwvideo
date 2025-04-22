@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "@/components/layout/ThemeToggle";
 
 // Import logo from assets
 import logoImg from "@assets/OIP.jfif";
