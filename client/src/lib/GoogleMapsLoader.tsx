@@ -1,33 +1,69 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
+import { Loader } from "@googlemaps/js-api-loader";
 
-/**
- * A simplified component that serves as a replacement for the Google Maps loader
- * Instead of embedding maps with the Google Maps API, we use direct links to Google Maps
- * which doesn't require an API key and is more lightweight
- */
+// Create a context to provide Google Maps resources across components
+type GoogleMapsContextType = {
+  isLoaded: boolean;
+  googleMaps: typeof google.maps | null;
+  error: Error | null;
+};
+
+const GoogleMapsContext = createContext<GoogleMapsContextType>({
+  isLoaded: false,
+  googleMaps: null,
+  error: null
+});
+
+// Hook to use the Google Maps context
+export const useGoogleMaps = () => useContext(GoogleMapsContext);
+
 interface GoogleMapsLoaderProps {
   children: React.ReactNode;
+  apiKey?: string;
 }
 
-export default function GoogleMapsLoader({ children }: GoogleMapsLoaderProps) {
-  const [loaded, setLoaded] = useState<boolean>(true);
-  
+export default function GoogleMapsLoader({ children, apiKey }: GoogleMapsLoaderProps) {
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [googleMaps, setGoogleMaps] = useState<typeof google.maps | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+
   useEffect(() => {
-    // Since we're using direct links to Google Maps instead of the API,
-    // we just set loaded to true immediately
-    setLoaded(true);
-  }, []);
+    if (!apiKey) {
+      // If no API key is provided, we'll just use direct links to Google Maps
+      // This allows the app to function without the actual maps API
+      setIsLoaded(true);
+      return;
+    }
+
+    const loader = new Loader({
+      apiKey,
+      version: "weekly",
+      libraries: ["places"]
+    });
+
+    loader.load()
+      .then((google) => {
+        setGoogleMaps(google.maps);
+        setIsLoaded(true);
+      })
+      .catch((err) => {
+        console.error("Error loading Google Maps API:", err);
+        setError(err);
+        // Still set loaded to true so the app can fallback to static maps
+        setIsLoaded(true);
+      });
+  }, [apiKey]);
   
   return (
-    <>
-      {loaded ? children : (
+    <GoogleMapsContext.Provider value={{ isLoaded, googleMaps, error }}>
+      {!isLoaded ? (
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <i className='bx bx-map text-5xl text-neutral-400'></i>
             <p className="mt-2 text-neutral-600">Loading map...</p>
           </div>
         </div>
-      )}
-    </>
+      ) : children}
+    </GoogleMapsContext.Provider>
   );
 }

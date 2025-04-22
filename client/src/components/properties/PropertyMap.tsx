@@ -3,8 +3,9 @@ import { Property } from "@shared/schema";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Helmet } from 'react-helmet';
-import { MapPin, ExternalLink } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import PropertiesMapOverview from "@/components/maps/PropertiesMapOverview";
 
 export default function PropertyMap() {
   const [isDark, setIsDark] = useState(false);
@@ -122,48 +123,23 @@ export default function PropertyMap() {
         
         {/* Interactive map area */}
         <div className={`mb-12 p-4 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
-          <div className="flex flex-col md:flex-row items-start gap-6">
-            <div className="w-full md:w-2/3 h-[400px] bg-slate-200 rounded-lg overflow-hidden relative">
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                <i className='bx bxs-map text-6xl text-primary mb-4'></i>
-                <h3 className="text-xl font-bold mb-2">Interactive Property Map</h3>
-                <p className="mb-4 text-slate-600">View our properties on an interactive map of Laredo.</p>
-                <p className="text-sm text-slate-500 mb-6">Select a property below to view its exact location.</p>
+          {isLoading ? (
+            <div className="h-[500px] bg-slate-200 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+              <div className="text-center">
+                <i className='bx bx-map text-5xl text-primary mb-4'></i>
+                <p className="text-lg font-medium">Loading properties map...</p>
               </div>
             </div>
-            
-            <div className="w-full md:w-1/3 overflow-auto max-h-[400px] pr-2">
-              <h3 className="text-lg font-bold mb-4">Select a Property</h3>
-              
-              {isLoading ? (
-                <div className="animate-pulse space-y-3">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-16 bg-slate-300 rounded"></div>
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {properties?.map(property => (
-                    <div 
-                      key={property.id}
-                      className={`p-3 rounded-lg cursor-pointer transition-all ${isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-white hover:bg-slate-50'} shadow-sm hover:shadow`}
-                      onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property) : null}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-bold">{property.address}</h4>
-                          <p className="text-xs text-slate-500">{property.city}, {property.state}</p>
-                        </div>
-                        <div className="text-xs px-2 py-1 rounded bg-primary text-white">
-                          View on Map
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+          ) : properties && properties.length > 0 ? (
+            <PropertiesMapOverview properties={properties} height="500px" />
+          ) : (
+            <div className="h-[500px] bg-slate-200 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+              <div className="text-center">
+                <i className='bx bx-map-alt text-5xl text-primary mb-4'></i>
+                <p className="text-lg font-medium">No properties available to display on map</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
         
         {/* Property cards listing */}
