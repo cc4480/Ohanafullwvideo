@@ -51,9 +51,9 @@ export default function Hero() {
   }, [currentImage]);
   
   return (
-    <section className="relative bg-neutral-900 min-h-screen flex items-center mt-[-5.5rem]">
-      {/* Background image carousel and overlays */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+    <section className="relative bg-neutral-900 min-h-[100svh] flex items-center mt-[-5.5rem]">
+      {/* Background image carousel and overlays - Mobile optimized */}
+      <div className="absolute inset-0 z-0 overflow-hidden transform-gpu">
         {/* Enhanced gradient overlay with multiple layers - fully transparent at top for seamless header blend */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/40 z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10 mix-blend-overlay"></div>
@@ -133,82 +133,109 @@ export default function Hero() {
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
-      {/* Content */}
-      <div className="container mx-auto px-4 relative z-20 pt-32 md:pt-36 pb-16">
-        <div className="max-w-3xl mt-12">
+      {/* Content - Mobile optimized */}
+      <div className="container mx-auto px-4 relative z-20 pt-24 md:pt-36 pb-16">
+        <div className="max-w-3xl mt-8 md:mt-12">
           <div className="mb-4 opacity-90">
-            <span className="inline-block px-4 py-1 bg-secondary/90 text-white rounded-full text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm">
+            <span className="inline-block px-3 py-1 md:px-4 md:py-1 bg-secondary/90 text-white rounded-full text-xs md:text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm transform-gpu">
               OHANA REALTY - ESTABLISHED IN LAREDO
             </span>
           </div>
           
           <h1 
-            className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 animate-slide-up text-shadow"
-            style={{ willChange: 'transform, opacity' }}
+            className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 md:mb-6 animate-slide-up text-shadow"
+            style={{ 
+              willChange: 'transform, opacity',
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden'
+            }}
           >
             Find Your Dream Property in Laredo with <span className="text-secondary">Ohana Realty</span>
           </h1>
           
           <p 
-            className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl animate-slide-up" 
-            style={{ animationDelay: "0.2s", willChange: 'transform, opacity' }}
+            className="text-white/90 text-base sm:text-lg md:text-xl mb-6 md:mb-8 max-w-2xl animate-slide-up" 
+            style={{ 
+              animationDelay: "0.2s", 
+              willChange: 'transform, opacity', 
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden' 
+            }}
           >
             Expert guidance from Valentin Cuellar to make your real estate journey seamless and successful.
           </p>
           
           <div 
-            className="flex flex-col sm:flex-row gap-4 animate-slide-up" 
-            style={{ animationDelay: "0.4s", willChange: 'transform, opacity' }}
+            className="flex flex-col sm:flex-row gap-3 md:gap-4 animate-slide-up" 
+            style={{ 
+              animationDelay: "0.4s", 
+              willChange: 'transform, opacity',
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden' 
+            }}
           >
-            <Link href="/properties">
+            <Link href="/properties" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
-                className="w-full sm:w-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu"
+                className="w-full h-14 md:h-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu"
               >
                 <span>Explore Listings</span>
                 <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1'></i>
               </Button>
             </Link>
-            <Link href="/#contact">
+            <Link href="/#contact" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white w-full sm:w-auto text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu"
+                className="w-full h-14 md:h-auto border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu"
               >
-                Contact Valentin Cuellar
+                Contact Valentin
               </Button>
             </Link>
           </div>
           
-          {/* Stats or badges */}
+          {/* Stats or badges - Mobile responsive */}
           <div 
-            className="mt-10 flex gap-6 animate-slide-up" 
-            style={{ animationDelay: "0.6s", willChange: 'transform, opacity' }}
+            className="mt-8 md:mt-10 grid grid-cols-3 gap-2 md:gap-6 animate-slide-up" 
+            style={{ 
+              animationDelay: "0.6s", 
+              willChange: 'transform, opacity',
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden' 
+            }}
           >
-            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-2xl">27+</p>
-              <p className="text-white text-sm">Years Experience</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center">
+              <p className="text-secondary font-bold text-xl md:text-2xl">27+</p>
+              <p className="text-white text-xs md:text-sm">Years Experience</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-2xl">150+</p>
-              <p className="text-white text-sm">Properties Sold</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center">
+              <p className="text-secondary font-bold text-xl md:text-2xl">150+</p>
+              <p className="text-white text-xs md:text-sm">Properties Sold</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-2xl">100%</p>
-              <p className="text-white text-sm">Client Satisfaction</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center">
+              <p className="text-secondary font-bold text-xl md:text-2xl">100%</p>
+              <p className="text-white text-xs md:text-sm">Client Satisfaction</p>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Scroll indicator with hardware acceleration */}
+      {/* Mobile-optimized scroll indicator with hardware acceleration */}
       <div 
-        className="absolute bottom-8 left-0 right-0 flex justify-center z-20 animate-bounce"
-        style={{ willChange: 'transform', transform: 'translateZ(0)' }}
+        className="absolute bottom-6 md:bottom-8 left-0 right-0 flex justify-center z-20 animate-bounce"
+        style={{ 
+          willChange: 'transform', 
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden'
+        }}
       >
         <a 
           href="#featured-properties" 
-          className="text-white bg-white/10 backdrop-blur-sm p-2 rounded-full hover:bg-white/20 transition-all duration-300 shadow-lg transform-gpu"
+          className="text-white bg-white/15 backdrop-blur-sm p-2.5 md:p-3 rounded-full hover:bg-white/25 transition-all duration-300 shadow-lg active:scale-95 transform-gpu"
+          style={{
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent'
+          }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
