@@ -16,7 +16,7 @@ export function useProperty(id: number) {
 
 export function usePropertiesByType(type: string) {
   return useQuery<Property[]>({
-    queryKey: [`/api/properties/type/${type}`],
+    queryKey: [`/api/propertiesByType/${type}`],
     enabled: !!type,
   });
 }
