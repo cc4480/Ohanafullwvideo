@@ -21,6 +21,7 @@ import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import PerformanceOptimizer from "@/components/common/PerformanceOptimizer";
 import SiteMapGenerator from "@/components/SiteMapGenerator";
 import ScrollToTop from "@/components/ScrollToTop"; // Import our enhanced ScrollToTop component
+import ScrollToTopButton from "@/components/ScrollToTopButton"; // Import the floating scroll-to-top button
 
 function App() {
   // Main App component with fixed background parallax effects and performance optimizations
@@ -176,6 +177,9 @@ function App() {
               
               {/* Global footer */}
               <Footer />
+              
+              {/* Floating scroll to top button - always accessible on mobile */}
+              <ScrollToTopButton />
             </FavoritesProvider>
           </ErrorBoundary>
         </TooltipProvider>

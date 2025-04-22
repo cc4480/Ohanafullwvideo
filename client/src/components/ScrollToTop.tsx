@@ -13,50 +13,46 @@ export default function ScrollToTop() {
   const [location] = useLocation();
   
   useEffect(() => {
-    // Ensure the window exists (for SSR compatibility)
-    if (typeof window !== 'undefined') {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
-      // Function to reset scroll position with multiple approaches
-      const resetScrollPosition = () => {
-        // Method 1: Basic scroll reset - most compatible
+    const resetScrollPosition = () => {
+      // Try multiple scrolling methods for maximum compatibility
+      if (window.scrollTo) {
+        // Standard method
         window.scrollTo(0, 0);
-        
-        // Method 2: Force layout recalculation - helps with stubborn browsers
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
-        
-        // Method 3: For iOS Safari specifically
-        if (isMobile) {
-          document.body.style.minHeight = '100vh';
-          document.body.style.height = 'auto';
-          
-          // Force redraw
-          document.body.style.display = 'none';
-          // This triggers a reflow
-          void document.body.offsetHeight;
-          document.body.style.display = '';
-          
-          // Ensure we're at the top
-          window.scrollTo(0, 0);
-        }
-      };
-      
-      // Immediate reset
-      resetScrollPosition();
-      
-      // Secondary reset with slight delay (helps with certain mobile browsers)
-      setTimeout(resetScrollPosition, 10);
-      
-      // Final cleanup for iOS Safari
-      if (isMobile) {
-        setTimeout(() => {
-          document.body.style.minHeight = '';
-          document.body.style.height = '';
-        }, 50);
       }
-    }
-  }, [location]); // Only run when the location changes
+      
+      // Ensure scrolling works on Safari
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      
+      // Additional mobile-specific handling
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        // Special handling for iOS Safari scrolling issues
+        document.body.style.overflow = 'hidden';
+        
+        // Force layout recalculation
+        void document.body.offsetHeight;
+        
+        // After a short delay, restore normal scrolling
+        setTimeout(() => {
+          document.body.style.overflow = '';
+          
+          // Scroll again to ensure position is reset
+          window.scrollTo(0, 0);
+          document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
+        }, 10);
+      }
+    };
+    
+    // Call once right away
+    resetScrollPosition();
+    
+    // And once more after a slight delay for reliable results
+    const timeoutId = setTimeout(resetScrollPosition, 50);
+    
+    return () => clearTimeout(timeoutId);
+  }, [location]); // Re-run when location changes
   
-  return null; // This component doesn't render anything
+  return null; // This is a behavior component, no UI needed
 }
