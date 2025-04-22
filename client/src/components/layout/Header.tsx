@@ -119,20 +119,20 @@ export default function Header() {
   };
   
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`} style={{ maxHeight: '60px' }}>
-      <div className="container mx-auto px-3 sm:px-4 py-1 sm:py-2 flex items-center justify-between">
-        {/* Logo with reduced size on mobile */}
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`} style={{ maxHeight: '70px' }}>
+      <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-2 flex items-center justify-between">
+        {/* Logo with improved styling for both mobile and desktop */}
         <Link href="/" className="flex items-center relative group animate-fade-in">
-          <div className={`p-1 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"}`}>
-            {/* Simple direct image approach for better cross-device compatibility */}
+          <div className={`p-1 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"} transform-gpu transition-all duration-300 hover:shadow-md`}>
+            {/* Enhanced image with better mobile optimization */}
             {isMobile ? (
               <img 
                 src={logoImg}
                 alt="Ohana Realty Logo"
                 style={{
-                  width: '30px',
+                  width: '60px',
                   height: 'auto',
-                  maxHeight: '20px',
+                  maxHeight: '30px',
                   objectFit: 'contain',
                   display: 'block'
                 }}
@@ -152,8 +152,8 @@ export default function Header() {
               />
             )}
           </div>
-          {/* Subtle decoration */}
-          <div className="absolute -bottom-2 -right-2 h-4 w-4 bg-secondary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          {/* Subtle decoration - now visible on mobile too */}
+          <div className="absolute -bottom-2 -right-2 h-3 w-3 sm:h-4 sm:w-4 bg-secondary rounded-full opacity-40 sm:opacity-0 group-hover:opacity-100 transition-all duration-300 animate-pulse"></div>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
@@ -188,38 +188,47 @@ export default function Header() {
             </Button>
           </Link>
           
-          {/* Mobile contact button - ALWAYS VISIBLE ON MOBILE */}
+          {/* Enhanced mobile contact button with pulse effect */}
           <Link href="/contact" className="md:hidden">
             <Button 
               variant="secondary" 
               size="icon"
-              className="h-8 w-8 rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95"
+              className="h-10 w-10 rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95"
               style={{
                 transform: 'translateZ(0)',
                 backfaceVisibility: 'hidden',
                 willChange: 'transform'
               }}
             >
-              <i className='bx bx-envelope text-sm'></i>
+              <i className='bx bx-envelope text-lg'></i>
             </Button>
           </Link>
           
+          {/* Enhanced mobile menu button with animated effects */}
           <button 
-            className={`md:hidden focus:outline-none ${scrolled || location !== "/" ? 'text-foreground' : 'text-white'}`}
+            className={`md:hidden focus:outline-none h-10 w-10 flex items-center justify-center rounded-full ${
+              scrolled || location !== "/" 
+                ? 'text-foreground bg-background/80 backdrop-blur-sm' 
+                : 'text-white bg-white/10 backdrop-blur-sm'
+            } transition-all duration-300`}
             id="menuButton"
             onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
           >
-            <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} text-2xl`}></i>
+            <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} text-xl transform-gpu transition-transform duration-300 ${mobileMenuOpen ? 'rotate-90' : 'rotate-0'}`}></i>
           </button>
         </div>
       </div>
       
-      {/* Mobile menu */}
+      {/* Enhanced mobile menu with smoother transitions */}
       <div 
         id="mobileMenu" 
-        className={`bg-background/95 backdrop-blur-md py-4 px-4 md:hidden shadow-xl border-t border-border/10 transition-all duration-300 ${
-          mobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+        className={`bg-background/95 backdrop-blur-md py-4 px-4 md:hidden shadow-xl border-t border-border/10 transition-all duration-500 ${
+          mobileMenuOpen 
+            ? 'opacity-100 translate-y-0 max-h-[calc(100vh-70px)] overflow-auto' 
+            : 'opacity-0 -translate-y-4 pointer-events-none max-h-0 overflow-hidden'
         }`}
+        style={{ transformOrigin: 'top center' }}
       >
         <div className="flex flex-col space-y-4">
           {[
@@ -233,24 +242,27 @@ export default function Header() {
             <Link 
               key={item.path} 
               href={item.path} 
-              className={`group flex items-center gap-3 text-foreground hover:text-primary font-medium py-3 px-2 rounded-lg hover:bg-primary/5 transition-all duration-300 ${
+              className={`group flex items-center gap-3 text-foreground hover:text-primary font-medium py-4 px-3 rounded-lg hover:bg-primary/5 transition-all duration-300 ${
                 location === item.path ? 'bg-primary/10 text-primary' : ''
-              }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
+              } transform-gpu ${mobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}
+              style={{ 
+                transitionDelay: `${index * 50}ms`,
+                animationDelay: `${index * 0.1}s` 
+              }}
             >
-              <i className={`bx ${item.icon} text-xl ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
-              <span>{item.label}</span>
+              <i className={`bx ${item.icon} text-2xl ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
+              <span className="text-base">{item.label}</span>
               {location === item.path && (
-                <div className="ml-auto w-1.5 h-6 bg-primary rounded-full"></div>
+                <div className="ml-auto w-1.5 h-8 bg-primary rounded-full"></div>
               )}
             </Link>
           ))}
           
-          <div className="pt-2">
+          <div className="pt-4 transform-gpu transition-all duration-300" style={{ transitionDelay: '300ms' }}>
             <Link href="/contact">
               <Button 
                 variant="secondary" 
-                className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2"
+                className="w-full h-12 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2 text-base"
               >
                 <i className='bx bx-envelope-open text-xl'></i>
                 <span>Contact Valentin</span>

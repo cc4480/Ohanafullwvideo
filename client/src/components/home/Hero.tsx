@@ -337,24 +337,24 @@ export default function Hero() {
           </div>
           
           <h1 
-            className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 animate-slide-up text-shadow"
+            className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 sm:mb-6 animate-slide-up text-shadow"
             style={{ willChange: 'transform, opacity' }}
           >
-            Find Your Dream Property in Laredo with <span className="text-secondary">Ohana Realty</span>
+            Find Your Dream Property in Laredo with <span className="text-secondary block sm:inline">Ohana Realty</span>
           </h1>
           
           <p 
-            className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl animate-slide-up" 
+            className="text-white/90 text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl animate-slide-up" 
             style={{ animationDelay: "0.2s", willChange: 'transform, opacity' }}
           >
             Expert guidance from Valentin Cuellar to make your real estate journey seamless and successful.
           </p>
           
           <div 
-            className="flex flex-col sm:flex-row gap-4 animate-slide-up" 
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-slide-up w-full sm:w-auto" 
             style={{ animationDelay: "0.4s", willChange: 'transform, opacity' }}
           >
-            <Link href="/properties">
+            <Link href="/properties" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
                 className="w-full sm:w-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu"
@@ -364,33 +364,34 @@ export default function Hero() {
                 <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1'></i>
               </Button>
             </Link>
-            <Link href="/contact">
+            <Link href="/contact" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
                 variant="outline" 
                 className="border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white w-full sm:w-auto text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu"
                 onClick={() => window.scrollTo(0, 0)}
               >
-                Contact Valentin Cuellar
+                <span className="hidden sm:inline">Contact Valentin Cuellar</span>
+                <span className="sm:hidden">Contact Us</span>
               </Button>
             </Link>
           </div>
           
           {/* Stats or badges - improved for mobile */}
           <div 
-            className="mt-8 md:mt-10 flex flex-wrap gap-3 md:gap-6 animate-slide-up" 
+            className="mt-6 sm:mt-8 md:mt-10 flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3 md:gap-6 animate-slide-up" 
             style={{ animationDelay: "0.6s", willChange: 'transform, opacity' }}
           >
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-xl md:text-2xl">27+</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 min-w-[100px] text-center sm:text-left">
+              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">27+</p>
               <p className="text-white text-xs md:text-sm">Years Experience</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-xl md:text-2xl">150+</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 min-w-[100px] text-center sm:text-left">
+              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">150+</p>
               <p className="text-white text-xs md:text-sm">Properties Sold</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-xl md:text-2xl">100%</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 min-w-[100px] text-center sm:text-left">
+              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">100%</p>
               <p className="text-white text-xs md:text-sm">Client Satisfaction</p>
             </div>
           </div>
