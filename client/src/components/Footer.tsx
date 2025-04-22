@@ -3,18 +3,18 @@ import logo from "@assets/OIP.jfif";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-primary/95 to-primary/90 text-primary-foreground pt-16 pb-8 relative">
+    <footer className="bg-gradient-to-b from-primary/95 to-primary/90 text-primary-foreground pt-12 sm:pt-16 pb-8 relative">
       {/* Decorative elements */}
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-secondary/80 to-transparent"></div>
       <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-black/10 to-transparent"></div>
       <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none"></div>
       
-      {/* Decorative shapes */}
-      <div className="absolute top-12 right-12 w-48 h-48 rounded-full bg-secondary/5 blur-3xl"></div>
-      <div className="absolute bottom-24 left-12 w-64 h-64 rounded-full bg-accent/5 blur-3xl"></div>
+      {/* Decorative shapes - adjusted for mobile */}
+      <div className="absolute top-12 right-4 sm:right-12 w-32 sm:w-48 h-32 sm:h-48 rounded-full bg-secondary/5 blur-3xl"></div>
+      <div className="absolute bottom-24 left-4 sm:left-12 w-40 sm:w-64 h-40 sm:h-64 rounded-full bg-accent/5 blur-3xl"></div>
       
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Company Info */}
           <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
             <div className="flex items-center gap-2 mb-6">
@@ -102,34 +102,44 @@ export default function Footer() {
                 <a href="mailto:info@ohanarealty.com" className="hover:text-white text-white/90 transition-colors duration-300">info@ohanarealty.com</a>
               </li>
             </ul>
-            <div className="flex space-x-3 mt-4">
+            <div className="flex space-x-4 mt-4">
               {[
-                { icon: 'bxl-facebook', url: '#' },
-                { icon: 'bxl-instagram', url: '#' },
-                { icon: 'bxl-linkedin', url: '#' },
-                { icon: 'bxl-twitter', url: '#' }
+                { icon: 'bxl-facebook', url: '#', label: 'Facebook' },
+                { icon: 'bxl-instagram', url: '#', label: 'Instagram' },
+                { icon: 'bxl-linkedin', url: '#', label: 'LinkedIn' },
+                { icon: 'bxl-twitter', url: '#', label: 'Twitter' }
               ].map((item, index) => (
                 <a 
                   key={item.icon}
                   href={item.url} 
-                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
+                  aria-label={`Visit our ${item.label} page`}
+                  className="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 flex items-center justify-center text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
+                  style={{ 
+                    WebkitTapHighlightColor: 'transparent', 
+                    touchAction: 'manipulation'
+                  }}
                 >
-                  <i className={`bx ${item.icon} text-xl`}></i>
+                  <i className={`bx ${item.icon} text-2xl sm:text-xl`}></i>
                 </a>
               ))}
             </div>
           </div>
         </div>
         
-        {/* Copyright */}
+        {/* Enhanced Copyright with better mobile spacing */}
         <div className="border-t border-white/10 pt-6 mt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center text-white/70">
-            <p className="text-sm">&copy; {new Date().getFullYear()} Ohana Realty. All rights reserved.</p>
-            <p className="text-sm mt-2 md:mt-0 flex items-center">
-              Website designed and developed with 
-              <span className="text-secondary mx-1 animate-pulse">❤️</span>
-              for Valentin Cuellar
+          <div className="flex flex-col md:flex-row justify-between items-center text-white/70 space-y-3 md:space-y-0">
+            <p className="text-sm text-center md:text-left">&copy; {new Date().getFullYear()} Ohana Realty. All rights reserved.</p>
+            <p className="text-sm flex items-center justify-center md:justify-start flex-wrap">
+              <span className="flex items-center">
+                Website designed and developed with 
+                <span className="text-secondary mx-1 animate-pulse">❤️</span>
+              </span>
+              <span className="ml-0 md:ml-1">for Valentin Cuellar</span>
             </p>
+          </div>
+          <div className="text-center text-white/40 text-xs mt-4 pt-2 pb-safe">
+            <p>Safe Harbor Statement: All information deemed reliable but not guaranteed.</p>
           </div>
         </div>
       </div>
