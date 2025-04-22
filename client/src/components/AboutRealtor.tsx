@@ -64,7 +64,7 @@ export default function AboutRealtor() {
               Valentin Cuellar
             </h2>
             <p className={`${isDarkMode ? 'text-slate-300' : 'text-muted-foreground'} mb-6 leading-relaxed`}>
-              With over 20 years of experience in the Laredo real estate market, Valentin Cuellar delivers exceptional service
+              With 27+ years of experience in the Laredo real estate market, Valentin Cuellar delivers exceptional service
               to clients looking to buy, sell, or invest in properties. His in-depth knowledge of local neighborhoods and market trends
               allows him to provide valuable insights and guidance throughout every transaction.
             </p>
@@ -74,7 +74,7 @@ export default function AboutRealtor() {
               {[
                 { icon: <Award className="h-5 w-5 text-secondary" />, text: "Licensed Texas Real Estate Broker" },
                 { icon: <MapPin className="h-5 w-5 text-secondary" />, text: "Specializing in Laredo residential and commercial properties" },
-                { icon: <Clock className="h-5 w-5 text-secondary" />, text: "Over 20 years of real estate experience" }
+                { icon: <Clock className="h-5 w-5 text-secondary" />, text: "27+ years of real estate experience" }
               ].map((feature, index) => (
                 <div className="flex items-center group" key={index}>
                   <div className={`${isDarkMode ? 'bg-primary/20' : 'bg-white'} p-3 rounded-full mr-4 shadow-sm group-hover:shadow-md transition-all duration-300 border border-primary/10`}>
@@ -188,7 +188,7 @@ export default function AboutRealtor() {
               {/* Experience badge */}
               <div className="absolute -top-5 -left-5 bg-secondary text-white p-3 rounded-full shadow-lg animate-float">
                 <div className="text-center w-16 h-16 flex flex-col items-center justify-center">
-                  <span className="text-xl font-bold">20+</span>
+                  <span className="text-xl font-bold">27+</span>
                   <span className="text-xs">Years Exp.</span>
                 </div>
               </div>
