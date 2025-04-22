@@ -107,12 +107,27 @@ export default function SEOLocationMap({
       zoom = 14; // Slightly zoomed out when using address
     }
     
-    return `https://maps.googleapis.com/maps/api/staticmap?center=${center}&zoom=${zoom}&size=600x300&maptype=roadmap&markers=color:red%7C${center}&key=YOUR_API_KEY_HERE`;
+    // Check if GOOGLE_MAPS_API_KEY environment variable is available
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    
+    if (apiKey) {
+      return `https://maps.googleapis.com/maps/api/staticmap?center=${center}&zoom=${zoom}&size=600x300&maptype=roadmap&markers=color:red%7C${center}&key=${apiKey}`;
+    } else {
+      // Return null if API key is not available
+      return null;
+    }
   };
   
-  // Get a styled static/fallback map with a marker that doesn't require an API key
+  // Get a styled static/fallback map with a marker using OpenStreetMap (no API key required)
   const getFallbackMapUrl = () => {
-    return `https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=600&height=300&center=lonlat:${longitude || -99.5},${latitude || 27.5}&zoom=15&marker=lonlat:${longitude || -99.5},${latitude || 27.5};color:%23ff0000;size:medium&apiKey=YOUR_GEOAPIFY_KEY`;
+    const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
+    
+    if (apiKey) {
+      return `https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=600&height=300&center=lonlat:${longitude || -99.5},${latitude || 27.5}&zoom=15&marker=lonlat:${longitude || -99.5},${latitude || 27.5};color:%23ff0000;size:medium&apiKey=${apiKey}`;
+    } else {
+      // If no API key is available, return null
+      return null;
+    }
   };
   
   // Create a placeholder for the map using styling instead of an actual image
@@ -167,6 +182,10 @@ export default function SEOLocationMap({
     "url": getDirectionsUrl()
   };
   
+  // Check if any API keys are available for static maps
+  const hasGoogleMapsApiKey = Boolean(import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
+  const hasGeoapifyApiKey = Boolean(import.meta.env.VITE_GEOAPIFY_API_KEY);
+
   return (
     <>
       <Helmet>
@@ -177,6 +196,12 @@ export default function SEOLocationMap({
       
       <div className={`seo-location-map ${className}`}>
         <Placeholder />
+        
+        {!hasGoogleMapsApiKey && !hasGeoapifyApiKey && (
+          <div className="mt-2 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-md">
+            Note: For map integration, add the VITE_GOOGLE_MAPS_API_KEY or VITE_GEOAPIFY_API_KEY environment variable.
+          </div>
+        )}
         
         <div className="mt-2 flex justify-end gap-2">
           <Button 
