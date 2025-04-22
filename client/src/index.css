@@ -253,52 +253,69 @@
   }
   
   /* ===== Enhanced Animations and Transitions ===== */
-  /* Improved property card image animation */
+  /* Improved property card image animation with GPU acceleration */
   .property-card-img {
     height: 240px;
     object-fit: cover;
-    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
   
   .property-card:hover .property-card-img {
-    transform: scale(1.05);
+    transform: scale(1.05) translateZ(0);
   }
   
-  /* Smooth loading transitions */
+  /* Smooth loading transitions with enhanced GPU acceleration */
   .animate-fade-in {
-    animation: fade-in 0.5s ease-out forwards;
+    animation: fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   .animate-slide-up {
     animation: slide-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   .animate-slide-down {
     animation: slide-down 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   .animate-scale-in {
     animation: scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   .animate-pulse {
-    animation: pulse 2s ease-in-out infinite;
+    animation: pulse 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   .animate-float {
-    animation: float 6s ease-in-out infinite;
+    animation: float 6s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   .animate-slow-zoom {
-    animation: slow-zoom 20s ease-in-out infinite alternate;
+    animation: slow-zoom 20s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite alternate;
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   /* Faster loading by preloading theme transitions with better performance */
@@ -326,8 +343,10 @@
   }
   
   .floating-animation {
-    animation: float 6s ease-in-out infinite;
+    animation: float 6s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   /* Map container */
@@ -380,7 +399,7 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
   
-  /* Smooth gradient text animation */
+  /* Smooth gradient text animation with GPU acceleration */
   .gradient-text {
     background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
     background-size: 200% auto;
@@ -388,7 +407,10 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-fill-color: transparent;
-    transition: background-position 0.3s ease;
+    transition: background-position 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: background-position;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   .gradient-text:hover {
@@ -401,8 +423,12 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: backdrop-filter 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                -webkit-backdrop-filter 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: backdrop-filter, background-color, border-color;
+    transform: translateZ(0);
   }
   
   .glass-effect:hover {
@@ -420,15 +446,17 @@
     background: rgba(0, 0, 0, 0.25);
   }
   
-  /* Loading skeleton placeholder animation */
+  /* Loading skeleton placeholder animation with improved performance */
   .skeleton-loading {
     background: linear-gradient(90deg, 
       rgba(var(--muted), 0.1) 0%, 
       rgba(var(--muted), 0.2) 50%, 
       rgba(var(--muted), 0.1) 100%);
     background-size: 200% 100%;
-    animation: shimmer 1.5s linear infinite;
+    animation: shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     border-radius: var(--radius);
     will-change: background-position;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 }
