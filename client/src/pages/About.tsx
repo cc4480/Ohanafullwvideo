@@ -240,7 +240,7 @@ export default function About() {
               <div className="order-1 lg:order-2 flex justify-center">
                 <div className="w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden border-4 border-primary/20">
                   <img 
-                    src="@assets/OIP (1).jfif" 
+                    src={brokerImage} 
                     alt="Valentin Cuellar - Broker and Owner" 
                     className="w-full h-full object-cover"
                   />
