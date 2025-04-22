@@ -148,48 +148,47 @@ export default function Header() {
         </div>
       </div>
       
-      {/* Mobile menu - Optimized for better mobile rendering */}
-      <div 
-        id="mobileMenu" 
-        className={`fixed top-[64px] left-0 right-0 bg-background/98 backdrop-blur-lg py-4 px-4 md:hidden shadow-xl border-t border-border/10 z-50 transform-gpu transition-transform duration-300 ease-out ${
-          mobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
-        }`}
-        style={{
-          willChange: 'transform',
-          backfaceVisibility: 'hidden',
-          perspective: '1000px',
-          transformStyle: 'preserve-3d'
-        }}
-      >
-        <div className="flex flex-col space-y-2 max-h-[70vh] overflow-y-auto">
-          {[
-            { path: '/', label: 'Home', icon: 'bx-home' },
-            { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
-            { path: '/#about', label: 'About', icon: 'bx-user' }
-          ].map((item, index) => (
-            <Link 
-              key={item.path} 
-              href={item.path} 
-              className={`group flex items-center gap-3 text-foreground hover:text-primary font-medium py-4 px-3 rounded-xl hover:bg-primary/5 active:bg-primary/10 transition-colors ${
-                location === item.path ? 'bg-primary/10 text-primary' : ''
-              }`}
-              onClick={toggleMobileMenu}
-              style={{ 
-                transform: 'translateZ(0)',
-                animationDelay: `${index * 0.05}s` 
-              }}
-            >
-              <i className={`bx ${item.icon} text-2xl ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
-              <span className="text-base">{item.label}</span>
-              {location === item.path && (
-                <div className="ml-auto w-1.5 h-6 bg-primary rounded-full"></div>
-              )}
-            </Link>
-          ))}
-          
-{/* Contact button removed as requested */}
+      {/* Mobile menu - Hidden but can be toggled when menu button is clicked */}
+      {mobileMenuOpen && (
+        <div 
+          id="mobileMenu" 
+          className="fixed top-[64px] left-0 right-0 bg-background/98 backdrop-blur-lg py-4 px-4 md:hidden shadow-xl border-t border-border/10 z-50 transform-gpu"
+          style={{
+            willChange: 'transform',
+            backfaceVisibility: 'hidden',
+            perspective: '1000px',
+            transformStyle: 'preserve-3d',
+            animation: 'slideDown 0.3s ease-out forwards'
+          }}
+        >
+          <div className="flex flex-col space-y-2 max-h-[70vh] overflow-y-auto">
+            {[
+              { path: '/', label: 'Home', icon: 'bx-home' },
+              { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
+              { path: '/#about', label: 'About', icon: 'bx-user' }
+            ].map((item, index) => (
+              <Link 
+                key={item.path} 
+                href={item.path} 
+                className={`group flex items-center gap-3 text-foreground hover:text-primary font-medium py-4 px-3 rounded-xl hover:bg-primary/5 active:bg-primary/10 transition-colors ${
+                  location === item.path ? 'bg-primary/10 text-primary' : ''
+                }`}
+                onClick={toggleMobileMenu}
+                style={{ 
+                  transform: 'translateZ(0)',
+                  animationDelay: `${index * 0.05}s` 
+                }}
+              >
+                <i className={`bx ${item.icon} text-2xl ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
+                <span className="text-base">{item.label}</span>
+                {location === item.path && (
+                  <div className="ml-auto w-1.5 h-6 bg-primary rounded-full"></div>
+                )}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }
