@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
 import { LocalBusinessStructuredData, BreadcrumbStructuredData, FAQStructuredData } from "@/components/StructuredData";
-import brokerImage from "@assets/OIP (1).jfif";
+import brokerImage from "@assets/thprofile_autox145.jpg";
 import propertyImage from "@assets/MLS15.jpg";
 
 export default function About() {
