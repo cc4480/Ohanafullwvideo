@@ -12,6 +12,7 @@ html, body {
   color: white; /* Ensure text contrasts well with dark background */
   min-height: 100vh;
   height: 100%;
+  position: relative; /* Ensure position context for fixed elements */
 }
 
 /* Remove any other background settings that might be interfering */
@@ -61,13 +62,13 @@ html, body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) translateZ(0); }
-  50% { transform: translateY(-10px) translateZ(0); }
+  0%, 100% { transform: translate(-50%, -50%) translateY(0) translateZ(0); }
+  50% { transform: translate(-50%, -50%) translateY(-10px) translateZ(0); }
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1) translateZ(0); }
-  50% { transform: scale(1.05) translateZ(0); }
+  0%, 100% { transform: translate(-50%, -50%) scale(1) translateZ(0); }
+  50% { transform: translate(-50%, -50%) scale(1.05) translateZ(0); }
 }
 
 :root {
