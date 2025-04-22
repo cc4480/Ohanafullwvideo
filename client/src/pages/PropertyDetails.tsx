@@ -7,16 +7,19 @@ import { Separator } from "@/components/ui/separator";
 import ContactSection from "@/components/ContactSection";
 import { useEffect, useState } from "react";
 import valentinCuellarImg from "../assets/valentin-realtor.png";
-import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle } from "lucide-react";
+import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle, Maximize2 } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
 import PropertyInquiryModal from "@/components/properties/PropertyInquiryModal";
+import FullScreenImageViewer from "@/components/properties/FullScreenImageViewer";
 
 export default function PropertyDetails({ id }: { id: number }) {
   const [, navigate] = useLocation();
   const [activeImage, setActiveImage] = useState<string>("");
+  const [isFullScreenViewerOpen, setIsFullScreenViewerOpen] = useState<boolean>(false);
+  const [fullScreenImageIndex, setFullScreenImageIndex] = useState<number>(0);
   
   // Ensure we scroll to the top when the component mounts
   useEffect(() => {
@@ -32,6 +35,21 @@ export default function PropertyDetails({ id }: { id: number }) {
       setActiveImage(property.images[0]);
     }
   }, [property]);
+  
+  // Open full screen image viewer
+  const openFullScreenViewer = (imageIndex: number) => {
+    setFullScreenImageIndex(imageIndex);
+    setIsFullScreenViewerOpen(true);
+    // Prevent scrolling on the body when viewer is open
+    document.body.style.overflow = 'hidden';
+  };
+  
+  // Close full screen image viewer
+  const closeFullScreenViewer = () => {
+    setIsFullScreenViewerOpen(false);
+    // Restore scrolling
+    document.body.style.overflow = '';
+  };
   
   if (isLoading) {
     return (
@@ -171,13 +189,34 @@ export default function PropertyDetails({ id }: { id: number }) {
                 role="region" 
                 aria-label="Property photo gallery"
               >
-                <div className="rounded-lg overflow-hidden mb-3 sm:mb-4 shadow-md">
+                <div className="rounded-lg overflow-hidden mb-3 sm:mb-4 shadow-md relative group">
                   <img 
                     src={activeImage} 
                     alt={`Main image of property at ${property.address}`} 
-                    className="w-full h-[250px] sm:h-[350px] md:h-[400px] object-cover transform-gpu"
+                    className="w-full h-[250px] sm:h-[350px] md:h-[400px] object-cover transform-gpu cursor-pointer"
                     style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
+                    onClick={() => openFullScreenViewer(property.images.indexOf(activeImage))}
                   />
+                  
+                  {/* Fullscreen button overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 cursor-pointer">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="absolute top-3 right-3 rounded-full p-2 shadow-lg bg-white/80 hover:bg-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openFullScreenViewer(property.images.indexOf(activeImage));
+                      }}
+                      aria-label="View image fullscreen"
+                    >
+                      <Maximize2 className="h-5 w-5" />
+                    </Button>
+                    
+                    <div className="bg-black/40 text-white px-4 py-2 rounded-md">
+                      Click to view fullscreen
+                    </div>
+                  </div>
                 </div>
                 
                 {property.images.length > 1 && (
@@ -191,7 +230,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                         key={index}
                         className={`cursor-pointer rounded-md overflow-hidden border-2 ${
                           activeImage === image ? 'border-primary' : 'border-transparent'
-                        } active:scale-95 transition-transform transform-gpu focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
+                        } active:scale-95 transition-transform transform-gpu focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 relative group`}
                         onClick={() => setActiveImage(image)}
                         style={{ touchAction: 'manipulation' }}
                         aria-label={`View photo ${index + 1} of ${property.images.length}`}
@@ -204,9 +243,37 @@ export default function PropertyDetails({ id }: { id: number }) {
                           style={{ backfaceVisibility: 'hidden' }}
                           aria-hidden="true"
                         />
+                        
+                        {/* Thumbnail overlay with fullscreen option */}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 bg-white/20 hover:bg-white/40 text-white rounded-full"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveImage(image);
+                              openFullScreenViewer(index);
+                            }}
+                            aria-label={`View photo ${index + 1} fullscreen`}
+                          >
+                            <Maximize2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </button>
                     ))}
                   </div>
+                )}
+                
+                {/* Full screen image viewer */}
+                {property.images.length > 0 && (
+                  <FullScreenImageViewer
+                    images={property.images}
+                    initialImageIndex={fullScreenImageIndex}
+                    isOpen={isFullScreenViewerOpen}
+                    onClose={closeFullScreenViewer}
+                    propertyAddress={property.address}
+                  />
                 )}
               </div>
               
