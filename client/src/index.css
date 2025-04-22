@@ -218,6 +218,18 @@
     font-family: 'Inter', sans-serif;
   }
   
+  /* Critical AI assistant styles - IMPORTANT: DO NOT REMOVE */
+  .ai-assistant-button {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
   /* ===== Enhanced Animations and Transitions ===== */
   /* Improved property card image animation */
   .property-card-img {
