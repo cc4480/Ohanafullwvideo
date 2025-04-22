@@ -61,46 +61,64 @@ export default function Hero() {
     };
   }, [currentImage]);
   
-  // Setup parallax effect on scroll
+  // Enhanced parallax effect on scroll using GSAP ScrollTrigger
   useEffect(() => {
     if (!sectionRef.current) return;
     
-    // Create parallax effect for the hero section
+    // Create main parallax effect for the hero section
     const parallaxEffect = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top",
         end: "bottom top",
-        scrub: true
+        scrub: 1.5,
+        markers: false
       }
     });
     
-    // Add parallax movement to various elements
-    parallaxEffect.to(".parallax-bg", {
-      y: 100,
-      ease: "none"
-    }, 0);
+    // Add parallax movement to background images
+    document.querySelectorAll(".parallax-bg").forEach(bg => {
+      parallaxEffect.to(bg, {
+        y: 100,
+        scale: 1.1,
+        ease: "none"
+      }, 0);
+    });
     
     // Add subtle scale effect to the hero section
     parallaxEffect.to(sectionRef.current, {
-      scale: 0.95,
+      scale: 0.98,
       ease: "none"
     }, 0);
     
-    // Scale and fade content on scroll
+    // Create smoother content movement effect
     if (contentRef.current) {
       parallaxEffect.to(contentRef.current, {
-        y: -30,
-        opacity: 0.5,
-        ease: "none"
+        y: -50,
+        opacity: 0.8,
+        ease: "power1.inOut"
       }, 0);
     }
     
-    return () => {
-      // Clean up ScrollTrigger when component unmounts
-      if (parallaxEffect.scrollTrigger) {
-        parallaxEffect.scrollTrigger.kill();
+    // Add extra parallax effect to floating logo
+    const logoParallax = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.5
       }
+    });
+    
+    logoParallax.to(".top-1\\/2", {
+      y: -80,
+      scale: 0.9,
+      ease: "power1.out"
+    }, 0);
+    
+    return () => {
+      // Clean up all ScrollTrigger instances when component unmounts
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
   
@@ -229,11 +247,11 @@ export default function Hero() {
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
-      {/* Floating Logo in background */}
+      {/* Floating Logo in background - made larger and more prominent */}
       <FloatingLogo 
         logoUrl={logoImg}
-        className="top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 z-5"
-        intensity={0.7}
+        className="top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] z-5"
+        intensity={0.6}
       />
       
       {/* Content - completely rebuilt for mobile */}

@@ -116,7 +116,7 @@ export default function FloatingLogo({
   return (
     <div 
       ref={logoRef}
-      className={`absolute z-1 opacity-10 transform-gpu will-change-transform ${className}`}
+      className={`absolute z-1 opacity-30 transform-gpu will-change-transform ${className}`}
       style={{
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
@@ -129,7 +129,7 @@ export default function FloatingLogo({
         alt={alt}
         className="w-full h-full object-contain transform-gpu"
         style={{
-          filter: 'brightness(1.2) contrast(0.9)',
+          filter: 'brightness(1.5) contrast(1.2) saturate(1.2)',
           maxWidth: '100%',
           maxHeight: '100%'
         }}
