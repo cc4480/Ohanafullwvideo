@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,6 +9,27 @@ export default function PropertySearch() {
   const [priceRange, setPriceRange] = useState<string>("Any");
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [searchPath, setSearchPath] = useState<string>("/properties");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  useEffect(() => {
+    // Check for dark mode preference
+    const isDark = document.documentElement.classList.contains('dark');
+    setIsDarkMode(isDark);
+    
+    // Listen for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const isDark = document.documentElement.classList.contains('dark');
+          setIsDarkMode(isDark);
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, []);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,13 +46,13 @@ export default function PropertySearch() {
   };
   
   return (
-    <section className="py-12 bg-white">
+    <section className={`py-12 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 -mt-24 relative z-20">
-          <h2 className="text-2xl font-serif font-bold text-neutral-800 mb-6">Find Your Perfect Property</h2>
+        <div className={`max-w-4xl mx-auto ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'} rounded-lg shadow-lg p-6 -mt-24 relative z-20`}>
+          <h2 className={`text-2xl font-serif font-bold ${isDarkMode ? 'text-white' : 'text-neutral-800'} mb-6`}>Find Your Perfect Property</h2>
           <form className="grid grid-cols-1 md:grid-cols-3 gap-4" onSubmit={handleSearch}>
             <div>
-              <label className="block text-sm font-medium text-neutral-600 mb-1">Property Type</label>
+              <label className={`block text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-neutral-600'} mb-1`}>Property Type</label>
               <Select value={propertyType} onValueChange={setPropertyType}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="All Properties" />
@@ -45,7 +66,7 @@ export default function PropertySearch() {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-600 mb-1">Price Range</label>
+              <label className={`block text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-neutral-600'} mb-1`}>Price Range</label>
               <Select value={priceRange} onValueChange={setPriceRange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Any Price" />
@@ -60,7 +81,7 @@ export default function PropertySearch() {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-600 mb-1">Location</label>
+              <label className={`block text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-neutral-600'} mb-1`}>Location</label>
               <Input
                 type="text"
                 placeholder="Enter neighborhood or address"
