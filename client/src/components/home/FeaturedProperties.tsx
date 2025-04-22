@@ -50,7 +50,11 @@ export default function FeaturedProperties() {
         
         <div className="mt-12 text-center">
           <Link href="/properties">
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
+            <Button 
+              variant="outline" 
+              className="border-primary text-primary hover:bg-primary hover:text-white"
+              onClick={() => window.scrollTo(0, 0)}
+            >
               View All Properties
               <i className='bx bx-right-arrow-alt ml-2'></i>
             </Button>

@@ -192,6 +192,7 @@ export default function Properties() {
                 variant="outline" 
                 className="h-9 sm:h-10 transform-gpu active:scale-95 transition-transform"
                 aria-label="Back to home page"
+                onClick={() => window.scrollTo(0, 0)}
               >
                 <i className="bx bx-arrow-back mr-1 sm:mr-2" aria-hidden="true"></i>
                 <span className="text-sm sm:text-base">Back to Home</span>

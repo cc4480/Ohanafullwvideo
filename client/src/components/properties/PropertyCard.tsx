@@ -49,7 +49,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   
   return (
     <div className={`property-card ${isDarkMode ? 'bg-slate-800' : 'bg-card'} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 card-hover-effect border border-border/30 mobile-optimized group`}>
-      <Link href={`/properties/${property.id}`}>
+      <Link href={`/properties/${property.id}`} onClick={() => window.scrollTo(0, 0)}>
         <div className="relative overflow-hidden h-48 sm:h-52 bg-slate-100 dark:bg-slate-700 transform-gpu">
           {property.images && property.images.length > 0 ? (
             <img 
@@ -165,7 +165,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             </div>
           )}
         </div>
-        <Link href={`/properties/${property.id}`} className="block w-full">
+        <Link href={`/properties/${property.id}`} className="block w-full" onClick={() => window.scrollTo(0, 0)}>
           <Button 
             className="w-full h-10 md:h-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-all duration-500 shadow-md hover:shadow-lg group-hover:shadow-lg mobile-optimized overflow-hidden relative"
             style={{ touchAction: 'manipulation' }}
