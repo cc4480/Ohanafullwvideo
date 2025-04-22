@@ -8,14 +8,12 @@ import ContactSection from "@/components/features/ContactSection";
 import { useEffect, useState } from "react";
 import valentinCuellarImg from "../assets/valentin-realtor.png";
 import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle, Maximize2 } from "lucide-react";
-// Enhanced SEO components
-import PropertyListingMetadata from "@/components/PropertyListingMetadata";
-import SEOBreadcrumbs from "@/components/SEOBreadcrumbs";
-import SEOImage from "@/components/SEOImage";
-import CanonicalURLs from "@/components/CanonicalURLs";
-import KeywordOptimizer from "@/components/KeywordOptimizer";
+
+// Import our new simplified SEO components
+import SimpleSEOMetadata from "@/components/SimpleSEOMetadata";
+import SimpleBreadcrumbs from "@/components/SimpleBreadcrumbs";
+import { generatePropertyStructuredData } from "@/components/SimplePropertyStructuredData";
 import SEOLocationMap from "@/components/SEOLocationMap";
-import { PropertyStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
 import PropertyInquiryModal from "@/components/properties/PropertyInquiryModal";
@@ -113,89 +111,57 @@ export default function PropertyDetails({ id }: { id: number }) {
 
   return (
     <>
-      {/* Enhanced SEO for property listing */}
-      {/* PropertyListingMetadata temporarily disabled to fix Symbol to string error 
-        <PropertyListingMetadata
-          property={property}
-          baseUrl={websiteUrl}
-          broker={{
+      {/* Enhanced SEO metadata with simplified implementation */}
+      <SimpleSEOMetadata
+        title={`${property.bedrooms ? `${property.bedrooms} Bed, ` : ''}${property.bathrooms ? `${property.bathrooms} Bath ` : ''}${property.type} For Sale at ${property.address} | ${formatPrice(property.price)}`}
+        description={propertyDescription}
+        keywords={[
+          `${property.type.toLowerCase()} for sale`,
+          `${property.city} real estate`,
+          `${property.bedrooms} bedroom house`,
+          `${property.bathrooms} bathroom home`,
+          `${property.address}`,
+          `${property.zipCode} properties`,
+          `${property.city} ${property.state} real estate`,
+          `homes for sale in ${property.city}`,
+          property.features && Array.isArray(property.features) ? property.features.join(', ') : ''
+        ]}
+        canonicalUrl={`${websiteUrl}/properties/${property.id}`}
+        ogType="product"
+        ogImage={property.images && Array.isArray(property.images) && property.images.length > 0 ? property.images[0] : ''}
+        ogImageAlt={`Property at ${property.address}`}
+        twitterCard="summary_large_image"
+        twitterSite="@ohanarealty"
+        geoPosition={property.lat && property.lng ? { lat: property.lat, lng: property.lng } : undefined}
+        geoPlacename={`${property.city}, ${property.state}`}
+        geoRegion={`US-${property.state}`}
+        author="Valentin Cuellar"
+        publishedDate={new Date().toISOString()}
+        modifiedDate={new Date().toISOString()}
+        structuredData={generatePropertyStructuredData({
+          property,
+          baseUrl: websiteUrl,
+          agent: {
             name: "Valentin Cuellar",
             url: `${websiteUrl}/realtors/valentin-cuellar`,
-            image: valentinCuellarImg, 
+            image: valentinCuellarImg,
             telephone: "+1-555-123-4567",
             email: "valentin@ohanarealty.com"
-          }}
-        />
-      */}
-      
-      {/* Enhanced SEO breadcrumbs with schema markup - temporarily disabled */}
-      {/* 
-      <SEOBreadcrumbs
-        items={[
-          { label: "Properties", path: "/properties" },
-          { label: property.address, path: `/properties/${property.id}` }
-        ]}
-        baseUrl={websiteUrl}
-        includeHome={true}
-        includeStructuredData={true}
+          }
+        })}
+        siteName="Ohana Realty"
       />
-      */}
       
-      {/* Canonical URL to prevent duplicate content - temporarily disabled */}
-      {/*
-      <CanonicalURLs 
-        baseUrl={websiteUrl}
-        overridePath={`/properties/${property.id}`}
-      />
-      */}
-      
-      {/* Advanced Keyword Optimization */}
-      {/* KeywordOptimizer temporarily disabled to fix Symbol to string error 
-        <KeywordOptimizer
-          primaryKeywords={[
-            `${property.type.toLowerCase()} for sale`,
-            property.type === "RESIDENTIAL" ? "house for sale" : property.type === "COMMERCIAL" ? "commercial property" : "land for sale",
-            property.city + " real estate",
-            `${property.bedrooms} bedroom ${property.type === "RESIDENTIAL" ? "home" : "property"}`,
-            `${property.city} ${property.type.toLowerCase()} ${property.price < 300000 ? "affordable" : "luxury"}`
+      {/* Enhanced breadcrumbs with schema markup */}
+      <div className="container mx-auto px-4">
+        <SimpleBreadcrumbs
+          items={[
+            { label: "Properties", path: "/properties" },
+            { label: property.address, path: `/properties/${property.id}` }
           ]}
-          secondaryKeywords={[
-            `${property.city} properties`,
-            `${property.address.split(' ').slice(-1)[0]} area homes`, // Uses street name for area targeting
-            property.type === "RESIDENTIAL" ? `${property.bedrooms} bed ${property.bathrooms} bath home` : "commercial space",
-            `${property.squareFeet} square foot ${property.type === "RESIDENTIAL" ? "house" : "property"}`,
-            property.features?.join(", ") || ""
-          ]}
-          longTailKeywords={[
-            `${property.bedrooms} bedroom home for sale in ${property.city} ${property.state}`,
-            `${property.type.toLowerCase()} for sale near ${property.city} downtown`,
-            `${property.city} ${property.state} ${property.type === "RESIDENTIAL" ? "family home" : "property"} under ${(property.price + 100000).toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0})}`,
-            `real estate agent for ${property.city} ${property.type.toLowerCase()}`,
-            `${property.zipCode} area ${property.type.toLowerCase()} for sale`
-          ]}
-          locationKeywords={[
-            property.city,
-            `${property.city} ${property.state}`,
-            property.state,
-            property.zipCode.toString(),
-            `${property.city} area`
-          ]}
-          semanticKeywords={[
-            "property details",
-            "real estate listing",
-            "home features",
-            "property images",
-            "property tour",
-            "schedule viewing",
-            "contact realtor",
-            "property inquiry"
-          ]}
-          pageUrl={`${websiteUrl}/properties/${property.id}`}
-          pageType="property-detail"
-          enableLSI={true}
-          advancedNLP={true}
+          includeHome={true}
         />
-      */}
+      </div>
       <div className="min-h-screen">
         {/* Property Header */}
         <div className="bg-primary text-white py-8 sm:py-12 mobile-optimized">

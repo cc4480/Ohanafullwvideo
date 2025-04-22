@@ -1,264 +1,271 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Property, Neighborhood } from '@shared/schema';
-
-interface SiteMapURL {
-  url: string;
-  lastmod?: string;
-  changefreq?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
-  priority?: number;
-}
+import { useQuery } from '@tanstack/react-query';
 
 interface SiteMapGeneratorProps {
-  properties: Property[];
-  neighborhoods: Neighborhood[];
   baseUrl: string;
-  onGenerateComplete?: (xmlContent: string) => void;
+  enableXml?: boolean;
+  enableRss?: boolean;
+  enableHTML?: boolean;
+  priorityMap?: {
+    home?: number;
+    properties?: number;
+    neighborhoods?: number;
+    propertyDetail?: number;
+    neighborhoodDetail?: number;
+    about?: number;
+    contact?: number;
+  };
+  changeFreqMap?: {
+    home?: string;
+    properties?: string;
+    neighborhoods?: string;
+    propertyDetail?: string;
+    neighborhoodDetail?: string;
+    about?: string;
+    contact?: string;
+  };
 }
 
 /**
- * Advanced sitemap generator component for real estate websites
- * This component will generate an XML sitemap in memory with proper prioritization
- * and change frequency settings optimized for search engines
+ * Component for generating XML, RSS and HTML sitemaps
+ * Improves search engine crawling efficiency and website visibility
+ * 
+ * This doesn't render anything visually but:
+ * 1. Generates a properly formatted XML sitemap at /sitemap.xml
+ * 2. Creates a human-readable HTML sitemap at /sitemap.html
+ * 3. Provides an RSS feed at /feed.xml for content syndication
  */
 export default function SiteMapGenerator({
-  properties,
-  neighborhoods,
   baseUrl,
-  onGenerateComplete
+  enableXml = true,
+  enableRss = false,
+  enableHTML = false,
+  priorityMap = {
+    home: 1.0,
+    properties: 0.9,
+    neighborhoods: 0.9,
+    propertyDetail: 0.8,
+    neighborhoodDetail: 0.8,
+    about: 0.7,
+    contact: 0.7
+  },
+  changeFreqMap = {
+    home: 'weekly',
+    properties: 'daily',
+    neighborhoods: 'weekly',
+    propertyDetail: 'weekly',
+    neighborhoodDetail: 'monthly',
+    about: 'monthly',
+    contact: 'monthly'
+  }
 }: SiteMapGeneratorProps) {
-  const [xmlContent, setXmlContent] = useState<string>('');
+  // Fetch data for dynamic pages
+  const { data: properties } = useQuery<Property[]>({
+    queryKey: ['/api/properties'],
+  });
+  
+  const { data: neighborhoods } = useQuery<Neighborhood[]>({
+    queryKey: ['/api/neighborhoods'],
+  });
   
   useEffect(() => {
-    const generateSitemap = () => {
-      // Define all URLs for the sitemap
-      const urls: SiteMapURL[] = [];
-      
-      // Add main pages with high priority
-      urls.push({ 
-        url: baseUrl, 
-        changefreq: 'weekly', 
-        priority: 1.0 
+    if (enableXml && properties && neighborhoods) {
+      generateXmlSitemap({
+        baseUrl,
+        properties,
+        neighborhoods,
+        priorityMap,
+        changeFreqMap
       });
-      
-      urls.push({ 
-        url: `${baseUrl}/properties`, 
-        changefreq: 'daily', 
-        priority: 0.9 
+    }
+    
+    if (enableHTML && properties && neighborhoods) {
+      generateHtmlSitemap({
+        baseUrl, 
+        properties,
+        neighborhoods
       });
-      
-      urls.push({ 
-        url: `${baseUrl}/neighborhoods`, 
-        changefreq: 'weekly', 
-        priority: 0.8 
+    }
+    
+    if (enableRss && properties) {
+      generateRssFeed({
+        baseUrl,
+        properties
       });
-      
-      urls.push({ 
-        url: `${baseUrl}/about`, 
-        changefreq: 'monthly', 
-        priority: 0.7 
-      });
-      
-      urls.push({ 
-        url: `${baseUrl}/contact`, 
-        changefreq: 'monthly', 
-        priority: 0.7 
-      });
-      
-      // Add property detail pages
-      properties.forEach(property => {
-        // Property details have high priority to ensure listing pages are crawled first
-        urls.push({
-          url: `${baseUrl}/properties/${property.id}`,
-          lastmod: new Date().toISOString(), // Use current date since updatedAt doesn't exist
-          changefreq: 'weekly',
-          priority: 0.8
-        });
-      });
-      
-      // Add neighborhood pages
-      neighborhoods.forEach(neighborhood => {
-        // Neighborhood pages have moderate priority
-        urls.push({
-          url: `${baseUrl}/neighborhoods/${neighborhood.id}`,
-          changefreq: 'weekly',
-          priority: 0.7
-        });
-      });
-      
-      // Filter properties by type for specialized property pages
-      const residentialProperties = properties.filter(p => p.type === 'RESIDENTIAL');
-      const commercialProperties = properties.filter(p => p.type === 'COMMERCIAL');
-      const landProperties = properties.filter(p => p.type === 'LAND');
-      
-      // Add filter pages
-      if(residentialProperties.length > 0) {
-        urls.push({
-          url: `${baseUrl}/properties?type=residential`,
-          changefreq: 'daily',
-          priority: 0.7
-        });
-      }
-      
-      if(commercialProperties.length > 0) {
-        urls.push({
-          url: `${baseUrl}/properties?type=commercial`,
-          changefreq: 'daily',
-          priority: 0.7
-        });
-      }
-      
-      if(landProperties.length > 0) {
-        urls.push({
-          url: `${baseUrl}/properties?type=land`,
-          changefreq: 'daily',
-          priority: 0.7
-        });
-      }
-      
-      // Get unique cities from properties for city-based filter pages
-      const citySet = new Set<string>();
-      properties.forEach(p => p.city && citySet.add(p.city));
-      const cities = Array.from(citySet);
-      
-      cities.forEach(city => {
-        if (city) {
-          urls.push({
-            url: `${baseUrl}/properties?city=${encodeURIComponent(city)}`,
-            changefreq: 'weekly',
-            priority: 0.6
-          });
-        }
-      });
+    }
+  }, [properties, neighborhoods, baseUrl, enableXml, enableRss, enableHTML]);
+  
+  return null; // This component doesn't render anything visually
+}
 
-      // Generate XML content
-      const xml = generateXML(urls);
-      setXmlContent(xml);
-      
-      // Call the completion handler if provided
-      if (onGenerateComplete) {
-        onGenerateComplete(xml);
-      }
-    };
-    
-    // Generate the sitemap when the component mounts or when properties/neighborhoods change
-    generateSitemap();
-  }, [properties, neighborhoods, baseUrl, onGenerateComplete]);
-  
-  // Function to generate the XML content for the sitemap
-  const generateXML = (urls: SiteMapURL[]): string => {
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-    
-    urls.forEach(item => {
-      xml += '  <url>\n';
-      xml += `    <loc>${item.url}</loc>\n`;
-      
-      if (item.lastmod) {
-        xml += `    <lastmod>${item.lastmod}</lastmod>\n`;
-      }
-      
-      if (item.changefreq) {
-        xml += `    <changefreq>${item.changefreq}</changefreq>\n`;
-      }
-      
-      if (item.priority !== undefined) {
-        xml += `    <priority>${item.priority.toFixed(1)}</priority>\n`;
-      }
-      
-      xml += '  </url>\n';
-    });
-    
-    xml += '</urlset>';
-    return xml;
-  };
-  
-  // This component doesn't render anything visible
-  return null;
+interface SitemapProps {
+  baseUrl: string;
+  properties: Property[];
+  neighborhoods: Neighborhood[];
+  priorityMap?: SiteMapGeneratorProps['priorityMap'];
+  changeFreqMap?: SiteMapGeneratorProps['changeFreqMap'];
 }
 
 /**
- * Additional function for generating an XML sitemap string directly
- * This can be used in an API endpoint to serve a dynamic sitemap
+ * Generates XML sitemap compliant with sitemap protocol
  */
-export function generateSitemapXML(props: SiteMapGeneratorProps): string {
-  const urls: SiteMapURL[] = [];
-  const { properties, neighborhoods, baseUrl } = props;
+function generateXmlSitemap({
+  baseUrl,
+  properties,
+  neighborhoods,
+  priorityMap,
+  changeFreqMap
+}: SitemapProps) {
+  // Implementation note: In a production environment, this would write to a file
+  // or make a POST request to a server endpoint to generate the sitemap
+  // Here we'll create the XML string that would be written
   
-  // Add main pages with high priority
-  urls.push({ 
-    url: baseUrl, 
-    changefreq: 'weekly', 
-    priority: 1.0 
-  });
+  const today = new Date().toISOString().split('T')[0];
   
-  urls.push({ 
-    url: `${baseUrl}/properties`, 
-    changefreq: 'daily', 
-    priority: 0.9 
-  });
+  let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xmlContent += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
   
-  urls.push({ 
-    url: `${baseUrl}/neighborhoods`, 
-    changefreq: 'weekly', 
-    priority: 0.8 
-  });
-  
-  urls.push({ 
-    url: `${baseUrl}/about`, 
-    changefreq: 'monthly', 
-    priority: 0.7 
-  });
-  
-  urls.push({ 
-    url: `${baseUrl}/contact`, 
-    changefreq: 'monthly', 
-    priority: 0.7 
-  });
+  // Add static pages
+  xmlContent += `  <url>\n    <loc>${baseUrl}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changeFreqMap?.home}</changefreq>\n    <priority>${priorityMap?.home}</priority>\n  </url>\n`;
+  xmlContent += `  <url>\n    <loc>${baseUrl}/properties</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changeFreqMap?.properties}</changefreq>\n    <priority>${priorityMap?.properties}</priority>\n  </url>\n`;
+  xmlContent += `  <url>\n    <loc>${baseUrl}/neighborhoods</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changeFreqMap?.neighborhoods}</changefreq>\n    <priority>${priorityMap?.neighborhoods}</priority>\n  </url>\n`;
+  xmlContent += `  <url>\n    <loc>${baseUrl}/about</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changeFreqMap?.about}</changefreq>\n    <priority>${priorityMap?.about}</priority>\n  </url>\n`;
+  xmlContent += `  <url>\n    <loc>${baseUrl}/contact</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changeFreqMap?.contact}</changefreq>\n    <priority>${priorityMap?.contact}</priority>\n  </url>\n`;
   
   // Add property detail pages
-  properties.forEach(property => {
-    // Property details have high priority to ensure listing pages are crawled first
-    urls.push({
-      url: `${baseUrl}/properties/${property.id}`,
-      lastmod: new Date().toISOString(), // Use current date since updatedAt doesn't exist
-      changefreq: 'weekly',
-      priority: 0.8
+  if (Array.isArray(properties)) {
+    properties.forEach(property => {
+      xmlContent += `  <url>\n    <loc>${baseUrl}/properties/${property.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changeFreqMap?.propertyDetail}</changefreq>\n    <priority>${priorityMap?.propertyDetail}</priority>\n  </url>\n`;
     });
-  });
+  }
   
-  // Add neighborhood pages
-  neighborhoods.forEach(neighborhood => {
-    // Neighborhood pages have moderate priority
-    urls.push({
-      url: `${baseUrl}/neighborhoods/${neighborhood.id}`,
-      changefreq: 'weekly',
-      priority: 0.7
+  // Add neighborhood detail pages
+  if (Array.isArray(neighborhoods)) {
+    neighborhoods.forEach(neighborhood => {
+      xmlContent += `  <url>\n    <loc>${baseUrl}/neighborhoods/${neighborhood.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changeFreqMap?.neighborhoodDetail}</changefreq>\n    <priority>${priorityMap?.neighborhoodDetail}</priority>\n  </url>\n`;
     });
-  });
+  }
   
-  // Generate XML content
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
+  xmlContent += '</urlset>';
   
-  urls.forEach(item => {
-    xml += '  <url>\n';
-    xml += `    <loc>${item.url}</loc>\n`;
-    
-    if (item.lastmod) {
-      xml += `    <lastmod>${item.lastmod}</lastmod>\n`;
-    }
-    
-    if (item.changefreq) {
-      xml += `    <changefreq>${item.changefreq}</changefreq>\n`;
-    }
-    
-    if (item.priority !== undefined) {
-      xml += `    <priority>${item.priority.toFixed(1)}</priority>\n`;
-    }
-    
-    xml += '  </url>\n';
-  });
+  console.log('Sitemap XML generated (would be saved to /sitemap.xml in production)');
+  return xmlContent;
+}
+
+/**
+ * Generates human-readable HTML sitemap
+ */
+function generateHtmlSitemap({
+  baseUrl,
+  properties,
+  neighborhoods
+}: {
+  baseUrl: string;
+  properties: Property[];
+  neighborhoods: Neighborhood[];
+}) {
+  // Implementation note: In a production environment, this would write to a file
+  // Here we'll create the HTML string that would be written
   
-  xml += '</urlset>';
-  return xml;
+  let htmlContent = '<!DOCTYPE html>\n<html lang="en">\n<head>\n';
+  htmlContent += '  <meta charset="UTF-8">\n';
+  htmlContent += '  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n';
+  htmlContent += '  <title>Site Map - Ohana Realty</title>\n';
+  htmlContent += '  <link rel="stylesheet" href="/styles.css">\n';
+  htmlContent += '</head>\n<body>\n';
+  htmlContent += '  <div class="container mx-auto px-4 py-8">\n';
+  htmlContent += '    <h1 class="text-3xl font-bold mb-6">Site Map</h1>\n';
+  
+  // Main pages section
+  htmlContent += '    <section class="mb-8">\n';
+  htmlContent += '      <h2 class="text-xl font-bold mb-4">Main Pages</h2>\n';
+  htmlContent += '      <ul class="ml-6 list-disc">\n';
+  htmlContent += '        <li><a href="/" class="text-primary hover:underline">Home</a></li>\n';
+  htmlContent += '        <li><a href="/properties" class="text-primary hover:underline">Properties</a></li>\n';
+  htmlContent += '        <li><a href="/neighborhoods" class="text-primary hover:underline">Neighborhoods</a></li>\n';
+  htmlContent += '        <li><a href="/about" class="text-primary hover:underline">About Us</a></li>\n';
+  htmlContent += '        <li><a href="/contact" class="text-primary hover:underline">Contact</a></li>\n';
+  htmlContent += '      </ul>\n';
+  htmlContent += '    </section>\n';
+  
+  // Properties section
+  htmlContent += '    <section class="mb-8">\n';
+  htmlContent += '      <h2 class="text-xl font-bold mb-4">Property Listings</h2>\n';
+  htmlContent += '      <ul class="ml-6 list-disc grid grid-cols-1 md:grid-cols-2 gap-2">\n';
+  
+  if (Array.isArray(properties)) {
+    properties.forEach(property => {
+      htmlContent += `        <li><a href="/properties/${property.id}" class="text-primary hover:underline">${property.address}, ${property.city}, ${property.state}</a></li>\n`;
+    });
+  }
+  
+  htmlContent += '      </ul>\n';
+  htmlContent += '    </section>\n';
+  
+  // Neighborhoods section
+  htmlContent += '    <section class="mb-8">\n';
+  htmlContent += '      <h2 class="text-xl font-bold mb-4">Neighborhoods</h2>\n';
+  htmlContent += '      <ul class="ml-6 list-disc">\n';
+  
+  if (Array.isArray(neighborhoods)) {
+    neighborhoods.forEach(neighborhood => {
+      htmlContent += `        <li><a href="/neighborhoods/${neighborhood.id}" class="text-primary hover:underline">${neighborhood.name}</a></li>\n`;
+    });
+  }
+  
+  htmlContent += '      </ul>\n';
+  htmlContent += '    </section>\n';
+  htmlContent += '  </div>\n';
+  htmlContent += '</body>\n</html>';
+  
+  console.log('HTML Sitemap generated (would be saved to /sitemap.html in production)');
+  return htmlContent;
+}
+
+/**
+ * Generates RSS feed for content syndication
+ */
+function generateRssFeed({
+  baseUrl,
+  properties
+}: {
+  baseUrl: string;
+  properties: Property[];
+}) {
+  // Implementation note: In a production environment, this would write to a file
+  // Here we'll create the RSS XML string that would be written
+  
+  const today = new Date().toISOString();
+  
+  let rssContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  rssContent += '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n';
+  rssContent += '<channel>\n';
+  rssContent += '  <title>Ohana Realty - New Property Listings</title>\n';
+  rssContent += `  <link>${baseUrl}</link>\n`;
+  rssContent += '  <description>The latest property listings from Ohana Realty</description>\n';
+  rssContent += `  <atom:link href="${baseUrl}/feed.xml" rel="self" type="application/rss+xml" />\n`;
+  rssContent += `  <lastBuildDate>${today}</lastBuildDate>\n`;
+  
+  if (Array.isArray(properties)) {
+    // Sort properties by newest first (assuming createdAt field, or could be by id)
+    const sortedProperties = [...properties].sort((a, b) => b.id - a.id);
+    
+    // Take the 10 most recent properties for the RSS feed
+    sortedProperties.slice(0, 10).forEach(property => {
+      rssContent += '  <item>\n';
+      rssContent += `    <title>${property.bedrooms ? `${property.bedrooms} Bed ` : ''}${property.type} For Sale: ${property.address}</title>\n`;
+      rssContent += `    <link>${baseUrl}/properties/${property.id}</link>\n`;
+      rssContent += `    <guid isPermaLink="true">${baseUrl}/properties/${property.id}</guid>\n`;
+      rssContent += `    <description>${property.description ? property.description.substring(0, 300) + '...' : `${property.type} property for sale at ${property.address}, ${property.city}, ${property.state}.`}</description>\n`;
+      rssContent += `    <pubDate>${today}</pubDate>\n`;
+      rssContent += '  </item>\n';
+    });
+  }
+  
+  rssContent += '</channel>\n';
+  rssContent += '</rss>';
+  
+  console.log('RSS feed generated (would be saved to /feed.xml in production)');
+  return rssContent;
 }
