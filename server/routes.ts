@@ -271,6 +271,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat with AI assistant using DeepSeek
   apiRouter.post("/chat", async (req, res) => {
     try {
+      // Check for DeepSeek API credentials
+      const apiKey = process.env.DEEPSEEK_API_KEY;
+      const baseUrl = process.env.DEEPSEEK_BASE_URL;
+      
+      if (!apiKey || !baseUrl) {
+        console.warn('DEEPSEEK_API_KEY or DEEPSEEK_BASE_URL environment variables are missing. AI assistant will use fallback responses.');
+      }
+      
       // Validate the request body
       const messageValidation = z.object({
         sessionId: z.string(),
@@ -294,7 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: new Date().toISOString()
       });
 
-      // Get AI response from DeepSeek API
+      // Get AI response from DeepSeek API (with fallback handling)
       const aiResponse = await getDeepSeekResponse(message);
 
       // Save AI response
@@ -321,12 +329,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // DeepSeek API endpoint
   apiRouter.post("/deepseek", async (req, res) => {
     try {
+      // Check for DeepSeek API credentials
+      const apiKey = process.env.DEEPSEEK_API_KEY;
+      const baseUrl = process.env.DEEPSEEK_BASE_URL;
+      
+      if (!apiKey || !baseUrl) {
+        console.warn('DEEPSEEK_API_KEY or DEEPSEEK_BASE_URL environment variables are missing. AI assistant will use fallback responses.');
+      }
+      
       const { message } = req.body;
       
       if (!message) {
         return res.status(400).json({ message: "Message is required" });
       }
       
+      // Get response (will use fallback if API key is missing)
       const reply = await getDeepSeekResponse(message);
       res.json({ reply });
     } catch (error) {
