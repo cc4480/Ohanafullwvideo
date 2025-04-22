@@ -340,11 +340,11 @@ export default function Hero() {
             className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 animate-slide-up text-shadow"
             style={{ willChange: 'transform, opacity' }}
           >
-            Find Your Dream Property in Laredo with <span className="text-secondary">Ohana Realty</span>
+            Find Your Dream Property in Laredo with <span className="gradient-text bg-clip-text bg-gradient-to-r from-secondary to-secondary/80">Ohana Realty</span>
           </h1>
           
           <p 
-            className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl animate-slide-up" 
+            className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl animate-slide-up glass-effect inline-block px-4 py-2 rounded-md" 
             style={{ animationDelay: "0.2s", willChange: 'transform, opacity' }}
           >
             Expert guidance from Valentin Cuellar to make your real estate journey seamless and successful.
@@ -357,47 +357,47 @@ export default function Hero() {
             <Link href="/properties">
               <Button 
                 size="lg" 
-                className="w-full sm:w-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu"
+                className="w-full sm:w-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu button-premium overflow-hidden"
                 onClick={() => window.scrollTo(0, 0)}
               >
-                <span>Explore Listings</span>
-                <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1'></i>
+                <span className="relative z-10">Explore Listings</span>
+                <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1 relative z-10'></i>
               </Button>
             </Link>
             <Link href="/contact">
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white w-full sm:w-auto text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu"
+                className="border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white w-full sm:w-auto text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu button-premium"
                 onClick={() => window.scrollTo(0, 0)}
               >
-                Contact Valentin Cuellar
+                <span className="relative z-10">Contact Valentin Cuellar</span>
               </Button>
             </Link>
           </div>
           
-          {/* Stats or badges - improved for mobile */}
+          {/* Stats or badges - with premium animation effects */}
           <div 
             className="mt-8 md:mt-10 flex flex-wrap gap-3 md:gap-6 animate-slide-up" 
             style={{ animationDelay: "0.6s", willChange: 'transform, opacity' }}
           >
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-xl md:text-2xl">27+</p>
+            <div className="bg-white/10 backdrop-blur-sm p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-4px] hover:scale-105 transition-all duration-300 glass-effect shadow-lg hover:shadow-xl">
+              <p className="text-secondary font-bold text-xl md:text-2xl gradient-text">27+</p>
               <p className="text-white text-xs md:text-sm">Years Experience</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-xl md:text-2xl">150+</p>
+            <div className="bg-white/10 backdrop-blur-sm p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-4px] hover:scale-105 transition-all duration-300 glass-effect shadow-lg hover:shadow-xl" style={{ transitionDelay: "50ms" }}>
+              <p className="text-secondary font-bold text-xl md:text-2xl gradient-text">150+</p>
               <p className="text-white text-xs md:text-sm">Properties Sold</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-xl md:text-2xl">100%</p>
+            <div className="bg-white/10 backdrop-blur-sm p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-4px] hover:scale-105 transition-all duration-300 glass-effect shadow-lg hover:shadow-xl" style={{ transitionDelay: "100ms" }}>
+              <p className="text-secondary font-bold text-xl md:text-2xl gradient-text">100%</p>
               <p className="text-white text-xs md:text-sm">Client Satisfaction</p>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Scroll indicator with hardware acceleration */}
+      {/* Enhanced scroll indicator with premium effects */}
       <div 
         className="absolute bottom-8 left-0 right-0 flex justify-center z-20 animate-bounce"
         style={{ willChange: 'transform', transform: 'translateZ(0)' }}
@@ -409,8 +409,11 @@ export default function Hero() {
               featuredElement.scrollIntoView({ behavior: 'smooth' });
             }
           }}
-          className="text-white bg-white/10 backdrop-blur-sm p-2 rounded-full hover:bg-white/20 transition-all duration-300 shadow-lg transform-gpu"
-          style={{ WebkitTapHighlightColor: 'transparent' }}
+          className="text-white bg-white/15 backdrop-blur-sm p-3 rounded-full hover:bg-white/25 transition-all duration-300 shadow-lg hover:shadow-xl transform-gpu button-premium highlight-pulse"
+          style={{ 
+            WebkitTapHighlightColor: 'transparent',
+            boxShadow: '0 0 15px rgba(255, 255, 255, 0.15)'
+          }}
           aria-label="Scroll to featured properties"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
