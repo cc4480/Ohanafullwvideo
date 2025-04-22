@@ -113,13 +113,21 @@ export default function Properties() {
         
         <div className="container mx-auto px-4 py-6 sm:py-8">
           {/* Filters */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8 -mt-10 sm:-mt-12 relative z-10 mobile-optimized">
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-neutral-800 dark:text-white mb-4 sm:mb-6">Find Your Perfect Property</h2>
+          <div 
+            className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8 -mt-10 sm:-mt-12 relative z-10 mobile-optimized"
+            role="search"
+            aria-labelledby="property-filter-heading"
+          >
+            <h2 id="property-filter-heading" className="text-xl sm:text-2xl font-serif font-bold text-neutral-800 dark:text-white mb-4 sm:mb-6">
+              Find Your Perfect Property
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">Property Type</label>
-                <Select value={propertyType} onValueChange={setPropertyType}>
-                  <SelectTrigger className="w-full h-10 sm:h-auto">
+                <label htmlFor="property-type-select" className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">
+                  Property Type
+                </label>
+                <Select value={propertyType} onValueChange={setPropertyType} name="property-type">
+                  <SelectTrigger id="property-type-select" className="w-full h-10 sm:h-auto">
                     <SelectValue placeholder="All Properties" />
                   </SelectTrigger>
                   <SelectContent>
@@ -131,9 +139,11 @@ export default function Properties() {
                 </Select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">Price Range</label>
-                <Select value={priceRange} onValueChange={setPriceRange}>
-                  <SelectTrigger className="w-full h-10 sm:h-auto">
+                <label htmlFor="price-range-select" className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">
+                  Price Range
+                </label>
+                <Select value={priceRange} onValueChange={setPriceRange} name="price-range">
+                  <SelectTrigger id="price-range-select" className="w-full h-10 sm:h-auto">
                     <SelectValue placeholder="Any Price" />
                   </SelectTrigger>
                   <SelectContent>
@@ -146,14 +156,18 @@ export default function Properties() {
                 </Select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">Location</label>
+                <label htmlFor="location-search" className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">
+                  Location
+                </label>
                 <Input 
+                  id="location-search"
                   type="text" 
                   placeholder="Enter neighborhood or address" 
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   className="h-10 sm:h-auto"
                   style={{ touchAction: 'manipulation' }}
+                  aria-label="Search by location or address"
                 />
               </div>
             </div>
@@ -163,24 +177,41 @@ export default function Properties() {
           
           {/* Results */}
           <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-neutral-800 dark:text-white">
+            <h2 
+              id="properties-results-heading" 
+              className="text-xl sm:text-2xl font-serif font-bold text-neutral-800 dark:text-white"
+              aria-live="polite"
+            >
               {isLoading ? 'Loading properties...' : 
                 filteredProperties?.length 
-                  ? `${filteredProperties.length} Properties Found` 
+                  ? `${filteredProperties.length} ${filteredProperties.length === 1 ? 'Property' : 'Properties'} Found` 
                   : 'No Properties Found'}
             </h2>
             <Link href="/">
-              <Button variant="outline" className="h-9 sm:h-10 transform-gpu active:scale-95 transition-transform">
-                <i className="bx bx-arrow-back mr-1 sm:mr-2"></i>
+              <Button 
+                variant="outline" 
+                className="h-9 sm:h-10 transform-gpu active:scale-95 transition-transform"
+                aria-label="Back to home page"
+              >
+                <i className="bx bx-arrow-back mr-1 sm:mr-2" aria-hidden="true"></i>
                 <span className="text-sm sm:text-base">Back to Home</span>
               </Button>
             </Link>
           </div>
           
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+            <div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
+              aria-labelledby="properties-results-heading"
+              role="status"
+            >
+              <div className="sr-only">Loading properties, please wait...</div>
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 h-[340px] sm:h-96 animate-pulse mobile-optimized">
+                <div 
+                  key={i} 
+                  className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 h-[340px] sm:h-96 animate-pulse mobile-optimized"
+                  aria-hidden="true"
+                >
                   <div className="bg-gray-200 dark:bg-slate-700 h-40 sm:h-48 rounded-md mb-4"></div>
                   <div className="bg-gray-200 dark:bg-slate-700 h-5 sm:h-6 rounded-md w-3/4 mb-2"></div>
                   <div className="bg-gray-200 dark:bg-slate-700 h-4 rounded-md w-1/2 mb-4"></div>
@@ -194,14 +225,22 @@ export default function Properties() {
               ))}
             </div>
           ) : filteredProperties?.length ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+            <div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8" 
+              aria-labelledby="properties-results-heading"
+              role="region"
+            >
               {filteredProperties.map((property) => (
                 <PropertyCard key={property.id} property={property} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-10 sm:py-16 mobile-optimized">
-              <i className="bx bx-search-alt text-5xl sm:text-6xl text-gray-300 dark:text-gray-600"></i>
+            <div 
+              className="text-center py-10 sm:py-16 mobile-optimized"
+              aria-labelledby="properties-results-heading"
+              role="region"
+            >
+              <i className="bx bx-search-alt text-5xl sm:text-6xl text-gray-300 dark:text-gray-600" aria-hidden="true"></i>
               <p className="text-lg sm:text-xl text-gray-500 dark:text-gray-400 mt-4">No properties match your search criteria.</p>
               <p className="text-sm sm:text-base text-gray-400 dark:text-gray-500 mt-2">Try adjusting your filters or search terms.</p>
               <Button 
@@ -211,8 +250,9 @@ export default function Properties() {
                   setPriceRange("Any");
                   setSearchText("");
                 }}
+                aria-label="Reset all search filters"
               >
-                <i className="bx bx-reset mr-2"></i>
+                <i className="bx bx-reset mr-2" aria-hidden="true"></i>
                 Reset Filters
               </Button>
             </div>
