@@ -23,12 +23,12 @@ body::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/assets/logo.jfif');
+  background-image: url('/assets/logo.png');
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 70vw auto; /* Size relative to viewport */
-  opacity: 0.8;
-  z-index: 1; /* Lower z-index so content appears on top */
+  background-size: 90vw auto; /* Much larger size relative to viewport */
+  opacity: 0.9; /* Higher opacity for better visibility */
+  z-index: 2; /* Slightly higher z-index to ensure visibility */
   pointer-events: none; /* Allows clicking through the logo */
 }
 
@@ -60,7 +60,7 @@ body::after {
 /* Ensure content scrolls over the fixed background */
 #root {
   position: relative;
-  z-index: 1;
+  z-index: 5; /* Higher z-index to ensure content is above the background logo */
 }
 
 @keyframes sunray-pulse {
