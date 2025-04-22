@@ -16,6 +16,7 @@ import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { FavoritesProvider } from "@/contexts/FavoritesContext";
 
 // ScrollToTop component that watches for route changes
 const ScrollToTop = () => {
@@ -37,101 +38,103 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <ErrorBoundary>
-            {/* Global header */}
-            <Header />
-            
-            {/* Main content with layout wrapper */}
-            <Layout>
-              <Switch>
-                <Route path="/">
-                  {() => {
-                    return (
-                      <>
-                        <ScrollToTop />
-                        <ErrorBoundary>
-                          <Home />
-                        </ErrorBoundary>
-                      </>
-                    );
-                  }}
-                </Route>
-                <Route path="/properties">
-                  {() => {
-                    return (
-                      <>
-                        <ScrollToTop />
-                        <ErrorBoundary>
-                          <Properties />
-                        </ErrorBoundary>
-                      </>
-                    );
-                  }}
-                </Route>
-                <Route path="/properties/:id">
-                  {(params) => {
-                    return (
-                      <>
-                        <ScrollToTop />
-                        <ErrorBoundary>
-                          <PropertyDetails id={parseInt(params.id)} />
-                        </ErrorBoundary>
-                      </>
-                    );
-                  }}
-                </Route>
-                <Route path="/neighborhoods">
-                  {() => {
-                    return (
-                      <>
-                        <ScrollToTop />
-                        <ErrorBoundary>
-                          <Neighborhoods />
-                        </ErrorBoundary>
-                      </>
-                    );
-                  }}
-                </Route>
-                <Route path="/about">
-                  {() => {
-                    return (
-                      <>
-                        <ScrollToTop />
-                        <ErrorBoundary>
-                          <About />
-                        </ErrorBoundary>
-                      </>
-                    );
-                  }}
-                </Route>
-                <Route path="/contact">
-                  {() => {
-                    return (
-                      <>
-                        <ScrollToTop />
-                        <ErrorBoundary>
-                          <Contact />
-                        </ErrorBoundary>
-                      </>
-                    );
-                  }}
-                </Route>
-                <Route>
-                  {() => {
-                    return (
-                      <>
-                        <ScrollToTop />
-                        <ErrorBoundary>
-                          <NotFound />
-                        </ErrorBoundary>
-                      </>
-                    );
-                  }}
-                </Route>
-              </Switch>
-            </Layout>
-            
-            {/* Global footer */}
-            <Footer />
+            <FavoritesProvider>
+              {/* Global header */}
+              <Header />
+              
+              {/* Main content with layout wrapper */}
+              <Layout>
+                <Switch>
+                  <Route path="/">
+                    {() => {
+                      return (
+                        <>
+                          <ScrollToTop />
+                          <ErrorBoundary>
+                            <Home />
+                          </ErrorBoundary>
+                        </>
+                      );
+                    }}
+                  </Route>
+                  <Route path="/properties">
+                    {() => {
+                      return (
+                        <>
+                          <ScrollToTop />
+                          <ErrorBoundary>
+                            <Properties />
+                          </ErrorBoundary>
+                        </>
+                      );
+                    }}
+                  </Route>
+                  <Route path="/properties/:id">
+                    {(params) => {
+                      return (
+                        <>
+                          <ScrollToTop />
+                          <ErrorBoundary>
+                            <PropertyDetails id={parseInt(params.id)} />
+                          </ErrorBoundary>
+                        </>
+                      );
+                    }}
+                  </Route>
+                  <Route path="/neighborhoods">
+                    {() => {
+                      return (
+                        <>
+                          <ScrollToTop />
+                          <ErrorBoundary>
+                            <Neighborhoods />
+                          </ErrorBoundary>
+                        </>
+                      );
+                    }}
+                  </Route>
+                  <Route path="/about">
+                    {() => {
+                      return (
+                        <>
+                          <ScrollToTop />
+                          <ErrorBoundary>
+                            <About />
+                          </ErrorBoundary>
+                        </>
+                      );
+                    }}
+                  </Route>
+                  <Route path="/contact">
+                    {() => {
+                      return (
+                        <>
+                          <ScrollToTop />
+                          <ErrorBoundary>
+                            <Contact />
+                          </ErrorBoundary>
+                        </>
+                      );
+                    }}
+                  </Route>
+                  <Route>
+                    {() => {
+                      return (
+                        <>
+                          <ScrollToTop />
+                          <ErrorBoundary>
+                            <NotFound />
+                          </ErrorBoundary>
+                        </>
+                      );
+                    }}
+                  </Route>
+                </Switch>
+              </Layout>
+              
+              {/* Global footer */}
+              <Footer />
+            </FavoritesProvider>
           </ErrorBoundary>
         </TooltipProvider>
       </ThemeProvider>

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Property } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
+import { useFavorites } from "@/contexts/FavoritesContext";
 
 interface PropertyCardProps {
   property: Property;
@@ -11,7 +12,7 @@ interface PropertyCardProps {
 export default function PropertyCard({ property }: PropertyCardProps) {
   // Simple theme detection as fallback
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const { toggleFavorite, isFavorite } = useFavorites();
   
   useEffect(() => {
     // Check for dark mode preference
@@ -33,10 +34,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     return () => observer.disconnect();
   }, []);
   
-  const toggleFavorite = (e: React.MouseEvent) => {
+  const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsFavorited(!isFavorited);
+    toggleFavorite(property.id);
   };
   
   const formatPrice = (price: number) => {
@@ -89,15 +90,20 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           {/* Favorite button - bounces slightly on hover */}
           <div className="absolute bottom-4 right-4 z-10 transition-transform duration-300 transform-gpu group-hover:scale-110">
             <button 
+              type="button"
               className={`${
-                isFavorited 
+                isFavorite(property.id) 
                   ? 'bg-primary text-primary-foreground' 
                   : 'bg-background/80 text-primary backdrop-blur-sm'
               } p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-lg`}
-              onClick={toggleFavorite}
-              aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFavorite(property.id);
+              }}
+              aria-label={isFavorite(property.id) ? 'Remove from favorites' : 'Add to favorites'}
             >
-              <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
+              <Heart className={`h-5 w-5 ${isFavorite(property.id) ? 'fill-current' : ''}`} />
             </button>
           </div>
           
