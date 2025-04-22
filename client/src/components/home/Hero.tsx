@@ -51,11 +51,11 @@ export default function Hero() {
   }, [currentImage]);
   
   return (
-    <section className="relative bg-neutral-900 min-h-[100vh] flex items-center mt-0">
-      {/* Background image carousel and overlays - fixed for mobile */}
+    <section className="relative bg-neutral-900 h-screen flex items-start md:items-center pt-14 md:pt-0 overflow-hidden">
+      {/* Background image carousel and overlays - COMPLETELY REBUILT FOR MOBILE */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {/* Enhanced gradient overlay with multiple layers - fully transparent at top for seamless header blend */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/40 z-10"></div>
+        {/* Enhanced gradient overlay with multiple layers */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black/40 z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10 mix-blend-overlay"></div>
         
         {/* Animated grain texture */}
@@ -133,9 +133,9 @@ export default function Hero() {
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
-      {/* Content - adjusted for mobile */}
-      <div className="container mx-auto px-4 relative z-20 pt-16 md:pt-36 pb-16">
-        <div className="max-w-3xl mt-4 md:mt-12">
+      {/* Content - completely rebuilt for mobile */}
+      <div className="container mx-auto px-4 relative z-20 pt-2 md:pt-36 pb-16">
+        <div className="max-w-3xl mt-0 md:mt-12">
           <div className="mb-4 opacity-90">
             <span className="inline-block px-4 py-1 bg-secondary/90 text-white rounded-full text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm">
               OHANA REALTY - ESTABLISHED IN LAREDO
