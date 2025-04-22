@@ -51,8 +51,8 @@ export default function Hero() {
   }, [currentImage]);
   
   return (
-    <section className="relative bg-neutral-900 min-h-screen flex items-center mt-[-5.5rem]">
-      {/* Background image carousel and overlays */}
+    <section className="relative bg-neutral-900 min-h-[100vh] flex items-center mt-0">
+      {/* Background image carousel and overlays - fixed for mobile */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {/* Enhanced gradient overlay with multiple layers - fully transparent at top for seamless header blend */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/40 z-10"></div>
@@ -133,9 +133,9 @@ export default function Hero() {
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
-      {/* Content */}
-      <div className="container mx-auto px-4 relative z-20 pt-32 md:pt-36 pb-16">
-        <div className="max-w-3xl mt-12">
+      {/* Content - adjusted for mobile */}
+      <div className="container mx-auto px-4 relative z-20 pt-16 md:pt-36 pb-16">
+        <div className="max-w-3xl mt-4 md:mt-12">
           <div className="mb-4 opacity-90">
             <span className="inline-block px-4 py-1 bg-secondary/90 text-white rounded-full text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm">
               OHANA REALTY - ESTABLISHED IN LAREDO
@@ -180,22 +180,22 @@ export default function Hero() {
             </Link>
           </div>
           
-          {/* Stats or badges */}
+          {/* Stats or badges - improved for mobile */}
           <div 
-            className="mt-10 flex gap-6 animate-slide-up" 
+            className="mt-8 md:mt-10 flex flex-wrap gap-3 md:gap-6 animate-slide-up" 
             style={{ animationDelay: "0.6s", willChange: 'transform, opacity' }}
           >
-            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-2xl">27+</p>
-              <p className="text-white text-sm">Years Experience</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
+              <p className="text-secondary font-bold text-xl md:text-2xl">27+</p>
+              <p className="text-white text-xs md:text-sm">Years Experience</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-2xl">150+</p>
-              <p className="text-white text-sm">Properties Sold</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
+              <p className="text-secondary font-bold text-xl md:text-2xl">150+</p>
+              <p className="text-white text-xs md:text-sm">Properties Sold</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
-              <p className="text-secondary font-bold text-2xl">100%</p>
-              <p className="text-white text-sm">Client Satisfaction</p>
+            <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300">
+              <p className="text-secondary font-bold text-xl md:text-2xl">100%</p>
+              <p className="text-white text-xs md:text-sm">Client Satisfaction</p>
             </div>
           </div>
         </div>
