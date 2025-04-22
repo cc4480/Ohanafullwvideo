@@ -125,24 +125,33 @@ export default function Header() {
         {/* Logo with reduced size on mobile */}
         <Link href="/" className="flex items-center relative group animate-fade-in">
           <div className={`p-1 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"}`}>
-            {/* Custom mobile logo sizing */}
-            <div style={{ 
-              width: isMobile ? '60px' : '140px', 
-              height: isMobile ? '25px' : '55px', 
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{ 
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                backgroundImage: `url(${logoImg})`,
-                backgroundSize: 'contain',
-                backgroundPosition: isMobile ? 'center center' : 'center',
-              transform: isMobile ? 'scale(0.8)' : 'none',
-                backgroundRepeat: 'no-repeat'
-              }}></div>
-            </div>
+            {/* Simple direct image approach for better cross-device compatibility */}
+            {isMobile ? (
+              <img 
+                src={logoImg}
+                alt="Ohana Realty Logo"
+                style={{
+                  width: '40px',
+                  height: 'auto',
+                  maxHeight: '25px',
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+                className="transform-gpu mobile-optimized"
+              />
+            ) : (
+              <img 
+                src={logoImg}
+                alt="Ohana Realty Logo"
+                style={{
+                  width: '140px',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+                className="transform-gpu"
+              />
+            )}
           </div>
           {/* Subtle decoration */}
           <div className="absolute -bottom-2 -right-2 h-4 w-4 bg-secondary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

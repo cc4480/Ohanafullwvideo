@@ -370,14 +370,39 @@
     animation: pulse 2s infinite !important;
   }
   
-  /* Mobile-specific chat icon */
+  /* Mobile-specific chat icon - CRITICAL: DO NOT REMOVE OR MODIFY */
   @media (max-width: 640px) {
     #ohana-chat-icon {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      position: fixed !important;
       bottom: 16px !important;
       right: 16px !important;
-      width: 56px !important;
-      height: 56px !important;
+      width: 50px !important;
+      height: 50px !important;
       z-index: 9999999 !important;
+      animation: pulse 2s infinite !important;
+      background-color: white !important;
+      border: 2px solid hsl(195, 100%, 29%) !important; 
+      border-radius: 8px !important;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
+    }
+    
+    #ohana-chat-icon img {
+      width: 90% !important;
+      height: 90% !important;
+      object-fit: contain !important;
+      margin: auto !important;
+    }
+    
+    /* Ensure the button is always shown on mobile */
+    button[aria-label="Chat with Ohana Assistant"] {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 999999 !important;
     }
   }
 
