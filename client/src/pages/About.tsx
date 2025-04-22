@@ -188,9 +188,12 @@ export default function About() {
 
             <div className="rounded-lg overflow-hidden shadow-lg">
               <img 
-                src="@assets/MLS15.jpg" 
+                src="/images/ohana-property.jpg" 
                 alt="Ohana Realty property" 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "https://placehold.co/600x400/slate/white?text=Ohana+Realty";
+                }}
               />
             </div>
           </div>
@@ -238,9 +241,12 @@ export default function About() {
               <div className="order-1 lg:order-2 flex justify-center">
                 <div className="w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden border-4 border-primary/20">
                   <img 
-                    src="@assets/OIP (1).jfif" 
+                    src="/images/valentin-cuellar.jpg" 
                     alt="Valentin Cuellar - Broker and Owner" 
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://placehold.co/800x800/slate/white?text=Valentin+Cuellar";
+                    }}
                   />
                 </div>
               </div>
