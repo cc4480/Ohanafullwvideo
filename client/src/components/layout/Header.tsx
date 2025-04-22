@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "./ThemeToggle";
 
 // Import logo from assets
 import logoImg from "@assets/OIP.jfif";
@@ -177,8 +176,6 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-2 sm:gap-4 animate-fade-in">
-          <ThemeToggle />
-          
           <Link href="/#contact">
             <Button 
               variant="secondary" 

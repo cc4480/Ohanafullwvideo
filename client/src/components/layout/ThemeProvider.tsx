@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-type Theme = "light" | "dark";
+type Theme = "dark";
 
 interface ThemeContextType {
   theme: Theme;
+  // These methods are kept for compatibility but will no longer change the theme
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
 }
@@ -15,47 +16,28 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  // Always use dark mode
+  const [theme] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
   // Only run once the component is mounted to avoid hydration issues
   useEffect(() => {
     setMounted(true);
     
-    // Initialize theme based on localStorage or system preference
-    const storedTheme = localStorage.getItem("theme") as Theme;
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    // Always set dark mode
+    document.documentElement.classList.add("dark");
     
-    if (storedTheme === "dark" || (!storedTheme && prefersDark)) {
-      setThemeState("dark");
-      document.documentElement.classList.add("dark");
-    } else {
-      setThemeState("light");
-      document.documentElement.classList.remove("dark");
-    }
+    // Store preference in localStorage
+    localStorage.setItem("theme", "dark");
   }, []);
 
-  // Separate function to set theme that can be called externally
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-    
-    // Update localStorage
-    localStorage.setItem("theme", newTheme);
-    
-    // Update DOM
-    if (newTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+  // These methods are kept for compatibility but no longer change the theme
+  const setTheme = (_newTheme: Theme) => {
+    // Do nothing, always dark mode
   };
 
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    
-    // Log for debugging
-    console.log(`Theme toggled to: ${newTheme}`);
+    // Do nothing, always dark mode
   };
 
   // Avoid rendering anything until mounted to prevent hydration issues
