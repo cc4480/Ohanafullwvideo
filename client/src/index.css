@@ -4,7 +4,7 @@
 
 /* Global fixed background settings with logo as background */
 html, body {
-  background-image: url('/assets/background.jpg'); /* Path to your background image */
+  background-image: url('../../../public/assets/background.jpg'); /* Path to your background image */
   background-size: cover !important;
   background-position: center !important;
   background-attachment: fixed !important; /* Keeps the image static */
@@ -23,7 +23,7 @@ body::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/assets/logo.png');
+  background-image: url('../../../public/assets/logo.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: 90vw auto; /* Much larger size relative to viewport */
