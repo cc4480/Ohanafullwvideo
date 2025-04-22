@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Import logo for background effect
-import logoImg from "@assets/OIP.jfif";
+import logoImg from "../../assets/logo.svg";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);

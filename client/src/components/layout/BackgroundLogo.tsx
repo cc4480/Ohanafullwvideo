@@ -1,4 +1,5 @@
 import React from 'react';
+import logoImg from "../../assets/logo.svg";
 
 /**
  * BackgroundLogo component that creates a semi-transparent overlay
@@ -12,15 +13,15 @@ export default function BackgroundLogo() {
       
       {/* Logo on top of the overlay */}
       <img 
-        src="/assets/profile.jpg"
-        alt="Background Logo" 
-        className="fixed transform-gpu"
+        src={logoImg}
+        alt="Ohana Realty Logo" 
+        className="fixed transform-gpu animate-float"
         style={{
           width: '500px',
           height: 'auto',
           opacity: 0.15,
           objectFit: 'contain',
-          filter: 'grayscale(50%)',
+          filter: 'grayscale(50%) drop-shadow(0 0 20px rgba(255,255,255,0.2))',
           pointerEvents: 'none',
           willChange: 'transform',
           backfaceVisibility: 'hidden'
