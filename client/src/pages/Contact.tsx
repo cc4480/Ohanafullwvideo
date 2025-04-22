@@ -10,7 +10,7 @@ export default function Contact() {
     <>
       <SEOHead 
         title="Contact Ohana Realty | Laredo TX Real Estate Agency | Valentin Cuellar"
-        description="Contact Valentin Cuellar at Ohana Realty for all your real estate needs in Laredo, TX. Visit our office at 5702 McPherson Rd, call us at (956) 451-2013, or fill out our online form for prompt assistance."
+        description="Contact Valentin Cuellar at Ohana Realty for all your real estate needs in Laredo, TX. Visit our office at 5702 McPherson Rd, call us at (956) 324-6714, or fill out our online form for prompt assistance."
         canonicalUrl="/contact"
         ogImage={`${websiteUrl}/og-image-contact.jpg`}
       />
@@ -25,7 +25,7 @@ export default function Contact() {
         addressLocality="Laredo"
         addressRegion="TX"
         postalCode="78041"
-        telephone="+19564512013"
+        telephone="+19563246714"
         email="contact@ohanarealty.com"
         priceRange="$$$"
         latitude={27.5454625}
@@ -64,7 +64,7 @@ export default function Contact() {
         questions={[
           {
             question: "What's the best way to contact Ohana Realty?",
-            answer: "The best way to contact Ohana Realty is by calling Valentin Cuellar directly at (956) 451-2013, sending an email to contact@ohanarealty.com, or using the contact form on our website. You can also visit our office at 5702 McPherson Rd, Suite 9, Laredo, TX 78041 during business hours."
+            answer: "The best way to contact Ohana Realty is by calling Valentin Cuellar directly at (956) 324-6714, sending an email to contact@ohanarealty.com, or using the contact form on our website. You can also visit our office at 5702 McPherson Rd, Suite 9, Laredo, TX 78041 during business hours."
           },
           {
             question: "What are Ohana Realty's office hours?",
@@ -100,8 +100,8 @@ export default function Contact() {
             </div>
             <h3 className="font-serif font-medium text-xl mb-2">Call Us</h3>
             <p className="text-muted-foreground mb-4">Speak directly with Valentin</p>
-            <a href="tel:+19564512013" className="text-primary hover:underline">
-              (956) 451-2013
+            <a href="tel:+19563246714" className="text-primary hover:underline">
+              (956) 324-6714
             </a>
           </div>
 
