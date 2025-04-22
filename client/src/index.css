@@ -80,6 +80,7 @@
   }
 }
 
+/* Enhanced smooth animations */
 @keyframes float {
   0%, 100% {
     transform: translateY(0);
@@ -113,6 +114,31 @@
   40% { background-position: 200px -200px; }
   60% { background-position: -100px 100px; }
   80% { background-position: -200px 200px; }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slide-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-down {
+  0% { transform: translateY(-20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scale-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 @layer base {
@@ -158,29 +184,66 @@
     font-family: 'Inter', sans-serif;
   }
   
+  /* ===== Enhanced Animations and Transitions ===== */
+  /* Improved property card image animation */
   .property-card-img {
     height: 240px;
     object-fit: cover;
-    transition: all 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
   }
   
   .property-card:hover .property-card-img {
-    transform: scale(1.03);
+    transform: scale(1.05);
   }
   
-  .map-container {
-    height: 500px;
+  /* Smooth loading transitions */
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+    will-change: opacity;
   }
   
-  @media (max-width: 768px) {
-    .map-container {
-      height: 350px;
-    }
+  .animate-slide-up {
+    animation: slide-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: transform, opacity;
   }
   
-  /* Visual enhancements */
+  .animate-slide-down {
+    animation: slide-down 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: transform, opacity;
+  }
+  
+  .animate-scale-in {
+    animation: scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: transform, opacity;
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+    will-change: transform;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+    will-change: transform;
+  }
+  
+  .animate-slow-zoom {
+    animation: slow-zoom 20s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  
+  /* Faster loading by preloading theme transitions */
+  .theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, 
+                box-shadow 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+    will-change: background-color, color, border-color, box-shadow, transform, opacity;
+  }
+  
+  /* Enhanced hover effects with GPU acceleration */
   .card-hover-effect {
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, box-shadow;
   }
   
   .card-hover-effect:hover {
@@ -190,13 +253,28 @@
   
   .floating-animation {
     animation: float 6s ease-in-out infinite;
+    will-change: transform;
   }
   
+  /* Map container */
+  .map-container {
+    height: 500px;
+    transition: height 0.3s ease;
+  }
+  
+  @media (max-width: 768px) {
+    .map-container {
+      height: 350px;
+    }
+  }
+  
+  /* Background pattern */
   .bg-grid-pattern {
     background-image: 
       linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
+    transition: background-image 0.3s ease;
   }
   
   .dark .bg-grid-pattern {
@@ -205,33 +283,78 @@
       linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   }
   
+  /* Enhanced shimmer effect with improved performance */
   .shimmer-effect {
     background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
     background-size: 200% 100%;
-    animation: shimmer 3s linear infinite;
+    animation: shimmer 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    will-change: background-position;
   }
   
+  .dark .shimmer-effect {
+    background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+    background-size: 200% 100%;
+  }
+  
+  /* Enhanced text shadow with adaptive colors */
   .text-shadow {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: text-shadow 0.3s ease;
   }
   
+  .dark .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Smooth gradient text animation */
   .gradient-text {
     background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-fill-color: transparent;
+    transition: background-position 0.3s ease;
   }
   
+  .gradient-text:hover {
+    background-position: right center;
+  }
+  
+  /* Enhanced glass effect with better performance */
   .glass-effect {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: backdrop-filter, background-color, border-color;
+  }
+  
+  .glass-effect:hover {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.15);
   }
   
   .dark .glass-effect {
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .dark .glass-effect:hover {
+    background: rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Loading skeleton placeholder animation */
+  .skeleton-loading {
+    background: linear-gradient(90deg, 
+      rgba(var(--muted), 0.1) 0%, 
+      rgba(var(--muted), 0.2) 50%, 
+      rgba(var(--muted), 0.1) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+    border-radius: var(--radius);
+    will-change: background-position;
   }
 }
