@@ -123,19 +123,16 @@ export default function Header() {
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center relative group animate-fade-in">
-          <div className={`w-48 h-20 flex items-center justify-center ${location === "/" && !scrolled ? "bg-transparent" : "bg-white"} rounded-md transition-all duration-300`}>
+          <div className={`p-2 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"}`}>
             <img 
               src={logoImg} 
               alt="Ohana Realty Logo" 
-              className="transform-gpu" 
+              className="transform-gpu"
               style={{ 
-                width: 'auto',
+                width: isMobile ? '75px' : '150px',
                 height: 'auto',
-                maxWidth: isMobile ? '45%' : '80%',
-                maxHeight: isMobile ? '45%' : '70%',
-                padding: '2px',
-                objectFit: 'contain',
-                display: 'block'
+                display: 'block',
+                maxWidth: '100%'
               }}
             />
           </div>
