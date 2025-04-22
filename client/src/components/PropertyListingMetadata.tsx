@@ -109,7 +109,7 @@ export default function PropertyListingMetadata({
   return (
     <>
       {/* Basic metadata */}
-      <Helmet>
+      <SafeHelmet>
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="keywords" content={keywords.join(', ')} />
@@ -138,7 +138,7 @@ export default function PropertyListingMetadata({
         {/* NewsArticle compatibility for Google Discover */}
         <meta name="article:published_time" content={publishedDate} />
         <meta name="article:modified_time" content={modifiedDate} />
-      </Helmet>
+      </SafeHelmet>
       
       {/* Canonical URL to prevent duplicate content */}
       <CanonicalURLs 

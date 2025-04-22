@@ -1,4 +1,4 @@
-import SafeHelmet from './SafeHelmet';
+import { Helmet } from 'react-helmet';
 
 interface SocialShareMetadataProps {
   /**
@@ -157,105 +157,113 @@ export default function SocialShareMetadata({
   currency,
   availability
 }: SocialShareMetadataProps) {
-  // Ensure description is a string and truncate it for optimal display
-  const descString = typeof description === 'string' ? description : '';
-  const truncatedDescription = descString.length > 160 
-    ? descString.substring(0, 157) + '...' 
-    : descString;
+  try {
+    // Safely ensure description is a string and truncate it for optimal display
+    const descString = typeof description === 'string' ? description : '';
+    const truncatedDescription = descString.length > 160 
+      ? descString.substring(0, 157) + '...' 
+      : descString;
+      
+    // Safely ensure image is a string and make it an absolute URL
+    const imgString = typeof image === 'string' ? image : '';
+    const absoluteImage = imgString.startsWith && imgString.startsWith('http')
+      ? imgString
+      : `https://ohanarealty.com${imgString.startsWith && imgString.startsWith('/') ? '' : '/'}${imgString}`;
     
-  // Ensure image is an absolute URL
-  const absoluteImage = typeof image === 'string' 
-    ? (image.startsWith('http') 
-       ? image 
-       : `https://ohanarealty.com${image.startsWith('/') ? '' : '/'}${image}`)
-    : 'https://ohanarealty.com/placeholder-property.jpg';
-  
-  return (
-    <SafeHelmet>
-      {/* Basic OpenGraph tags */}
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={truncatedDescription} />
-      <meta property="og:url" content={url} />
-      <meta property="og:image" content={absoluteImage} />
-      {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
-      <meta property="og:type" content={type} />
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:locale" content={locale} />
-      
-      {/* Alternate locales */}
-      {alternateLocales.map(alt => (
-        <meta 
-          key={alt.locale} 
-          property="og:locale:alternate" 
-          content={alt.locale} 
-        />
-      ))}
-      
-      {/* Facebook app ID if available */}
-      {facebookAppId && <meta property="fb:app_id" content={facebookAppId} />}
-      
-      {/* Video metadata if available */}
-      {videoUrl && (
-        <>
-          <meta property="og:video" content={videoUrl} />
-          <meta property="og:video:secure_url" content={videoUrl} />
-          <meta property="og:video:type" content="video/mp4" />
-          <meta property="og:video:width" content="1280" />
-          <meta property="og:video:height" content="720" />
-        </>
-      )}
-      
-      {/* Article-specific metadata */}
-      {type === 'article' && (
-        <>
-          {author && <meta property="article:author" content={author} />}
-          {publishedTime && <meta property="article:published_time" content={publishedTime} />}
-          {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
-          {section && <meta property="article:section" content={section} />}
-          {tags.map(tag => (
-            <meta key={tag} property="article:tag" content={tag} />
-          ))}
-        </>
-      )}
-      
-      {/* Product-specific metadata */}
-      {type === 'product' && (
-        <>
-          {price && currency && (
-            <meta property="product:price:amount" content={price} />
-          )}
-          {currency && (
-            <meta property="product:price:currency" content={currency} />
-          )}
-          {availability && (
-            <meta property="product:availability" content={availability} />
-          )}
-        </>
-      )}
-      
-      {/* Twitter Card metadata */}
-      <meta name="twitter:card" content={twitter?.card || twitterCard} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={truncatedDescription} />
-      <meta name="twitter:image" content={absoluteImage} />
-      {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
-      {(twitter?.site || twitterSite) && 
-        <meta name="twitter:site" content={`@${twitter?.site || twitterSite}`} />}
-      {(twitter?.creator || twitterCreator) && 
-        <meta name="twitter:creator" content={`@${twitter?.creator || twitterCreator}`} />}
-      
-      {/* Additional social platforms */}
-      <meta name="linkedin:title" content={title} />
-      <meta name="linkedin:description" content={truncatedDescription} />
-      <meta name="linkedin:image" content={absoluteImage} />
-      
-      {/* Pinterest optimization */}
-      <meta name="pinterest" content="nohover" />
-      {imageAlt && <meta name="pinterest:description" content={imageAlt} />}
-      
-      {/* WhatsApp preview */}
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:rich_attachment" content="true" />
-    </SafeHelmet>
-  );
+    return (
+      <Helmet>
+        {/* Basic OpenGraph tags */}
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={truncatedDescription} />
+        <meta property="og:url" content={url} />
+        <meta property="og:image" content={absoluteImage} />
+        {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+        <meta property="og:type" content={type} />
+        <meta property="og:site_name" content={siteName} />
+        <meta property="og:locale" content={locale} />
+        
+        {/* Alternate locales */}
+        {Array.isArray(alternateLocales) && alternateLocales.map(alt => (
+          alt && alt.locale ? (
+            <meta 
+              key={alt.locale} 
+              property="og:locale:alternate" 
+              content={alt.locale} 
+            />
+          ) : null
+        ))}
+        
+        {/* Facebook app ID if available */}
+        {facebookAppId && <meta property="fb:app_id" content={facebookAppId} />}
+        
+        {/* Video metadata if available */}
+        {videoUrl && (
+          <>
+            <meta property="og:video" content={videoUrl} />
+            <meta property="og:video:secure_url" content={videoUrl} />
+            <meta property="og:video:type" content="video/mp4" />
+            <meta property="og:video:width" content="1280" />
+            <meta property="og:video:height" content="720" />
+          </>
+        )}
+        
+        {/* Article-specific metadata */}
+        {type === 'article' && (
+          <>
+            {author && <meta property="article:author" content={author} />}
+            {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+            {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+            {section && <meta property="article:section" content={section} />}
+            {Array.isArray(tags) && tags.map(tag => (
+              typeof tag === 'string' ? (
+                <meta key={tag} property="article:tag" content={tag} />
+              ) : null
+            ))}
+          </>
+        )}
+        
+        {/* Product-specific metadata */}
+        {type === 'product' && (
+          <>
+            {price && currency && (
+              <meta property="product:price:amount" content={price} />
+            )}
+            {currency && (
+              <meta property="product:price:currency" content={currency} />
+            )}
+            {availability && (
+              <meta property="product:availability" content={availability} />
+            )}
+          </>
+        )}
+        
+        {/* Twitter Card metadata */}
+        <meta name="twitter:card" content={twitter?.card || twitterCard} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={truncatedDescription} />
+        <meta name="twitter:image" content={absoluteImage} />
+        {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
+        {(twitter?.site || twitterSite) && 
+          <meta name="twitter:site" content={`@${twitter?.site || twitterSite}`} />}
+        {(twitter?.creator || twitterCreator) && 
+          <meta name="twitter:creator" content={`@${twitter?.creator || twitterCreator}`} />}
+        
+        {/* Additional social platforms */}
+        <meta name="linkedin:title" content={title} />
+        <meta name="linkedin:description" content={truncatedDescription} />
+        <meta name="linkedin:image" content={absoluteImage} />
+        
+        {/* Pinterest optimization */}
+        <meta name="pinterest" content="nohover" />
+        {imageAlt && <meta name="pinterest:description" content={imageAlt} />}
+        
+        {/* WhatsApp preview */}
+        <meta property="og:site_name" content={siteName} />
+        <meta property="og:rich_attachment" content="true" />
+      </Helmet>
+    );
+  } catch (error) {
+    console.error('Error in SocialShareMetadata component:', error);
+    return null;
+  }
 }
