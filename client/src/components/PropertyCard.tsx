@@ -278,7 +278,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           </div>
         </div>
       </Link>
-      <div className="p-6 relative">
+      <div className="p-5 sm:p-6 relative">
         {/* Subtle corner decoration - hide from screen readers */}
         <div className="absolute top-0 right-0 w-12 h-12 overflow-hidden" aria-hidden="true">
           <div className="absolute -top-6 -right-6 w-12 h-12 bg-primary/10 rotate-45 transform origin-bottom-left"></div>
@@ -302,7 +302,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           {accessibleDescription}
         </div>
         
-        <div className="flex flex-wrap gap-4 mb-4" aria-label="Property features">
+        <div className="flex flex-wrap gap-3 sm:gap-4 mb-5" aria-label="Property features">
           {property.type === "RESIDENTIAL" && property.bedrooms && (
             <div 
               className={`flex items-center ${isDarkMode ? 'text-white' : 'text-foreground'}`}

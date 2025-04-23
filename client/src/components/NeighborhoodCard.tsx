@@ -186,7 +186,7 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
           </span>
         </div>
       </div>
-      <div ref={contentRef} className="p-6">
+      <div ref={contentRef} className="p-5 sm:p-6">
         <h3 
           ref={titleRef}
           className={`font-serif text-xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mb-2 transition-colors`}
@@ -196,14 +196,14 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
         <p className={`${isDarkMode ? 'text-slate-300' : 'text-muted-foreground'} mb-4`}>
           {neighborhood.description}
         </p>
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-5">
           {neighborhood.features?.map((feature, index) => (
             <span 
               key={index} 
               className={`${isDarkMode 
                 ? 'bg-slate-700 text-slate-200' 
                 : 'bg-neutral-100 text-neutral-700'} 
-                text-sm px-3 py-1 rounded-full transition-all duration-300`}
+                text-sm px-3 py-1.5 rounded-full shadow-sm transition-all duration-300`}
             >
               {feature}
             </span>
@@ -212,8 +212,8 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
         <a 
           ref={linkRef}
           href="#" 
-          className="flex items-center text-primary font-medium hover:text-primary-dark will-change-transform"
-          style={{ transformOrigin: 'left center' }}
+          className="flex items-center text-primary font-medium hover:text-primary-dark will-change-transform py-2 px-1 -ml-1 mt-1 rounded-md"
+          style={{ transformOrigin: 'left center', minHeight: '44px' }}
         >
           Learn More
           <ArrowRight className="h-4 w-4 ml-1 will-change-transform" />
