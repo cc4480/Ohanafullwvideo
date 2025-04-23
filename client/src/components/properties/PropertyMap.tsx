@@ -176,29 +176,32 @@ export default function PropertyMap() {
                   </div>
                 </div>
                 
-                <div className="mt-4 flex justify-between items-center">
+                {/* Price display */}
+                <div className="mt-4">
                   <p className="font-bold text-lg text-secondary">${property.price.toLocaleString()}</p>
-                  <div className="flex gap-2">
-                    <Button
+                </div>
+                
+                {/* Buttons stacked for better mobile display */}
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:flex sm:justify-between">
+                  <Link href={`/properties/${property.id}`} className="w-full sm:w-auto">
+                    <Button 
                       size="sm"
-                      variant="outline"
-                      onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property) : null}
-                      className="text-xs flex items-center gap-1"
-                      aria-label={`View ${property.address} on Google Maps`}
+                      variant="default"
+                      className="w-full text-sm font-medium"
+                      aria-label={`View details of ${property.address}`}
                     >
-                      <MapPin className="h-3 w-3" /> Google Maps
+                      View Details
                     </Button>
-                    <Link href={`/properties/${property.id}`}>
-                      <Button 
-                        size="sm"
-                        variant="default"
-                        className="text-xs"
-                        aria-label={`View details of ${property.address}`}
-                      >
-                        View Details
-                      </Button>
-                    </Link>
-                  </div>
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property) : null}
+                    className="text-xs flex items-center justify-center gap-1"
+                    aria-label={`View ${property.address} on Google Maps`}
+                  >
+                    <MapPin className="h-3 w-3" /> Map
+                  </Button>
                 </div>
               </div>
             </div>

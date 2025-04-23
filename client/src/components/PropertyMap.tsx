@@ -81,11 +81,16 @@ export default function PropertyMap() {
                   </div>
                 </div>
                 
-                <div className="mt-4 flex justify-between items-center">
+                {/* Price display */}
+                <div className="mt-4">
                   <p className="font-bold text-lg text-secondary">${property.price.toLocaleString()}</p>
+                </div>
+                
+                {/* View details button - full width for better mobile tapping */}
+                <div className="mt-3">
                   <a 
                     href={`/properties/${property.id}`}
-                    className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90 transition-colors text-sm"
+                    className="block w-full text-center px-3 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors text-sm font-medium"
                   >
                     View Details
                   </a>
