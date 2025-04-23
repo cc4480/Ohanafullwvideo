@@ -53,7 +53,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Search properties with filters
   apiRouter.get("/properties/search", async (req, res) => {
     try {
-      const { type, minPrice, maxPrice, minBeds, minBaths, city, zipCode } = req.query;
+      const { type, minPrice, maxPrice, minBeds, minBaths, city, zipCode, neighborhood } = req.query;
       
       // Prepare filter object with correct types
       const filters: {
@@ -64,6 +64,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         minBaths?: number;
         city?: string;
         zipCode?: string;
+        neighborhood?: number;
       } = {};
       
       // Add only defined filters with proper type conversion
@@ -74,6 +75,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (minBaths) filters.minBaths = Number(minBaths);
       if (city) filters.city = String(city);
       if (zipCode) filters.zipCode = String(zipCode);
+      if (neighborhood) {
+        const neighborhoodId = Number(neighborhood);
+        if (!isNaN(neighborhoodId)) {
+          filters.neighborhood = neighborhoodId;
+        }
+      }
       
       // Use the database-optimized search method
       const properties = await storage.searchProperties(filters);

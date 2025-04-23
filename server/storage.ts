@@ -79,6 +79,7 @@ export class DatabaseStorage implements IStorage {
     minBaths?: number;
     city?: string;
     zipCode?: string;
+    neighborhood?: number;
   }): Promise<Property[]> {
     // Create an array to hold query conditions
     const conditions: Array<SQL> = [];
@@ -111,6 +112,13 @@ export class DatabaseStorage implements IStorage {
     if (filters.zipCode) {
       conditions.push(eq(properties.zipCode, filters.zipCode));
     }
+    
+    if (filters.neighborhood) {
+      conditions.push(eq(properties.neighborhood, filters.neighborhood));
+    }
+    
+    // Log the search filters for debugging
+    console.log("Searching properties with filters:", JSON.stringify(filters, null, 2));
     
     // Execute query with conditions if they exist
     if (conditions.length > 0) {
@@ -158,6 +166,28 @@ export class DatabaseStorage implements IStorage {
   async getNeighborhood(id: number): Promise<Neighborhood | undefined> {
     const [neighborhood] = await db.select().from(neighborhoods).where(eq(neighborhoods.id, id));
     return neighborhood || undefined;
+  }
+  
+  /**
+   * Get a neighborhood with all its properties included
+   * @param id The neighborhood ID
+   * @returns Neighborhood with properties or undefined
+   */
+  async getNeighborhoodWithProperties(id: number): Promise<(Neighborhood & { properties: Property[] }) | undefined> {
+    // First get the neighborhood
+    const neighborhood = await this.getNeighborhood(id);
+    if (!neighborhood) {
+      return undefined;
+    }
+    
+    // Then get its properties
+    const neighborhoodProperties = await this.getPropertiesByNeighborhood(id);
+    
+    // Return the combined result
+    return {
+      ...neighborhood,
+      properties: neighborhoodProperties
+    };
   }
   
   // Get properties by neighborhood ID
