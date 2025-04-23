@@ -64,17 +64,24 @@ export default function FullScreenImageViewer({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent 
-        className="max-w-7xl w-full p-0 bg-black/95 border-none lg:max-h-[90vh]" 
+        className="max-w-none w-screen h-screen p-0 m-0 bg-black/95 border-none inset-0 overflow-hidden" 
         aria-describedby="fullscreen-viewer-description"
         style={{
-          touchAction: 'manipulation'
+          touchAction: 'manipulation',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          transform: 'none',
+          borderRadius: 0
         }}
       >
         <DialogTitle className="sr-only">Image Viewer - {propertyAddress}</DialogTitle>
         <div id="fullscreen-viewer-description" className="sr-only">
           Full screen image viewer for property at {propertyAddress}, showing image {currentIndex + 1} of {images.length}.
         </div>
-        <div className="relative w-full h-screen max-h-[90vh] flex flex-col">
+        <div className="relative w-full h-full flex flex-col justify-center items-center">
           {/* Close button - Made larger on mobile for easier touch */}
           <div className="absolute top-4 right-4 z-50">
             <Button
@@ -96,7 +103,7 @@ export default function FullScreenImageViewer({
           
           {/* Main image container - Enhanced for touch interactions */}
           <div 
-            className="flex-1 flex items-center justify-center p-4 overflow-hidden"
+            className="flex-1 flex items-center justify-center w-full h-full overflow-hidden"
             style={{ 
               WebkitOverflowScrolling: 'touch', // Better momentum scrolling
               touchAction: 'pan-y pinch-zoom' // Enable vertical swiping and pinch zoom
@@ -106,7 +113,7 @@ export default function FullScreenImageViewer({
               <img
                 src={images[currentIndex]}
                 alt={`Property image ${currentIndex + 1} of ${propertyAddress}`}
-                className="max-h-full max-w-full object-contain select-none"
+                className="max-h-[80vh] w-auto max-w-[90vw] mx-auto object-contain select-none"
                 loading="eager"
                 draggable="false" // Prevent unwanted drag on mobile
                 style={{ 
@@ -124,7 +131,7 @@ export default function FullScreenImageViewer({
           </div>
 
           {/* Navigation controls - Enhanced size for better touch targets */}
-          <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 flex justify-between px-3">
+          <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 flex justify-between px-3 w-full">
             <Button
               variant="ghost"
               size="icon"
@@ -149,7 +156,7 @@ export default function FullScreenImageViewer({
           </div>
 
           {/* Thumbnail navigation - Enhanced for touch with better spacing */}
-          <div className="mt-auto p-3 overflow-x-auto flex space-x-3 bg-black/40 backdrop-blur-sm">
+          <div className="absolute bottom-0 left-0 right-0 p-3 overflow-x-auto flex justify-center space-x-3 bg-black/40 backdrop-blur-sm">
             {images && images.length > 0 && images.map((image, index) => (
               <div
                 key={index}
