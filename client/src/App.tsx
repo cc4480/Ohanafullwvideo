@@ -2,8 +2,9 @@ import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { queryClient } from "./lib/queryClient";
+import { useLocation } from "wouter";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Layout from "@/components/layout/Layout";
@@ -31,11 +32,73 @@ import SiteMapGenerator from "@/components/SiteMapGenerator";
 function App() {
   // Main App component with advanced optimizations and enterprise-grade SEO
   
+  // Get current location for route change detection
+  const [location] = useLocation();
+  const prevLocationRef = useRef(location);
+  
   // Initialize the mobile experience hook for mobile optimizations
   const { isMobile, isTouchDevice } = useMobile();
   
   // Base URL for the website - used for SEO components and sitemap generation
   const websiteUrl = "https://ohanarealty.com";
+  
+  // Force scroll to top on all route changes
+  useEffect(() => {
+    if (location !== prevLocationRef.current) {
+      console.log("GLOBAL ROUTE CHANGE DETECTED - FORCING SCROLL RESET");
+      
+      // Define an aggressive scroll reset function
+      const forceScrollToTop = () => {
+        console.log("Executing global scroll reset");
+        
+        // Use all known techniques to reset scroll
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+        
+        // Forcefully reset scroll on all scrollable elements
+        document.querySelectorAll('main, section, article, div, .scrollable, .overflow-auto, .overflow-y-auto').forEach(el => {
+          if (el instanceof HTMLElement) {
+            el.scrollTop = 0;
+          }
+        });
+        
+        // Special hack for stubborn mobile browsers
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          // Temporarily disable scrolling to force position
+          document.body.style.overflow = 'hidden';
+          document.documentElement.style.overflow = 'hidden';
+          
+          // Force browser to recognize the change
+          void document.body.offsetHeight;
+          
+          // After a short delay, restore scrolling at the top position
+          setTimeout(() => {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            window.scrollTo(0, 0);
+          }, 10);
+        }
+      };
+      
+      // Execute immediately
+      forceScrollToTop();
+      
+      // Then multiple times with different timing approaches
+      setTimeout(forceScrollToTop, 0);
+      setTimeout(forceScrollToTop, 50);
+      setTimeout(forceScrollToTop, 100);
+      setTimeout(forceScrollToTop, 300);
+      
+      // Also use requestAnimationFrame for precise timing with render cycle
+      requestAnimationFrame(() => {
+        requestAnimationFrame(forceScrollToTop);
+      });
+      
+      // Update the reference to current location
+      prevLocationRef.current = location;
+    }
+  }, [location]);
   
   // Apply native lazy loading to images once mounted
   useEffect(() => {
