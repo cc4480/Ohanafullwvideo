@@ -1,8 +1,20 @@
-import express, { type Express } from "express";
+import express, { type Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage, initializeSampleData } from "./storage";
-import { insertMessageSchema } from "@shared/schema";
+import { insertMessageSchema, loginUserSchema } from "@shared/schema";
 import { z } from "zod";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
+import { pool } from "./db";
+import { 
+  authenticateUser, 
+  createUser, 
+  createUserSession,
+  clearUserSession,
+  getCurrentUser,
+  requireAuth,
+  requireAdmin
+} from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database with sample data
