@@ -145,7 +145,6 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-4 animate-fade-in">
-{/* ThemeToggle removed as requested */}
 {/* Desktop Contact button removed completely as requested */}
           
           <button 
