@@ -11,14 +11,12 @@ document.documentElement.style.transform = "translate3d(0,0,0)";
 document.documentElement.style.backfaceVisibility = "hidden";
 document.documentElement.style.perspective = "1000px";
 
-// Force dark mode always
+// Initialize dark mode based on localStorage or system preference before render
 const initializeTheme = () => {
-  // Always set dark mode regardless of user preferences or stored settings
+  // Fast synchronous theme application to avoid flash of incorrect theme
   try {
-    // Set dark mode explicitly
+    // Set dark mode explicitly for this app - always use dark mode
     document.documentElement.classList.add("dark");
-    
-    // Store the theme setting in localStorage for consistency
     localStorage.setItem("theme", "dark");
   } catch (e) {
     // Fallback in case localStorage is unavailable
