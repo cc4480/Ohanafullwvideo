@@ -100,7 +100,7 @@ export default function StaticPropertyMap({
           </div>
         </div>
 
-        {/* Enhanced Action Button with hover animation */}
+        {/* Enhanced Action Button with hover animation - Responsive for mobile */}
         <div className="absolute bottom-3 right-3 transform transition-transform duration-300 hover:scale-105">
           <Button 
             variant="secondary" 
@@ -109,11 +109,18 @@ export default function StaticPropertyMap({
               e.stopPropagation();
               openDirectionsToProperty();
             }}
-            className="shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm hover:bg-primary hover:text-white transition-colors duration-300 relative overflow-hidden group"
+            className="shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm hover:bg-primary hover:text-white transition-colors duration-300 relative overflow-hidden group h-[44px] sm:h-9"
+            style={{ 
+              WebkitTapHighlightColor: 'transparent', 
+              touchAction: 'manipulation'
+            }}
           >
             <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
             <Navigation className="w-4 h-4 mr-2 relative z-10 group-hover:animate-pulse" /> 
-            <span className="relative z-10">Get Directions</span>
+            <span className="relative z-10 whitespace-nowrap">
+              <span className="hidden xs:inline">Get Directions</span>
+              <span className="xs:hidden">Directions</span>
+            </span>
           </Button>
         </div>
       </div>

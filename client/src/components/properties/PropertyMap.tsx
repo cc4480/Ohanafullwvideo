@@ -181,13 +181,13 @@ export default function PropertyMap() {
                   <p className="font-bold text-lg text-secondary">${property.price.toLocaleString()}</p>
                 </div>
                 
-                {/* Buttons stacked for better mobile display */}
+                {/* Buttons stacked for better mobile display - with improved spacing */}
                 <div className="mt-3 grid grid-cols-1 gap-2 sm:flex sm:justify-between">
                   <Link href={`/properties/${property.id}`} className="w-full sm:w-auto">
                     <Button 
                       size="sm"
                       variant="default"
-                      className="w-full text-sm font-medium"
+                      className="w-full text-sm font-medium h-[44px] sm:h-9"
                       aria-label={`View details of ${property.address}`}
                     >
                       View Details
@@ -197,8 +197,12 @@ export default function PropertyMap() {
                     size="sm"
                     variant="outline"
                     onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property) : null}
-                    className="text-xs flex items-center justify-center gap-1"
+                    className="text-xs flex items-center justify-center gap-1 h-[44px] sm:h-9"
                     aria-label={`View ${property.address} on Google Maps`}
+                    style={{ 
+                      WebkitTapHighlightColor: 'transparent', 
+                      touchAction: 'manipulation'
+                    }}
                   >
                     <MapPin className="h-3 w-3" /> Map
                   </Button>
