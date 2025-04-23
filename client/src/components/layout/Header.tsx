@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 
 // Import logo from assets
-import logoImg from "@assets/OIP.jfif";
+import logoImg from "@assets/logo.png";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -123,7 +123,7 @@ export default function Header() {
       <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-2 flex items-center justify-between">
         {/* Logo with improved styling for both mobile and desktop */}
         <Link href="/" className="flex items-center relative group">
-          <div className={`p-1 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"} transform-gpu transition-all duration-300 hover:shadow-md`}>
+          <div className="p-1 rounded-md transform-gpu transition-all duration-300 hover:shadow-md">
             {/* Enhanced image with better mobile optimization */}
             {isMobile ? (
               <img 

@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import logo from "@assets/OIP.jfif";
+import logo from "@assets/logo.png";
 
 export default function Footer() {
   // Function to scroll to top with smooth animation
@@ -36,7 +36,7 @@ export default function Footer() {
           {/* Company Info - Enhanced for mobile */}
           <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-32 h-12 overflow-hidden rounded-md shadow-lg border border-white/20 transform hover:scale-105 transition-transform duration-300">
+              <div className="w-32 h-12 overflow-hidden transform hover:scale-105 transition-transform duration-300">
                 <img src={logo} alt="Ohana Realty Logo" className="w-full h-full object-contain" />
               </div>
             </div>
