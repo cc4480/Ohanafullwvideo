@@ -103,6 +103,11 @@ export default function Header() {
       ? "bg-transparent"  // Completely transparent on homepage when not scrolled
       : "bg-background/95 backdrop-blur-md";
       
+  // Add glow for home page logo when not scrolled
+  const logoGlowClass = (!scrolled && location === "/") 
+    ? "filter drop-shadow(0 0 8px rgba(255,255,255,0.5))" 
+    : "";
+      
   const textClasses = (isActive: boolean) => {
     if (scrolled) {
       return `hover:text-primary font-medium transition-all duration-300 relative
@@ -119,8 +124,8 @@ export default function Header() {
   };
   
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`} style={{ maxHeight: '70px' }}>
-      <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-2 flex items-center justify-between">
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
+      <div className="container mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
         {/* Logo with improved styling for both mobile and desktop */}
         <Link href="/" className="flex items-center relative group">
           <div className="p-1 rounded-md transform-gpu transition-all duration-300 hover:shadow-md">
@@ -130,13 +135,13 @@ export default function Header() {
                 src={logoImg}
                 alt="Ohana Realty Logo"
                 style={{
-                  width: '60px',
+                  width: '90px',
                   height: 'auto',
-                  maxHeight: '30px',
+                  maxHeight: '40px',
                   objectFit: 'contain',
                   display: 'block'
                 }}
-                className="transform-gpu mobile-optimized"
+                className={`transform-gpu mobile-optimized ${logoGlowClass}`}
               />
             ) : (
               <img 
@@ -148,7 +153,7 @@ export default function Header() {
                   objectFit: 'contain',
                   display: 'block'
                 }}
-                className="transform-gpu"
+                className={`transform-gpu ${logoGlowClass}`}
               />
             )}
           </div>
@@ -193,7 +198,7 @@ export default function Header() {
             <Button 
               variant="secondary" 
               size="icon"
-              className="h-10 w-10 rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95"
+              className="h-10 w-10 rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95 button-press-feedback"
               style={{
                 transform: 'translateZ(0)',
                 backfaceVisibility: 'hidden',
@@ -209,8 +214,8 @@ export default function Header() {
             className={`md:hidden focus:outline-none h-10 w-10 flex items-center justify-center rounded-full ${
               scrolled || location !== "/" 
                 ? 'text-foreground bg-background/80 backdrop-blur-sm' 
-                : 'text-white bg-white/10 backdrop-blur-sm'
-            } transition-all duration-300`}
+                : 'text-white bg-black/30 backdrop-blur-sm border border-white/20'
+            } transition-all duration-300 button-press-feedback transform-gpu active:scale-95`}
             id="menuButton"
             onClick={toggleMobileMenu}
             aria-label="Toggle menu"

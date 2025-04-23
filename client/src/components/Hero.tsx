@@ -95,7 +95,7 @@ export default function Hero() {
   }, [isTouchDevice, carouselRef.current]);
   
   return (
-    <section className="relative bg-neutral-900 min-h-[100svh] flex items-center mt-[-5.5rem]">
+    <section className="relative bg-neutral-900 min-h-[100svh] flex items-center">
       {/* Background image carousel and overlays - Mobile optimized */}
       <div className="absolute inset-0 z-0 overflow-hidden transform-gpu">
         {/* Enhanced gradient overlay with multiple layers - fully transparent at top for seamless header blend */}
