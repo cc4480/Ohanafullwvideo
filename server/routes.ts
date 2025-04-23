@@ -25,17 +25,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get featured properties (top 4 properties)
+  // Get featured properties (top properties using database sorting)
   apiRouter.get("/properties/featured", async (req, res) => {
     try {
-      const properties = await storage.getProperties();
-      // Sort by price (descending) and select top 4
-      const featuredProperties = properties
-        .sort((a, b) => b.price - a.price)
-        .slice(0, 4);
+      // Get the limit parameter if provided, default to 4 if not
+      let limit = 4;
+      if (req.query.limit) {
+        limit = parseInt(String(req.query.limit));
+        // Check if the parsed limit is a valid number
+        if (isNaN(limit) || limit <= 0) {
+          limit = 4; // Default to 4 if limit is invalid
+        }
+      }
+      
+      console.log(`Route handler requesting featured properties with limit: ${limit}`);
+      
+      // Use database-optimized method for fetching featured properties
+      const featuredProperties = await storage.getFeaturedProperties(limit);
       
       res.json(featuredProperties);
     } catch (error) {
+      console.error("Featured properties error:", error);
       res.status(500).json({ message: "Failed to fetch featured properties" });
     }
   });

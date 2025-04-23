@@ -14,6 +14,7 @@ export interface IStorage {
   getProperties(): Promise<Property[]>;
   getProperty(id: number): Promise<Property | undefined>;
   getPropertiesByType(type: string): Promise<Property[]>;
+  getFeaturedProperties(limit?: number): Promise<Property[]>;
   searchProperties(filters: {
     type?: string;
     minPrice?: number;
@@ -176,6 +177,20 @@ export class DatabaseStorage implements IStorage {
 
   async getMessages(): Promise<Message[]> {
     return await db.select().from(messages).orderBy(sql`${messages.createdAt} DESC`);
+  }
+  
+  // Get featured properties (top properties by price)
+  async getFeaturedProperties(limit: number = 4): Promise<Property[]> {
+    // Ensure limit is a valid number
+    const validLimit = isNaN(limit) || limit <= 0 ? 4 : limit;
+    
+    console.log(`Fetching featured properties with limit: ${validLimit}`);
+    
+    return await db
+      .select()
+      .from(properties)
+      .orderBy(sql`${properties.price} DESC`)
+      .limit(validLimit);
   }
 }
 
