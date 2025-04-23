@@ -473,51 +473,36 @@ export default function PropertyDetails({ id }: { id: number }) {
                     aria-label={`View ${property.address} on Google Maps`}
                     className="h-60 sm:h-80 bg-card dark:bg-slate-800 rounded-md mb-3 sm:mb-4 overflow-hidden shadow-sm mobile-optimized relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                     onClick={() => {
-                      const latitude = getPropertyLatitude(property);
-                      const longitude = getPropertyLongitude(property);
-                      if (latitude && longitude) {
-                        // Format the full address for the map search
-                        const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
-                        const url = `https://www.google.com/maps/search/?api=1&query=${formattedAddress}`;
-                        window.open(url, '_blank', 'noopener,noreferrer');
-                      }
+                      // Always use the address for Google Maps, regardless of lat/lng availability
+                      const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
+                      const url = `https://www.google.com/maps/search/?api=1&query=${formattedAddress}`;
+                      window.open(url, '_blank', 'noopener,noreferrer');
                     }}
                     onKeyDown={(e) => {
                       // Handle keyboard accessibility - activate on Enter or Space
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        const latitude = getPropertyLatitude(property);
-                        const longitude = getPropertyLongitude(property);
-                        if (latitude && longitude) {
-                          const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
-                          const url = `https://www.google.com/maps/search/?api=1&query=${formattedAddress}`;
-                          window.open(url, '_blank', 'noopener,noreferrer');
-                        }
+                        // Always use the address for Google Maps, regardless of lat/lng availability
+                        const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
+                        const url = `https://www.google.com/maps/search/?api=1&query=${formattedAddress}`;
+                        window.open(url, '_blank', 'noopener,noreferrer');
                       }
                     }}
                   >
-                    {getPropertyLatitude(property) && getPropertyLongitude(property) ? (
-                      <>
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 z-10 flex flex-col items-center justify-center">
-                          <div className="bg-white rounded-full p-3 shadow-lg mb-3 transform-gpu hover:scale-105 transition-transform">
-                            <MapPin className="h-6 w-6 text-primary" aria-hidden="true" />
-                          </div>
-                          <p className="text-white font-medium text-sm sm:text-base">Click to view in Google Maps</p>
-                        </div>
-                        <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-200">
-                          <div className="text-center px-6">
-                            <i className='bx bxs-map text-6xl text-primary/30 mb-4' aria-hidden="true"></i>
-                            <h3 className="text-xl font-medium text-slate-500 mb-2">Interactive Map</h3>
-                            <p className="text-slate-400 text-sm">Click to open this location in Google Maps</p>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full">
-                        <MapPin className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground/50 mb-2" aria-hidden="true" />
-                        <p className="text-muted-foreground text-sm sm:text-base">Map location not available</p>
+                    {/* Always show the map option, whether coordinates are available or not */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 z-10 flex flex-col items-center justify-center">
+                      <div className="bg-white rounded-full p-3 shadow-lg mb-3 transform-gpu hover:scale-105 transition-transform">
+                        <MapPin className="h-6 w-6 text-primary" aria-hidden="true" />
                       </div>
-                    )}
+                      <p className="text-white font-medium text-sm sm:text-base">Click to view in Google Maps</p>
+                    </div>
+                    <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-200">
+                      <div className="text-center px-6">
+                        <i className='bx bxs-map text-6xl text-primary/30 mb-4' aria-hidden="true"></i>
+                        <h3 className="text-xl font-medium text-slate-500 mb-2">Interactive Map</h3>
+                        <p className="text-slate-400 text-sm">Click to open this location in Google Maps</p>
+                      </div>
+                    </div>
                     {/* Hidden but screen reader accessible description */}
                     <span className="sr-only">
                       Property located at {property.address}, {property.city}, {property.state} {property.zipCode}. 
