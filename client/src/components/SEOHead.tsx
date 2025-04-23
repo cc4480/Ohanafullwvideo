@@ -95,10 +95,10 @@ export default function SEOHead({
       "addressCountry": location.addressCountry
     },
     "sameAs": [
-      "https://www.facebook.com/ohanarealty",
-      "https://twitter.com/ohanarealty",
-      "https://www.instagram.com/ohanarealty",
-      "https://www.linkedin.com/company/ohana-realty"
+      "https://www.facebook.com/valentincrealtor",
+      "https://twitter.com/valentinrealtor",
+      "https://www.instagram.com/valentincrealtor",
+      "https://www.linkedin.com/in/valentin-cuellar-5827b4123"
     ]
   };
   
