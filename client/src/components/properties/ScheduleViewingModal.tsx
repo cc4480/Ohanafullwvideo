@@ -79,6 +79,9 @@ export default function ScheduleViewingModal({ property, trigger }: ScheduleView
       email: "",
       phone: "",
       notes: "",
+      // Time needs a default value to avoid controlled/uncontrolled component warnings
+      time: undefined,
+      // Date will be selected via calendar
     },
   });
   
@@ -114,6 +117,16 @@ export default function ScheduleViewingModal({ property, trigger }: ScheduleView
       toast({
         title: "Error",
         description: "Please select a date for your viewing",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate time selection
+    if (!values.time) {
+      toast({
+        title: "Error",
+        description: "Please select a time for your viewing",
         variant: "destructive",
       });
       return;
@@ -240,7 +253,7 @@ export default function ScheduleViewingModal({ property, trigger }: ScheduleView
                 <Label>Preferred Time</Label>
                 <Select 
                   onValueChange={(value) => form.setValue("time", value)}
-                  defaultValue={form.watch("time")}
+                  value={form.watch("time") || ""}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a time" />
