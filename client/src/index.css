@@ -110,28 +110,16 @@
     }
   }
   
-  /* Responsive container padding with improved centering */
+  /* Responsive container padding */
   .container-responsive {
     padding-left: 1rem;
     padding-right: 1rem;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
   }
   
   @media (min-width: 640px) {
     .container-responsive {
       padding-left: 1.5rem;
       padding-right: 1.5rem;
-      max-width: 640px;
-    }
-  }
-  
-  @media (min-width: 768px) {
-    .container-responsive {
-      max-width: 768px;
     }
   }
   
@@ -139,13 +127,6 @@
     .container-responsive {
       padding-left: 2rem;
       padding-right: 2rem;
-      max-width: 1024px;
-    }
-  }
-  
-  @media (min-width: 1280px) {
-    .container-responsive {
-      max-width: 1280px;
     }
   }
   
@@ -297,12 +278,6 @@ html, body {
 .overlay-content {
   position: relative;
   z-index: 10;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
 }
 
 /* Ensure content scrolls smoothly */
