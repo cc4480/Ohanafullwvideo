@@ -74,10 +74,16 @@ export default function ThemeToggle() {
               ? 'bg-slate-800 border-slate-700 hover:bg-slate-700 shadow-lg shadow-slate-900/20' 
               : 'bg-white hover:bg-secondary/10 border-gray-200 shadow-lg'
           }
-          h-10 w-10 p-0
+          h-12 w-12 md:h-10 md:w-10 p-0
           ${isTransitioning ? 'scale-90 rotate-180' : 'scale-100 rotate-0'}
           hover:shadow-xl
         `}
+        style={{ 
+          WebkitTapHighlightColor: 'transparent', 
+          touchAction: 'manipulation',
+          minHeight: '44px',
+          minWidth: '44px'
+        }}
       >
         <span className="sr-only">{isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}</span>
         

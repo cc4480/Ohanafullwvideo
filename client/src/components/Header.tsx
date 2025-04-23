@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "./ThemeToggle";
 
 // Load Valentin Cuellar's profile image
 import profileImg from "@assets/thprofile_autox145.jpg";
@@ -146,14 +145,20 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-4 animate-fade-in">
-          <ThemeToggle />
-          
+{/* ThemeToggle removed as requested */}
 {/* Desktop Contact button removed completely as requested */}
           
           <button 
-            className={`md:hidden focus:outline-none ${scrolled || location !== "/" ? 'text-foreground' : 'text-white'}`}
+            className={`md:hidden focus:outline-none ${scrolled || location !== "/" ? 'text-foreground' : 'text-white'} p-2`}
             id="menuButton"
             onClick={toggleMobileMenu}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            style={{ 
+              WebkitTapHighlightColor: 'transparent', 
+              touchAction: 'manipulation',
+              minHeight: '44px',
+              minWidth: '44px'
+            }}
           >
             <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} text-3xl`}></i>
           </button>

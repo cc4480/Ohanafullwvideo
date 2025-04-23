@@ -11,18 +11,15 @@ document.documentElement.style.transform = "translate3d(0,0,0)";
 document.documentElement.style.backfaceVisibility = "hidden";
 document.documentElement.style.perspective = "1000px";
 
-// Initialize dark mode based on localStorage or system preference before render
+// Force dark mode always
 const initializeTheme = () => {
-  // Fast synchronous theme application to avoid flash of incorrect theme
+  // Always set dark mode regardless of user preferences or stored settings
   try {
-    const storedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    // Set dark mode explicitly
+    document.documentElement.classList.add("dark");
     
-    if (storedTheme === "dark" || (!storedTheme && prefersDark)) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    // Store the theme setting in localStorage for consistency
+    localStorage.setItem("theme", "dark");
   } catch (e) {
     // Fallback in case localStorage is unavailable
     console.warn("Theme initialization encountered an error:", e);
