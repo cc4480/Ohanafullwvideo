@@ -31,6 +31,7 @@ export interface IStorage {
   // Neighborhood methods
   getNeighborhoods(): Promise<Neighborhood[]>;
   getNeighborhood(id: number): Promise<Neighborhood | undefined>;
+  getPropertiesByNeighborhood(neighborhoodId: number): Promise<Property[]>;
   createNeighborhood(neighborhood: InsertNeighborhood): Promise<Neighborhood>;
   
   // Message methods
@@ -158,6 +159,16 @@ export class DatabaseStorage implements IStorage {
     const [neighborhood] = await db.select().from(neighborhoods).where(eq(neighborhoods.id, id));
     return neighborhood || undefined;
   }
+  
+  // Get properties by neighborhood ID
+  async getPropertiesByNeighborhood(neighborhoodId: number): Promise<Property[]> {
+    console.log(`Fetching properties for neighborhood ID: ${neighborhoodId}`);
+    
+    return await db
+      .select()
+      .from(properties)
+      .where(eq(properties.neighborhood, neighborhoodId));
+  }
 
   async createNeighborhood(insertNeighborhood: InsertNeighborhood): Promise<Neighborhood> {
     const [neighborhood] = await db
@@ -186,11 +197,15 @@ export class DatabaseStorage implements IStorage {
     
     console.log(`Fetching featured properties with limit: ${validLimit}`);
     
-    return await db
+    // Build a more explicit query to control the limit
+    const result = await db
       .select()
       .from(properties)
       .orderBy(sql`${properties.price} DESC`)
       .limit(validLimit);
+    
+    // Only return the specified number of properties, enforced by JavaScript
+    return result.slice(0, validLimit);
   }
 }
 

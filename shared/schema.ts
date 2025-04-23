@@ -26,6 +26,7 @@ export const properties = pgTable("properties", {
   features: text("features").array(),
   lat: real("lat"),
   lng: real("lng"),
+  neighborhood: integer("neighborhood"),
 });
 
 export const insertPropertySchema = createInsertSchema(properties);
