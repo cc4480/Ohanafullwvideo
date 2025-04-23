@@ -106,6 +106,14 @@ export default function Header() {
       : isMobile 
         ? "bg-background/50 backdrop-blur-sm" 
         : "bg-background/95 backdrop-blur-md";
+        
+  // Force scroll to top on navigation
+  const handleLinkClick = () => {
+    // Immediately scroll to top
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  };
       
   // Add glow for home page logo when not scrolled
   const logoGlowClass = (!scrolled && location === "/") 
@@ -131,7 +139,7 @@ export default function Header() {
     <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
       <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-1.5' : 'py-3'} flex items-center justify-between`}>
         {/* Logo with improved styling for both mobile and desktop */}
-        <Link href="/" className="flex items-center relative group">
+        <Link href="/" className="flex items-center relative group" onClick={handleLinkClick}>
           <div className={`${isMobile ? 'p-0' : 'p-1'} rounded-md transform-gpu transition-all duration-300 hover:shadow-md`}>
             {/* Enhanced image with better mobile optimization - smaller on mobile */}
             {isMobile ? (
@@ -179,6 +187,7 @@ export default function Header() {
               href={item.path} 
               className={`${textClasses(location === item.path)} relative group overflow-hidden`}
               style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={handleLinkClick}
             >
               {item.label}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
@@ -187,7 +196,7 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-2 sm:gap-4 animate-fade-in">
-          <Link href="/contact">
+          <Link href="/contact" onClick={handleLinkClick}>
             <Button 
               variant="secondary" 
               className="hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white transition-all duration-300 shadow-md hover:shadow-lg animate-slide-up"
@@ -198,7 +207,7 @@ export default function Header() {
           </Link>
           
           {/* Enhanced mobile contact button with pulse effect - smaller on mobile */}
-          <Link href="/contact" className="md:hidden">
+          <Link href="/contact" className="md:hidden" onClick={handleLinkClick}>
             <Button 
               variant="secondary" 
               size="icon"
@@ -260,6 +269,10 @@ export default function Header() {
                 WebkitTapHighlightColor: 'transparent',
                 touchAction: 'manipulation'
               }}
+              onClick={() => {
+                handleLinkClick();
+                setMobileMenuOpen(false); // Close mobile menu when a link is clicked
+              }}
             >
               <i className={`bx ${item.icon} text-2xl ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
               <span className="text-base">{item.label}</span>
@@ -270,7 +283,13 @@ export default function Header() {
           ))}
           
           <div className="pt-4 transform-gpu transition-all duration-300" style={{ transitionDelay: '300ms' }}>
-            <Link href="/contact">
+            <Link 
+              href="/contact" 
+              onClick={() => {
+                handleLinkClick();
+                setMobileMenuOpen(false); // Close mobile menu when the contact button is clicked
+              }}
+            >
               <Button 
                 variant="secondary" 
                 className="w-full h-12 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2 text-base button-press-feedback"
