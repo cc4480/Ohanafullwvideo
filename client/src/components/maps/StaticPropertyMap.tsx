@@ -47,8 +47,9 @@ export default function StaticPropertyMap({
     window.open(mapsUrl, '_blank', 'noopener,noreferrer');
   };
 
-  // Choose which map image to use
-  const mapImageSrc = Math.random() > 0.5 ? 
+  // Use a consistent map image based on property ID instead of random selection
+  // This prevents the map from changing/blinking on re-renders
+  const mapImageSrc = property.id % 2 === 0 ?
     '/images/maps/laredo-map.png' : 
     '/images/maps/laredo-satellite.png';
 
@@ -82,9 +83,10 @@ export default function StaticPropertyMap({
           }}
         >
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            {/* Pulsing animation ring around pin */}
+            {/* Pin with subtle animation that won't cause flickering */}
             <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping opacity-75 scale-150"></div>
+              {/* Changed from animate-ping (which was too aggressive) to a custom animation */}
+              <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse opacity-70 scale-150 transform-gpu transition-opacity duration-1000"></div>
               <div className="bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg mb-2 transform transition-transform duration-300 group-hover:scale-110 relative z-10">
                 <MapPin className="w-6 h-6 text-primary" />
               </div>
