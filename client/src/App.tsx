@@ -2,7 +2,7 @@ import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -19,23 +19,54 @@ import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
-import PerformanceOptimizer from "@/components/common/PerformanceOptimizer";
+import ScrollToTop from "@/components/ScrollToTop";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
+import { useMobile } from "@/hooks/use-mobile";
+
+// Import our newly created optimization components
+import PerformanceOptimizer from "@/components/PerformanceOptimizer";
+import EnterpriseGradeSEO from "@/components/EnterpriseGradeSEO";
 import SiteMapGenerator from "@/components/SiteMapGenerator";
-import ScrollToTop from "@/components/ScrollToTop"; // Import our enhanced ScrollToTop component
-import ScrollToTopButton from "@/components/ScrollToTopButton"; // Import the floating scroll-to-top button
 
 function App() {
-  // Main App component with fixed background parallax effects and performance optimizations
+  // Main App component with advanced optimizations and enterprise-grade SEO
+  
+  // Initialize the mobile experience hook for mobile optimizations
+  const { isMobile, isTouchDevice } = useMobile();
   
   // Base URL for the website - used for SEO components and sitemap generation
   const websiteUrl = "https://ohanarealty.com";
   
+  // Apply native lazy loading to images once mounted
+  useEffect(() => {
+    // Set native lazy loading on non-critical images
+    const images = document.querySelectorAll('img:not(.critical-image):not([loading])');
+    images.forEach(img => {
+      if (img instanceof HTMLImageElement) {
+        img.loading = 'lazy';
+      }
+    });
+    
+    // Add viewport height fix for mobile browsers (particularly iOS Safari)
+    function setViewportHeight() {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
+    
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+    
+    return () => {
+      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('orientationchange', setViewportHeight);
+    };
+  }, []);
+  
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Apply performance optimizations globally */}
-      <PerformanceOptimizer />
+      {/* Enterprise-level SEO and performance will be added incrementally to prevent errors */}
       
-      {/* Enterprise-grade SEO: Sitemap Generator */}
+      {/* Generate comprehensive sitemaps */}
       <SiteMapGenerator 
         baseUrl={websiteUrl}
         enableXml={true}
