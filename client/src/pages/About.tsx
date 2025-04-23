@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
 import { LocalBusinessStructuredData, BreadcrumbStructuredData, FAQStructuredData } from "@/components/StructuredData";
 import brokerImage from "@assets/thprofile_autox145.jpg";
-import propertyImage from "@assets/MLS15.jpg";
+import propertyImage from "../assets/beautiful-home-exterior.jpg";
 
 export default function About() {
   const stats = [
