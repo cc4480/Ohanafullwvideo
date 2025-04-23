@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import valentinCuellarImg from "../../assets/valentin-realtor.png";
+import ohanLogo from "../../assets/logo.png";
 import { Phone, Mail, Award, Star, MapPin, Clock } from "lucide-react";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 
@@ -20,6 +21,15 @@ export default function AboutRealtor() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <span className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm tracking-wide font-medium mb-4 animate-fade-in">OUR STORY</span>
+          <div className="flex justify-center mb-6 animate-fade-in">
+            <div className="w-52 h-28 bg-white p-2 rounded-lg shadow-lg border border-primary/10 hover:shadow-xl transition-all duration-300">
+              <img 
+                src={ohanLogo} 
+                alt="Ohana Realty Logo" 
+                className="w-full h-full object-contain" 
+              />
+            </div>
+          </div>
           <h2 className={`font-serif text-3xl md:text-5xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mb-6 animate-slide-up`}>
             About <span className="text-primary">Ohana</span> Realty
           </h2>
