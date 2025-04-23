@@ -345,9 +345,42 @@ export default function NeighborhoodDetails({ id }: NeighborhoodDetailsProps) {
                   key={n.id} 
                   className="bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                   onClick={() => {
-                    // Navigate to the new neighborhood and scroll to top
+                    // Reset scroll position with exhaustive approach
+                    const resetScroll = () => {
+                      console.log("Resetting scroll before neighborhood navigation");
+                      window.scrollTo(0, 0);
+                      document.body.scrollTop = 0;
+                      document.documentElement.scrollTop = 0;
+                      
+                      // Reset all scrollable elements
+                      const scrollableElements = document.querySelectorAll('main, section, .scrollable, .overflow-auto, .overflow-y-auto');
+                      scrollableElements.forEach(el => {
+                        if (el instanceof HTMLElement) {
+                          el.scrollTop = 0;
+                        }
+                      });
+                      
+                      // Mobile-specific handling
+                      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                        document.body.style.overflow = 'hidden';
+                        document.documentElement.style.overflow = 'hidden';
+                        setTimeout(() => {
+                          document.body.style.overflow = '';
+                          document.documentElement.style.overflow = '';
+                          window.scrollTo(0, 0);
+                        }, 5);
+                      }
+                    };
+                    
+                    // Apply multiple approaches for reliability
+                    resetScroll();
+                    setTimeout(resetScroll, 0);
+                    requestAnimationFrame(() => {
+                      requestAnimationFrame(resetScroll);
+                    });
+                    
+                    // Then navigate
                     navigate(`/neighborhoods/${n.id}`);
-                    window.scrollTo(0, 0);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {

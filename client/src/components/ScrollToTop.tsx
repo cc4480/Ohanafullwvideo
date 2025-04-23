@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { useLocation } from 'wouter';
 
 /**
@@ -13,71 +13,86 @@ import { useLocation } from 'wouter';
 export default function ScrollToTop() {
   const [location] = useLocation();
   
-  useEffect(() => {
+  // Use useLayoutEffect for synchronous execution before browser paints
+  useLayoutEffect(() => {
     // Create a more aggressive scroll reset function
     const resetScrollPosition = () => {
-      // Use smooth scrolling for better UX
-      if ('scrollBehavior' in document.documentElement.style) {
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'instant' // Use 'instant' instead of 'smooth' to prevent scroll animation
-        });
-      } else {
-        // Fallback for browsers without scrollBehavior support
-        window.scrollTo(0, 0);
+      console.log("Resetting scroll position for navigation to:", location);
+      
+      // Immediately stop any ongoing scrolling
+      if ('cancelScroll' in window) {
+        (window as any).cancelScroll();
       }
       
-      // Ensure scrolling works on all browsers including Safari
+      // Force scroll to top with highest priority
+      window.scrollTo(0, 0);
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
       
-      // Additional mobile-specific handling
+      // Force all scrollable elements to top position
+      const scrollableElements = document.querySelectorAll('.scrollable, [data-scrollable], main, section, .overflow-auto, .overflow-y-auto');
+      scrollableElements.forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.scrollTop = 0;
+        }
+      });
+      
+      // Special handling for mobile browsers
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       if (isMobile) {
-        // Force body to top
-        document.body.style.scrollBehavior = 'auto';
+        // Reset scroll position with different technique
         document.documentElement.style.scrollBehavior = 'auto';
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
+        document.body.style.scrollBehavior = 'auto';
+        window.scrollTo(0, 0);
         
         // iOS Safari specific fixes
         if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-          // Briefly pause scrolling to ensure position reset
+          // Force layout recalculation with scroll blocking
           document.body.style.overflow = 'hidden';
-          
-          // Force layout recalculation
+          document.documentElement.style.overflow = 'hidden';
           void document.body.offsetHeight;
           
-          // After a short delay, restore normal scrolling
+          // After a tiny delay, restore scrolling and ensure we're at top
           setTimeout(() => {
             document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
             window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-          }, 10);
+          }, 5);
         }
       }
     };
     
-    // Run immediately
+    // Run immediately with high priority
     resetScrollPosition();
     
-    // Multiple timers for extra reliability
+    // Add multiple attempts with increasing delays for reliability
     const timers = [
-      setTimeout(resetScrollPosition, 0),
-      setTimeout(resetScrollPosition, 50),
-      setTimeout(resetScrollPosition, 100)
+      setTimeout(resetScrollPosition, 0),  // Immediate queue
+      setTimeout(resetScrollPosition, 10), // Very quick follow-up
+      setTimeout(resetScrollPosition, 50), // Short delay
+      setTimeout(resetScrollPosition, 100), // Medium delay
+      setTimeout(resetScrollPosition, 300), // Longer delay for slower devices
+      setTimeout(resetScrollPosition, 500)  // Final attempt
     ];
     
-    // Also attach to window load event for additional insurance
-    const handleLoad = () => resetScrollPosition();
-    window.addEventListener('load', handleLoad);
+    // Add special handling for document ready state
+    if (document.readyState !== 'complete') {
+      window.addEventListener('load', resetScrollPosition, { once: true });
+    }
+    
+    // Add RAF for best timing with browser paint cycle
+    requestAnimationFrame(() => {
+      requestAnimationFrame(resetScrollPosition);
+    });
     
     return () => {
-      // Cleanup all timers and event listeners
+      // Cleanup all timers
       timers.forEach(id => clearTimeout(id));
-      window.removeEventListener('load', handleLoad);
+      
+      // Only remove event listener if we added it
+      if (document.readyState !== 'complete') {
+        window.removeEventListener('load', resetScrollPosition);
+      }
     };
   }, [location]); // Re-run when location changes
   

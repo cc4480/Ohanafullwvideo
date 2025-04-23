@@ -41,10 +41,45 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
       className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group mobile-optimized transform-gpu cursor-pointer`} 
       style={{ backfaceVisibility: 'hidden' }}
       onClick={() => {
-        // Navigate to the neighborhood details page using Wouter's navigate
+        // Reset scroll position before navigation (most reliable way)
+        const resetScroll = () => {
+          console.log("Forcing scroll reset before neighborhood navigation");
+          // Force all scrollable elements to top
+          window.scrollTo(0, 0);
+          document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
+          
+          // Reset position of any scrollable containers
+          const scrollableElements = document.querySelectorAll('.scrollable, main, section, .overflow-auto, .overflow-y-auto');
+          scrollableElements.forEach(el => {
+            if (el instanceof HTMLElement) {
+              el.scrollTop = 0;
+            }
+          });
+          
+          // Mobile-specific fixes
+          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            setTimeout(() => {
+              document.body.style.overflow = '';
+              document.documentElement.style.overflow = '';
+              window.scrollTo(0, 0);
+            }, 5);
+          }
+        };
+        
+        // Apply scroll reset before navigation
+        resetScroll();
+        
+        // Add multiple attempts with various timing approaches
+        setTimeout(resetScroll, 0);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resetScroll);
+        });
+        
+        // Then navigate
         navigate(`/neighborhoods/${neighborhood.id}`);
-        // On mobile, this helps ensure the page starts from the top
-        window.scrollTo(0, 0);
       }}
     >
       <div className="h-40 sm:h-48 overflow-hidden relative bg-slate-100 dark:bg-slate-700">
