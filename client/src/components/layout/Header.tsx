@@ -249,10 +249,12 @@ export default function Header() {
               href={item.path} 
               className={`group flex items-center gap-3 text-foreground hover:text-primary font-medium py-4 px-3 rounded-lg hover:bg-primary/5 transition-all duration-300 ${
                 location === item.path ? 'bg-primary/10 text-primary' : ''
-              } transform-gpu ${mobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}
+              } transform-gpu ${mobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'} button-press-feedback active:bg-primary/10`}
               style={{ 
                 transitionDelay: `${index * 50}ms`,
-                animationDelay: `${index * 0.1}s` 
+                animationDelay: `${index * 0.1}s`,
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation'
               }}
             >
               <i className={`bx ${item.icon} text-2xl ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
@@ -267,7 +269,7 @@ export default function Header() {
             <Link href="/contact">
               <Button 
                 variant="secondary" 
-                className="w-full h-12 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2 text-base"
+                className="w-full h-12 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2 text-base button-press-feedback"
               >
                 <i className='bx bx-envelope-open text-xl'></i>
                 <span>Contact Valentin</span>
