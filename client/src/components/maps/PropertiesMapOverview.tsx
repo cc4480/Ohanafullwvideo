@@ -51,9 +51,17 @@ export default function PropertiesMapOverview({
   return (
     <div className={`properties-map-overview ${className}`}>
       <div 
-        className="relative bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden"
+        className="relative rounded-lg overflow-hidden"
         style={{ height }}
       >
+        {/* Static Map Background Image */}
+        <div className="absolute inset-0 z-0 bg-slate-200 dark:bg-slate-800">
+          <img 
+            src="/images/maps/laredo-map.png" 
+            alt="Map of Laredo properties" 
+            className="w-full h-full object-cover opacity-60 dark:opacity-40"
+          />
+        </div>
         {/* Map Interaction Area */}
         <div 
           className="absolute inset-0 cursor-pointer flex items-center justify-center"
