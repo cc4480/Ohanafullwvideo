@@ -35,7 +35,7 @@ export default function Home() {
           country: "US"
         }}
         phone="+19567123000"
-        email="info@ohanarealty.com"
+        email="valentin_cuellar@hotmail.com"
         socialLinks={[
           "https://www.facebook.com/ohanarealty",
           "https://www.instagram.com/ohanarealty",
@@ -60,7 +60,7 @@ export default function Home() {
         logo={`${websiteUrl}/logo.png`}
         image={`${websiteUrl}/office-exterior.jpg`}
         telephone="+19567123000"
-        email="info@ohanarealty.com"
+        email="valentin_cuellar@hotmail.com"
         priceRange="$$$"
         rating={4.9}
         hours={[
@@ -183,7 +183,7 @@ export default function Home() {
           },
           {
             question: "How can I schedule a property viewing?",
-            answer: "You can schedule a property viewing by contacting Valentin Cuellar directly at (956) 712-3000, sending an email to info@ohanarealty.com, or using the contact form on our website. We offer flexible viewing times to accommodate your schedule."
+            answer: "You can schedule a property viewing by contacting Valentin Cuellar directly at (956) 712-3000, sending an email to valentin_cuellar@hotmail.com, or using the contact form on our website. We offer flexible viewing times to accommodate your schedule."
           },
           {
             question: "What types of properties does Ohana Realty offer?",

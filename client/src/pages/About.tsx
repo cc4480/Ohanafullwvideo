@@ -81,7 +81,7 @@ export default function About() {
         addressRegion="TX"
         postalCode="78041"
         telephone="+19567123000"
-        email="info@ohanarealty.com"
+        email="valentin_cuellar@hotmail.com"
         priceRange="$$$"
         latitude={27.5629}
         longitude={-99.4805}
