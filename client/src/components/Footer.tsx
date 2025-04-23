@@ -17,8 +17,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Company Info */}
           <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-48 h-16 overflow-hidden bg-white rounded-md shadow-2xl border border-white/20 hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] transition-all duration-500 transform hover:scale-105">
+            <div className="flex items-center mb-6">
+              <div className="w-full sm:w-48 h-16 max-w-[200px] overflow-hidden bg-white rounded-md shadow-2xl border border-white/20 hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] transition-all duration-500 transform hover:scale-105">
                 <img 
                   src={logo} 
                   alt="Ohana Realty Logo" 
