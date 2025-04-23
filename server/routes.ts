@@ -13,7 +13,9 @@ import {
   clearUserSession,
   getCurrentUser,
   requireAuth,
-  requireAdmin
+  requireAdmin,
+  hashPassword,
+  verifyPassword
 } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -25,6 +27,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   } catch (error) {
     console.error("Error initializing database:", error);
   }
+  
+  // Set up session middleware
+  const PgSession = connectPgSimple(session);
+  
+  app.use(
+    session({
+      store: new PgSession({
+        pool: pool,
+        tableName: 'user_sessions', // Use this table to store session data
+        createTableIfMissing: true
+      }),
+      secret: process.env.SESSION_SECRET || 'ohana-realty-secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'lax'
+      }
+    })
+  );
+  
   const apiRouter = express.Router();
 
   // Get all properties
@@ -278,6 +303,153 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // No AI chat features as requested
+  
+  // Authentication routes
+  
+  // Register a new user
+  apiRouter.post("/auth/register", async (req, res) => {
+    try {
+      // Check if username or email already exists
+      const existingUsername = await storage.getUserByUsername(req.body.username);
+      if (existingUsername) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+      
+      const existingEmail = await storage.getUserByEmail(req.body.email);
+      if (existingEmail) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+      
+      // Create the user
+      const user = await createUser({
+        ...req.body,
+        role: "user", // Default role for new users
+      });
+      
+      // Create session for the user
+      createUserSession(req, user);
+      
+      // Return user info (excluding password)
+      const { password, ...userWithoutPassword } = user;
+      res.status(201).json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Failed to register user" });
+    }
+  });
+  
+  // Login
+  apiRouter.post("/auth/login", async (req, res) => {
+    try {
+      const result = loginUserSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid login data", 
+          errors: result.error.errors 
+        });
+      }
+      
+      const user = await authenticateUser(result.data);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+      
+      // Create session for the user
+      createUserSession(req, user);
+      
+      // Return user info (excluding password)
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ message: "Failed to log in" });
+    }
+  });
+  
+  // Logout
+  apiRouter.post("/auth/logout", (req, res) => {
+    clearUserSession(req);
+    res.json({ message: "Logged out successfully" });
+  });
+  
+  // Get current user
+  apiRouter.get("/auth/me", async (req, res) => {
+    try {
+      const user = await getCurrentUser(req);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      // Return user info (excluding password)
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+      res.status(500).json({ message: "Failed to fetch user data" });
+    }
+  });
+  
+  // Update user profile
+  apiRouter.patch("/auth/profile", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.user!.id;
+      
+      // Don't allow updating username, email, or role through this endpoint
+      const { username, email, password, role, ...updateData } = req.body;
+      
+      const updatedUser = await storage.updateUser(userId, updateData);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Return updated user info (excluding password)
+      const { password: pwd, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+  
+  // Change password
+  apiRouter.post("/auth/change-password", requireAuth, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+      
+      const userId = req.session.user!.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Verify current password
+      const isPasswordValid = await verifyPassword(currentPassword, user.password);
+      
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+      
+      // Hash the new password
+      const hashedPassword = await hashPassword(newPassword);
+      
+      // Update the password
+      await storage.updateUser(userId, { password: hashedPassword });
+      
+      res.json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
 
   // Register the API router
   app.use("/api", apiRouter);

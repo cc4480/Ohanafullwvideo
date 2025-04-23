@@ -19,6 +19,7 @@ import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { useMobile } from "@/hooks/use-mobile";
@@ -96,7 +97,8 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <ErrorBoundary>
-            <FavoritesProvider>
+            <AuthProvider>
+              <FavoritesProvider>
               {/* Global header */}
               <Header />
               
@@ -225,6 +227,7 @@ function App() {
               {/* Floating scroll to top button - always accessible on mobile */}
               <ScrollToTopButton />
             </FavoritesProvider>
+            </AuthProvider>
           </ErrorBoundary>
         </TooltipProvider>
       </ThemeProvider>

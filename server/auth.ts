@@ -3,6 +3,39 @@ import { Request, Response, NextFunction } from 'express';
 import { storage } from './storage';
 import { User, LoginUser, insertUserSchema } from '@shared/schema';
 
+// Add session interface to express Request
+declare module 'express-session' {
+  interface SessionData {
+    user: {
+      id: number;
+      username: string;
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      role: string;
+    };
+  }
+}
+
+declare module 'express' {
+  interface Request {
+    session: {
+      user?: {
+        id: number;
+        username: string;
+        email: string;
+        firstName?: string;
+        lastName?: string;
+        role: string;
+      };
+      cookie: {
+        maxAge: number;
+      };
+      destroy: (callback: (err: Error) => void) => void;
+    };
+  }
+}
+
 // Constants
 const SALT_ROUNDS = 10;
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -117,8 +150,8 @@ export function createUserSession(req: Request, user: User) {
     id: user.id,
     username: user.username,
     email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
+    firstName: user.firstName || undefined,
+    lastName: user.lastName || undefined,
     role: user.role
   };
   
