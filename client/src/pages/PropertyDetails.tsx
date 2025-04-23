@@ -197,7 +197,7 @@ export default function PropertyDetails({ id }: { id: number }) {
       </div>
       <div className="min-h-screen">
         {/* Property Header */}
-        <div className="bg-primary text-white py-8 sm:py-12 mobile-optimized">
+        <div className="bg-gradient-to-b from-secondary/95 to-secondary/90 text-white py-8 sm:py-12 mobile-optimized">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center">
               <div>
@@ -205,7 +205,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                 <p className="text-base sm:text-lg">{property.city}, {property.state} {property.zipCode}</p>
               </div>
               <div className="mt-3 md:mt-0 flex flex-row md:flex-col items-baseline md:items-end justify-between">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-secondary transform-gpu">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white transform-gpu">
                   {formatPrice(property.price)}
                 </div>
                 <p className="text-xs sm:text-sm text-neutral-200 md:text-right">
