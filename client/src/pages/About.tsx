@@ -5,6 +5,7 @@ import SEOHead from "@/components/SEOHead";
 import { LocalBusinessStructuredData, BreadcrumbStructuredData, FAQStructuredData } from "@/components/StructuredData";
 import brokerImage from "@assets/thprofile_autox145.jpg";
 import propertyImage from "../assets/beautiful-home-exterior.jpg";
+import logoImg from "@assets/logo.png";
 
 export default function About() {
   const stats = [
@@ -142,6 +143,15 @@ export default function About() {
         {/* Hero Section */}
         <div className="bg-[#0A2342]/10 py-20">
           <div className="container mx-auto px-4 text-center">
+            <div className="flex justify-center mb-6">
+              <div className="w-52 h-28">
+                <img 
+                  src={logoImg} 
+                  alt="Ohana Realty Logo" 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
+            </div>
             <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">About Ohana Realty</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
               We're dedicated to helping you find your dream home or investment property in Laredo, Texas.
@@ -162,6 +172,15 @@ export default function About() {
         <div className="container mx-auto px-4 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
+              <div className="flex items-center mb-6">
+                <div className="w-40 h-20 mr-4">
+                  <img 
+                    src={logoImg} 
+                    alt="Ohana Realty Logo" 
+                    className="w-full h-full object-contain" 
+                  />
+                </div>
+              </div>
               <h2 className="text-3xl font-serif font-semibold mb-6">Our Story</h2>
               <p className="text-muted-foreground mb-4">
                 Founded by Valentin Cuellar, Ohana Realty has been serving the Laredo community since 1998. 
