@@ -304,45 +304,7 @@ export default function Hero() {
         </div>
       </div>
       
-      {/* Enhanced mobile-optimized scroll indicator with improved visibility and feedback */}
-      <div 
-        className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-0 right-0 flex flex-col items-center justify-center z-20"
-        style={{ 
-          willChange: 'transform', 
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden'
-        }}
-      >
-        {/* Small visible text hint above the scroll button for better UX */}
-        {isMobile && (
-          <span className="text-white text-xs font-medium mb-1.5 bg-black/30 px-2 py-0.5 rounded-full backdrop-blur-sm">
-            Explore More
-          </span>
-        )}
-        
-        <a 
-          href="#featured-properties" 
-          className="text-white bg-secondary/80 backdrop-blur-sm p-2.5 sm:p-3 md:p-4 rounded-full hover:bg-secondary/90 transition-all duration-300 shadow-lg active:scale-95 transform-gpu orange-glow-border-intense button-press-feedback"
-          style={{
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
-            minHeight: '45px',
-            minWidth: '45px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            willChange: 'transform, opacity',
-            transform: 'translateZ(0)',
-            animation: 'bounce 2s infinite ease-in-out'
-          }}
-          aria-label="Scroll to featured properties"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-          </svg>
-          <span className="sr-only">Discover Featured Properties</span>
-        </a>
-      </div>
+      {/* Scroll indicator removed as requested */}
     </section>
   );
 }

@@ -412,27 +412,7 @@ export default function Hero() {
         </div>
       </div>
       
-      {/* Scroll indicator with hardware acceleration */}
-      <div 
-        className="absolute bottom-8 left-0 right-0 flex justify-center z-20 animate-bounce"
-        style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-      >
-        <button 
-          onClick={() => {
-            const featuredElement = document.getElementById('featured-properties');
-            if (featuredElement) {
-              featuredElement.scrollIntoView({ behavior: 'smooth' });
-            }
-          }}
-          className="text-white bg-white/10 backdrop-blur-sm p-2 rounded-full hover:bg-white/20 transition-all duration-300 shadow-lg transform-gpu"
-          style={{ WebkitTapHighlightColor: 'transparent' }}
-          aria-label="Scroll to featured properties"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
+      {/* Scroll indicator removed as requested */}
     </section>
   );
 }
