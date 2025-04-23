@@ -123,10 +123,20 @@ export default function NeighborhoodDetails({ id }: NeighborhoodDetailsProps) {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
   
-  // Filter properties that might be in this neighborhood (based on address or city match)
+  // Map zipCodes to neighborhoods
+  const neighborhoodZipCodes: Record<string, string[]> = {
+    "North Laredo": ["78041", "78045"],
+    "Downtown Laredo": ["78040"],
+    "Del Mar": ["78041"],
+    "South Laredo": ["78046"]
+  };
+  
+  // Filter properties that might be in this neighborhood (based on address, city, or zipCode match)
   const neighborhoodProperties = properties?.filter(property => 
     property.address.includes(neighborhood?.name || '') || 
-    property.city.includes(neighborhood?.name || '')
+    property.city.includes(neighborhood?.name || '') ||
+    (neighborhoodZipCodes[neighborhood?.name || ''] && 
+     neighborhoodZipCodes[neighborhood?.name || ''].includes(property.zipCode))
   ) || [];
   
   // Get additional content based on neighborhood name
