@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { 
   Dialog, 
   DialogContent,
-  DialogTitle
+  DialogTitle,
+  DialogDescription
 } from "../../components/ui/dialog";
 import { Button } from "../../components/ui/button";
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -78,9 +79,9 @@ export default function FullScreenImageViewer({
         }}
       >
         <DialogTitle className="sr-only">Image Viewer - {propertyAddress}</DialogTitle>
-        <div id="fullscreen-viewer-description" className="sr-only">
+        <DialogDescription id="fullscreen-viewer-description" className="sr-only">
           Full screen image viewer for property at {propertyAddress}, showing image {currentIndex + 1} of {images.length}.
-        </div>
+        </DialogDescription>
         <div className="relative w-full h-full flex flex-col justify-center items-center translate-y-6">
           {/* Close button - Made larger on mobile for easier touch */}
           <div className="absolute top-4 right-4 z-50">
