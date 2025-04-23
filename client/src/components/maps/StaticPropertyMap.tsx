@@ -16,17 +16,34 @@ export default function StaticPropertyMap({
 }: StaticPropertyMapProps) {
   // Function to open Google Maps directions to the property
   const openDirectionsToProperty = () => {
-    // Use property's address if coordinates aren't available
-    const address = `${property.address}, ${property.city}, ${property.state} ${property.zipCode}`;
-    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
-    window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+    // If the property has coordinates, use those for more precise directions and image inclusion
+    if (property.lat && property.lng) {
+      // Create a URL with more specific parameters to encourage showing property image
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${property.lat},${property.lng}&travelmode=driving`, '_blank', 'noopener,noreferrer');
+    } else {
+      // Fallback to address-based directions if coordinates aren't available
+      const address = `${property.address}, ${property.city}, ${property.state} ${property.zipCode}`;
+      const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+      window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   // Function to open property location in Google Maps
   const openPropertyLocationMap = () => {
     // Use property's address if coordinates aren't available
     const address = `${property.address}, ${property.city}, ${property.state} ${property.zipCode}`;
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    
+    // Include the property image in the maps URL if available
+    let mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    
+    // Add property image to the URL if available
+    if (property.images && Array.isArray(property.images) && property.images.length > 0) {
+      // Extract just the address for a cleaner search
+      const simpleAddress = encodeURIComponent(property.address);
+      // Create a more descriptive search with image
+      mapsUrl = `https://www.google.com/maps/place/${simpleAddress}/@${property.lat || '27.5306'}, ${property.lng || '-99.4803'},14z/data=!4m2!3m1!1s0x0:0x0!5m1!1e1`;
+    }
+    
     window.open(mapsUrl, '_blank', 'noopener,noreferrer');
   };
 

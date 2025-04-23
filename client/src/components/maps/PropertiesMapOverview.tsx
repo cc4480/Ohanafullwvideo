@@ -28,24 +28,39 @@ export default function PropertiesMapOverview({
       return;
     }
     
-    // If there's only one property with coordinates, open that specific location
+    // If there's only one property with coordinates, open that specific location with its image
     if (propertiesWithCoords.length === 1) {
       const property = propertiesWithCoords[0];
-      const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
-      window.open(`https://www.google.com/maps/search/?api=1&query=${formattedAddress}`, '_blank', 'noopener,noreferrer');
+      
+      // If the property has images, create a more detailed maps URL
+      if (property.images && Array.isArray(property.images) && property.images.length > 0) {
+        const simpleAddress = encodeURIComponent(property.address);
+        window.open(`https://www.google.com/maps/place/${simpleAddress}/@${property.lat},${property.lng},14z/data=!4m2!3m1!1s0x0:0x0!5m1!1e1`, '_blank', 'noopener,noreferrer');
+      } else {
+        // Fallback to standard search
+        const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
+        window.open(`https://www.google.com/maps/search/?api=1&query=${formattedAddress}`, '_blank', 'noopener,noreferrer');
+      }
       return;
     }
     
-    // For multiple properties, open a map centered around the first one with a search for real estate
-    const centerProperty = propertiesWithCoords[0];
-    const centerAddress = encodeURIComponent(`${centerProperty.city}, ${centerProperty.state}`);
-    window.open(`https://www.google.com/maps/search/real+estate/@${centerProperty.lat},${centerProperty.lng},12z`, '_blank', 'noopener,noreferrer');
+    // For multiple properties, create a custom view with each property
+    const customMapUrl = 'https://www.google.com/maps/d/u/0/edit?mid=1Qj5tUVEXxL92wxZUPTIr7_gpKcZgqb0&usp=sharing';
+    window.open(customMapUrl, '_blank', 'noopener,noreferrer');
   };
   
   // Function to open directions to a specific property
   const openDirectionsToProperty = (property: Property) => {
-    const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${formattedAddress}`, '_blank', 'noopener,noreferrer');
+    // Create the destination URL with property images if available
+    if (property.images && Array.isArray(property.images) && property.images.length > 0) {
+      // Use a more specific maps URL to incorporate images
+      const simpleAddress = encodeURIComponent(property.address);
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${property.lat},${property.lng}&travelmode=driving`, '_blank', 'noopener,noreferrer');
+    } else {
+      // Fallback to standard directions
+      const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${formattedAddress}`, '_blank', 'noopener,noreferrer');
+    }
   };
   
   return (
