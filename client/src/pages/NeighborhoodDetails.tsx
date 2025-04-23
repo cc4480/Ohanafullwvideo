@@ -385,8 +385,32 @@ export default function NeighborhoodDetails({ id }: NeighborhoodDetailsProps) {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
+                      
+                      // Reset scroll position with our enhanced approach for keyboard users
+                      const resetScroll = () => {
+                        console.log("Resetting scroll for keyboard navigation");
+                        window.scrollTo(0, 0);
+                        document.body.scrollTop = 0;
+                        document.documentElement.scrollTop = 0;
+                        
+                        // Reset all scrollable elements
+                        document.querySelectorAll('main, section, .scrollable, .overflow-auto, .overflow-y-auto')
+                          .forEach(el => {
+                            if (el instanceof HTMLElement) {
+                              el.scrollTop = 0;
+                            }
+                          });
+                      };
+                      
+                      // Multiple scroll reset attempts for reliability
+                      resetScroll();
+                      setTimeout(resetScroll, 0);
+                      requestAnimationFrame(() => {
+                        requestAnimationFrame(resetScroll);
+                      });
+                      
+                      // Then navigate
                       navigate(`/neighborhoods/${n.id}`);
-                      window.scrollTo(0, 0);
                     }
                   }}
                   tabIndex={0}

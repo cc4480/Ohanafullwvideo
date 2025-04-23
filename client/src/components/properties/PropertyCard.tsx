@@ -50,7 +50,43 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   
   return (
     <div className={`property-card ${isDarkMode ? 'bg-slate-800' : 'bg-card'} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 card-hover-effect border border-border/30 mobile-optimized group w-full hover:-translate-y-1`}>
-      <Link href={`/properties/${property.id}`} onClick={() => window.scrollTo(0, 0)}>
+      <Link href={`/properties/${property.id}`} onClick={() => {
+        console.log("Resetting scroll position for property navigation");
+        
+        // Exhaustive scroll reset function for maximum reliability
+        const resetScroll = () => {
+          // Apply all known scroll reset techniques
+          window.scrollTo(0, 0);
+          document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
+          
+          // Reset all scrollable elements
+          const scrollableElements = document.querySelectorAll('main, section, .scrollable, .overflow-auto, .overflow-y-auto');
+          scrollableElements.forEach(el => {
+            if (el instanceof HTMLElement) {
+              el.scrollTop = 0;
+            }
+          });
+          
+          // Mobile-specific handling
+          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            setTimeout(() => {
+              document.body.style.overflow = '';
+              document.documentElement.style.overflow = '';
+              window.scrollTo(0, 0);
+            }, 5);
+          }
+        };
+        
+        // Apply multiple approaches for maximum reliability
+        resetScroll();
+        setTimeout(resetScroll, 0);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resetScroll);
+        });
+      }}>
         <div className="relative overflow-hidden h-52 sm:h-52 bg-slate-100 dark:bg-slate-700 transform-gpu">
           {property.images && Array.isArray(property.images) && property.images.length > 0 ? (
             <img 
@@ -178,7 +214,42 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             </div>
           )}
         </div>
-        <Link href={`/properties/${property.id}`} className="block w-full" onClick={() => window.scrollTo(0, 0)}>
+        <Link href={`/properties/${property.id}`} className="block w-full" onClick={() => {
+          console.log("Resetting scroll position for property details button");
+          
+          // Exhaustive scroll reset function
+          const resetScroll = () => {
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            
+            // Reset all scrollable elements
+            const scrollableElements = document.querySelectorAll('main, section, .scrollable, .overflow-auto, .overflow-y-auto');
+            scrollableElements.forEach(el => {
+              if (el instanceof HTMLElement) {
+                el.scrollTop = 0;
+              }
+            });
+            
+            // Mobile-specific handling
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+              document.body.style.overflow = 'hidden';
+              document.documentElement.style.overflow = 'hidden';
+              setTimeout(() => {
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
+                window.scrollTo(0, 0);
+              }, 5);
+            }
+          };
+          
+          // Apply multiple approaches for maximum reliability
+          resetScroll();
+          setTimeout(resetScroll, 0);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(resetScroll);
+          });
+        }}>
           <Button 
             className="w-full h-12 sm:h-10 md:h-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-all duration-500 shadow-md hover:shadow-lg group-hover:shadow-lg mobile-optimized overflow-hidden relative"
             style={{ touchAction: 'manipulation' }}
