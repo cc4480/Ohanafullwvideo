@@ -49,21 +49,29 @@
       transition: transform 0.15s ease, background-color 0.15s ease;
     }
     
-    /* Global button press effect */
+    /* Enhanced Mobile-First Button Press Effects */
     button:active, 
     a[role="button"]:active,
     [role="button"]:active,
     .btn:active {
       transform: scale(0.97);
       opacity: 0.9;
+      transition: transform 0.1s ease-out, opacity 0.1s ease-out !important;
     }
     
-    /* Improved mobile feedback for button presses */
+    /* Premium Tactile Feedback for Mobile */
     .button-press-feedback {
       position: relative;
       overflow: hidden;
+      transition: all 0.2s ease-out !important;
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+      user-select: none !important;
+      -webkit-touch-callout: none !important;
+      -webkit-user-select: none !important;
     }
     
+    /* Visible ripple effect - high visibility for all lighting conditions */
     .button-press-feedback::after {
       content: '';
       display: block;
@@ -73,16 +81,28 @@
       top: 0;
       left: 0;
       pointer-events: none;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 80%);
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 80%);
       transform: scale(10);
       opacity: 0;
       transition: transform 0.5s, opacity 0.5s;
+      will-change: transform, opacity;
+      z-index: 10;
     }
     
     .button-press-feedback:active::after {
       transform: scale(0);
       opacity: 1;
       transition: 0s;
+    }
+    
+    /* Increase contrast for visual feedback on darker themes */
+    .dark .button-press-feedback::after {
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 80%);
+    }
+    
+    /* Extra feedback through border flash */
+    .button-press-feedback:active {
+      box-shadow: 0 0 0 2px rgba(var(--primary-rgb, 0, 123, 255), 0.5) !important;
     }
     
     .mobile-optimized .active-state:active {

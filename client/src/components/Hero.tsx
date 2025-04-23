@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
+import { useMobile } from "@/hooks/use-mobile";
 
 // Define carousel images with optimized sizes and loading
 const carouselImages = [
@@ -25,6 +26,11 @@ const carouselImages = [
 export default function Hero() {
   const [currentImage, setCurrentImage] = useState(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  
+  // Use mobile detection
+  const { isMobile, isTouchDevice } = useMobile();
   
   // Setup carousel with hardware acceleration
   useEffect(() => {
@@ -50,6 +56,44 @@ export default function Hero() {
     };
   }, [currentImage]);
   
+  // Advanced touch swipe handling for mobile carousels
+  useEffect(() => {
+    if (!isTouchDevice || !carouselRef.current) return;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartXRef.current = e.touches[0].clientX;
+    };
+    
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (touchStartXRef.current === null) return;
+      
+      const touchEndX = e.changedTouches[0].clientX;
+      const diffX = touchStartXRef.current - touchEndX;
+      
+      // Detect left/right swipe (with threshold)
+      if (Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+          // Swipe left (next image)
+          setCurrentImage(prev => (prev === carouselImages.length - 1 ? 0 : prev + 1));
+        } else {
+          // Swipe right (previous image)
+          setCurrentImage(prev => (prev === 0 ? carouselImages.length - 1 : prev - 1));
+        }
+      }
+      
+      touchStartXRef.current = null;
+    };
+    
+    const carouselElement = carouselRef.current;
+    carouselElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+    carouselElement.addEventListener('touchend', handleTouchEnd, { passive: true });
+    
+    return () => {
+      carouselElement.removeEventListener('touchstart', handleTouchStart);
+      carouselElement.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isTouchDevice, carouselRef.current]);
+  
   return (
     <section className="relative bg-neutral-900 min-h-[100svh] flex items-center mt-[-5.5rem]">
       {/* Background image carousel and overlays - Mobile optimized */}
@@ -62,7 +106,7 @@ export default function Hero() {
         <div className="absolute inset-0 opacity-30 z-10 bg-noise"></div>
         
         {/* Optimized carousel container with hardware acceleration */}
-        <div className="absolute inset-0 transform-gpu">
+        <div ref={carouselRef} className="absolute inset-0 transform-gpu">
           {/* Only render current and next images for better performance */}
           {[currentImage, (currentImage + 1) % carouselImages.length].map((imageIndex) => {
             const image = carouselImages[imageIndex];
@@ -177,7 +221,13 @@ export default function Hero() {
             <Link href="/properties" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
-                className="w-full h-14 md:h-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu orange-glow-border-intense"
+                className="w-full h-14 md:h-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu orange-glow-border-intense button-press-feedback min-h-[60px] sm:min-h-[48px]"
+                style={{
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  willChange: 'transform, opacity',
+                  transform: 'translateZ(0)'
+                }}
               >
                 <span>Explore Listings</span>
                 <i className='bx bx-right-arrow-alt ml-2 transform transition-transform duration-300 group-hover:translate-x-1'></i>
@@ -187,14 +237,20 @@ export default function Hero() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="w-full h-14 md:h-auto border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu orange-glow-border-subtle"
+                className="w-full h-14 md:h-auto border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu orange-glow-border-subtle button-press-feedback min-h-[60px] sm:min-h-[48px]"
+                style={{
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  willChange: 'transform, opacity',
+                  transform: 'translateZ(0)'
+                }}
               >
                 Contact Valentin
               </Button>
             </Link>
           </div>
           
-          {/* Stats or badges - Completely redesigned for better mobile visibility */}
+          {/* Stats or badges - Mobile optimized with enhanced touch feedback */}
           <div 
             className="mt-12 mb-28 sm:mb-24 md:mb-20 grid grid-cols-3 gap-3 md:gap-6 animate-slide-up" 
             style={{ 
@@ -204,15 +260,43 @@ export default function Hero() {
               backfaceVisibility: 'hidden' 
             }}
           >
-            <div className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl">
+            {/* Enhanced mobile stat cards with larger touch targets and feedback */}
+            <div 
+              className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
+              style={{
+                minHeight: isMobile ? '90px' : '70px',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                willChange: 'transform, opacity',
+                transform: 'translateZ(0)'
+              }}
+            >
               <p className="text-secondary font-bold text-xl md:text-2xl">27+</p>
               <p className="text-white text-xs md:text-sm font-semibold">Years Exp.</p>
             </div>
-            <div className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl">
+            <div 
+              className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
+              style={{
+                minHeight: isMobile ? '90px' : '70px',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                willChange: 'transform, opacity',
+                transform: 'translateZ(0)'
+              }}
+            >
               <p className="text-secondary font-bold text-xl md:text-2xl">150+</p>
               <p className="text-white text-xs md:text-sm font-semibold">Properties</p>
             </div>
-            <div className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl">
+            <div 
+              className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
+              style={{
+                minHeight: isMobile ? '90px' : '70px',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                willChange: 'transform, opacity',
+                transform: 'translateZ(0)'
+              }}
+            >
               <p className="text-secondary font-bold text-xl md:text-2xl">100%</p>
               <p className="text-white text-xs md:text-sm font-semibold">Satisfaction</p>
             </div>
@@ -220,7 +304,7 @@ export default function Hero() {
         </div>
       </div>
       
-      {/* Mobile-optimized scroll indicator with hardware acceleration */}
+      {/* Enhanced mobile-optimized scroll indicator with better visibility and feedback */}
       <div 
         className="absolute bottom-6 md:bottom-8 left-0 right-0 flex justify-center z-20 animate-bounce"
         style={{ 
@@ -231,15 +315,27 @@ export default function Hero() {
       >
         <a 
           href="#featured-properties" 
-          className="text-white bg-white/15 backdrop-blur-sm p-2.5 md:p-3 rounded-full hover:bg-white/25 transition-all duration-300 shadow-lg active:scale-95 transform-gpu orange-glow-border-subtle"
+          className="text-white bg-secondary/70 backdrop-blur-sm p-3 md:p-4 rounded-full hover:bg-secondary/90 transition-all duration-300 shadow-lg active:scale-95 transform-gpu orange-glow-border-intense button-press-feedback"
           style={{
             touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent'
+            WebkitTapHighlightColor: 'transparent',
+            minHeight: '50px',
+            minWidth: '50px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            willChange: 'transform, opacity',
+            transform: 'translateZ(0)'
           }}
+          aria-label="Scroll to featured properties"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
           </svg>
+          {/* Visual label for mobile users - better UX */}
+          {isMobile && (
+            <span className="sr-only">Discover Featured Properties</span>
+          )}
         </a>
       </div>
     </section>
