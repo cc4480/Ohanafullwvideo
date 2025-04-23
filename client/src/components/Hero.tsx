@@ -106,8 +106,8 @@ export default function Hero() {
           </div>
         </div>
         
-        {/* Carousel indicators - Moved higher to avoid overlap with stats */}
-        <div className="absolute bottom-32 md:bottom-28 left-0 right-0 z-20 flex justify-center gap-2">
+        {/* Carousel indicators - Repositioned to top of carousel to avoid any overlap issues */}
+        <div className="absolute top-20 left-0 right-0 z-20 flex justify-center gap-2">
           {carouselImages.map((_, index) => (
             <button
               key={index}
@@ -194,9 +194,9 @@ export default function Hero() {
             </Link>
           </div>
           
-          {/* Stats or badges - Enhanced for mobile visibility with increased spacing to avoid overlaps */}
+          {/* Stats or badges - Completely redesigned for better mobile visibility */}
           <div 
-            className="mt-12 mb-16 sm:mb-12 md:mt-10 grid grid-cols-3 gap-2 md:gap-6 animate-slide-up" 
+            className="mt-12 mb-28 sm:mb-24 md:mb-20 grid grid-cols-3 gap-3 md:gap-6 animate-slide-up" 
             style={{ 
               animationDelay: "0.6s", 
               willChange: 'transform, opacity',
@@ -204,17 +204,17 @@ export default function Hero() {
               backfaceVisibility: 'hidden' 
             }}
           >
-            <div className="bg-white/20 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border shadow-lg">
+            <div className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl">
               <p className="text-secondary font-bold text-xl md:text-2xl">27+</p>
-              <p className="text-white text-xs md:text-sm">Years Exp.</p>
+              <p className="text-white text-xs md:text-sm font-semibold">Years Exp.</p>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border shadow-lg">
+            <div className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl">
               <p className="text-secondary font-bold text-xl md:text-2xl">150+</p>
-              <p className="text-white text-xs md:text-sm">Properties</p>
+              <p className="text-white text-xs md:text-sm font-semibold">Properties</p>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border shadow-lg">
+            <div className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl">
               <p className="text-secondary font-bold text-xl md:text-2xl">100%</p>
-              <p className="text-white text-xs md:text-sm">Satisfaction</p>
+              <p className="text-white text-xs md:text-sm font-semibold">Satisfaction</p>
             </div>
           </div>
         </div>

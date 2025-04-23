@@ -46,10 +46,10 @@ export default function PropertySearch() {
   };
   
   return (
-    <section className={`py-12 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
+    <section className={`py-12 pt-32 mt-8 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
       <div className="container mx-auto px-4">
-        {/* Adjusted the negative margin for better mobile spacing to prevent overlapping with realtor stats */}
-        <div className={`max-w-4xl mx-auto ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'} rounded-lg shadow-2xl p-6 -mt-10 sm:-mt-16 md:-mt-24 relative z-20 hardware-accelerated`}>
+        {/* Completely removed negative margin and added TOP margin instead to guarantee no overlap with stats */}
+        <div className={`max-w-4xl mx-auto ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'} rounded-lg shadow-2xl p-6 mt-4 relative z-20 hardware-accelerated`}>
           <h2 className={`text-2xl font-serif font-bold ${isDarkMode ? 'text-white' : 'text-neutral-800'} mb-4`}>Find Your Perfect Property</h2>
           <form className="grid grid-cols-1 md:grid-cols-3 gap-4" onSubmit={handleSearch}>
             <div>
