@@ -177,17 +177,17 @@ export default function Hero() {
         style={{ animationDelay: "2s", willChange: 'transform', transform: 'translateZ(0)' }}
       ></div>
       
-      {/* Content - Mobile optimized */}
-      <div className="container mx-auto px-4 relative z-20 pt-24 md:pt-36 pb-16">
-        <div className="max-w-3xl mt-8 md:mt-12">
-          <div className="mb-4 opacity-90">
-            <span className="inline-block px-3 py-1 md:px-4 md:py-1 bg-secondary/90 text-white rounded-full text-xs md:text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm transform-gpu">
+      {/* Content - Improved mobile optimization with better spacing */}
+      <div className="container mx-auto px-4 relative z-20 pt-16 sm:pt-20 md:pt-36 pb-12 sm:pb-16">
+        <div className="max-w-3xl mt-4 sm:mt-8 md:mt-12">
+          <div className="mb-3 sm:mb-4 opacity-90">
+            <span className="inline-block px-3 py-1 md:px-4 md:py-1.5 bg-secondary/90 text-white rounded-full text-[11px] sm:text-xs md:text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm transform-gpu">
               OHANA REALTY - ESTABLISHED IN LAREDO
             </span>
           </div>
           
           <h1 
-            className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 md:mb-6 animate-slide-up text-shadow"
+            className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-3 sm:mb-4 md:mb-6 animate-slide-up text-shadow"
             style={{ 
               willChange: 'transform, opacity',
               transform: 'translateZ(0)',
@@ -198,7 +198,7 @@ export default function Hero() {
           </h1>
           
           <p 
-            className="text-white/90 text-base sm:text-lg md:text-xl mb-6 md:mb-8 max-w-2xl animate-slide-up" 
+            className="text-white/90 text-sm sm:text-base md:text-xl mb-4 sm:mb-6 md:mb-8 max-w-2xl animate-slide-up" 
             style={{ 
               animationDelay: "0.2s", 
               willChange: 'transform, opacity', 
@@ -210,7 +210,7 @@ export default function Hero() {
           </p>
           
           <div 
-            className="flex flex-col sm:flex-row gap-3 md:gap-4 animate-slide-up" 
+            className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 md:gap-4 animate-slide-up" 
             style={{ 
               animationDelay: "0.4s", 
               willChange: 'transform, opacity',
@@ -221,7 +221,7 @@ export default function Hero() {
             <Link href="/properties" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
-                className="w-full h-14 md:h-auto text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu orange-glow-border-intense button-press-feedback min-h-[60px] sm:min-h-[48px]"
+                className="w-full h-12 sm:h-14 md:h-auto text-sm sm:text-base font-medium bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 group transform-gpu orange-glow-border-intense button-press-feedback min-h-[48px] sm:min-h-[56px]"
                 style={{
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
@@ -237,7 +237,7 @@ export default function Hero() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="w-full h-14 md:h-auto border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu orange-glow-border-subtle button-press-feedback min-h-[60px] sm:min-h-[48px]"
+                className="w-full h-12 sm:h-14 md:h-auto border-2 border-white bg-transparent hover:bg-white/10 text-white hover:text-white text-sm sm:text-base font-medium backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform-gpu orange-glow-border-subtle button-press-feedback min-h-[48px] sm:min-h-[56px]"
                 style={{
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
@@ -250,9 +250,9 @@ export default function Hero() {
             </Link>
           </div>
           
-          {/* Stats or badges - Mobile optimized with enhanced touch feedback */}
+          {/* Stats or badges - Improved mobile optimization with better spacing */}
           <div 
-            className="mt-12 mb-28 sm:mb-24 md:mb-20 grid grid-cols-3 gap-3 md:gap-6 animate-slide-up" 
+            className="mt-8 sm:mt-10 md:mt-12 mb-16 sm:mb-24 md:mb-20 grid grid-cols-3 gap-2 sm:gap-3 md:gap-6 animate-slide-up" 
             style={{ 
               animationDelay: "0.6s", 
               willChange: 'transform, opacity',
@@ -262,80 +262,85 @@ export default function Hero() {
           >
             {/* Enhanced mobile stat cards with larger touch targets and feedback */}
             <div 
-              className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
+              className="bg-white/30 backdrop-blur-md p-2 sm:p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
               style={{
-                minHeight: isMobile ? '90px' : '70px',
+                minHeight: isMobile ? '80px' : '70px',
                 touchAction: 'manipulation',
                 WebkitTapHighlightColor: 'transparent',
                 willChange: 'transform, opacity',
                 transform: 'translateZ(0)'
               }}
             >
-              <p className="text-secondary font-bold text-xl md:text-2xl">27+</p>
-              <p className="text-white text-xs md:text-sm font-semibold">Years Exp.</p>
+              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">27+</p>
+              <p className="text-white text-[10px] xs:text-xs md:text-sm font-semibold">Years Exp.</p>
             </div>
             <div 
-              className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
+              className="bg-white/30 backdrop-blur-md p-2 sm:p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
               style={{
-                minHeight: isMobile ? '90px' : '70px',
+                minHeight: isMobile ? '80px' : '70px',
                 touchAction: 'manipulation',
                 WebkitTapHighlightColor: 'transparent',
                 willChange: 'transform, opacity',
                 transform: 'translateZ(0)'
               }}
             >
-              <p className="text-secondary font-bold text-xl md:text-2xl">150+</p>
-              <p className="text-white text-xs md:text-sm font-semibold">Properties</p>
+              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">150+</p>
+              <p className="text-white text-[10px] xs:text-xs md:text-sm font-semibold">Properties</p>
             </div>
             <div 
-              className="bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
+              className="bg-white/30 backdrop-blur-md p-2 sm:p-3 md:p-4 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 text-center orange-glow-border-intense shadow-xl button-press-feedback active:translate-y-0.5"
               style={{
-                minHeight: isMobile ? '90px' : '70px',
+                minHeight: isMobile ? '80px' : '70px',
                 touchAction: 'manipulation',
                 WebkitTapHighlightColor: 'transparent',
                 willChange: 'transform, opacity',
                 transform: 'translateZ(0)'
               }}
             >
-              <p className="text-secondary font-bold text-xl md:text-2xl">100%</p>
-              <p className="text-white text-xs md:text-sm font-semibold">Satisfaction</p>
+              <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">100%</p>
+              <p className="text-white text-[10px] xs:text-xs md:text-sm font-semibold">Satisfaction</p>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Enhanced mobile-optimized scroll indicator with better visibility and feedback */}
+      {/* Enhanced mobile-optimized scroll indicator with improved visibility and feedback */}
       <div 
-        className="absolute bottom-6 md:bottom-8 left-0 right-0 flex justify-center z-20 animate-bounce"
+        className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-0 right-0 flex flex-col items-center justify-center z-20"
         style={{ 
           willChange: 'transform', 
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden'
         }}
       >
+        {/* Small visible text hint above the scroll button for better UX */}
+        {isMobile && (
+          <span className="text-white text-xs font-medium mb-1.5 bg-black/30 px-2 py-0.5 rounded-full backdrop-blur-sm">
+            Explore More
+          </span>
+        )}
+        
         <a 
           href="#featured-properties" 
-          className="text-white bg-secondary/70 backdrop-blur-sm p-3 md:p-4 rounded-full hover:bg-secondary/90 transition-all duration-300 shadow-lg active:scale-95 transform-gpu orange-glow-border-intense button-press-feedback"
+          className="text-white bg-secondary/80 backdrop-blur-sm p-2.5 sm:p-3 md:p-4 rounded-full hover:bg-secondary/90 transition-all duration-300 shadow-lg active:scale-95 transform-gpu orange-glow-border-intense button-press-feedback"
           style={{
             touchAction: 'manipulation',
             WebkitTapHighlightColor: 'transparent',
-            minHeight: '50px',
-            minWidth: '50px',
+            minHeight: '45px',
+            minWidth: '45px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             willChange: 'transform, opacity',
-            transform: 'translateZ(0)'
+            transform: 'translateZ(0)',
+            animation: 'bounce 2s infinite ease-in-out'
           }}
           aria-label="Scroll to featured properties"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
           </svg>
-          {/* Visual label for mobile users - better UX */}
-          {isMobile && (
-            <span className="sr-only">Discover Featured Properties</span>
-          )}
+          <span className="sr-only">Discover Featured Properties</span>
         </a>
       </div>
     </section>
