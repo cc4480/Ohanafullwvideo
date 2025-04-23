@@ -26,7 +26,7 @@ export default function Contact() {
         addressRegion="TX"
         postalCode="78041"
         telephone="+19563246714"
-        email="contact@ohanarealty.com"
+        email="valentin_cuellar@hotmail.com"
         priceRange="$$$"
         latitude={27.5454625}
         longitude={-99.4785054}
@@ -64,7 +64,7 @@ export default function Contact() {
         questions={[
           {
             question: "What's the best way to contact Ohana Realty?",
-            answer: "The best way to contact Ohana Realty is by calling Valentin Cuellar directly at (956) 324-6714, sending an email to contact@ohanarealty.com, or using the contact form on our website. You can also visit our office at 5702 McPherson Rd, Suite 9, Laredo, TX 78041 during business hours."
+            answer: "The best way to contact Ohana Realty is by calling Valentin Cuellar directly at (956) 324-6714, sending an email to valentin_cuellar@hotmail.com, or using the contact form on our website. You can also visit our office at 5702 McPherson Rd, Suite 9, Laredo, TX 78041 during business hours."
           },
           {
             question: "What are Ohana Realty's office hours?",
@@ -111,8 +111,8 @@ export default function Contact() {
             </div>
             <h3 className="font-serif font-medium text-xl mb-2">Email Us</h3>
             <p className="text-muted-foreground mb-4">Send us your inquiry anytime</p>
-            <a href="mailto:contact@ohanarealty.com" className="text-primary hover:underline">
-              contact@ohanarealty.com
+            <a href="mailto:valentin_cuellar@hotmail.com" className="text-primary hover:underline">
+              valentin_cuellar@hotmail.com
             </a>
           </div>
 

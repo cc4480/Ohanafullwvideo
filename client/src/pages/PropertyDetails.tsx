@@ -580,8 +580,8 @@ export default function PropertyDetails({ id }: { id: number }) {
                     </Button>
                   </a>
                   <a 
-                    href="mailto:info@ohanarealty.com" 
-                    aria-label="Email Ohana Realty at info@ohanarealty.com"
+                    href="mailto:valentin_cuellar@hotmail.com" 
+                    aria-label="Email Valentin Cuellar at valentin_cuellar@hotmail.com"
                   >
                     <Button 
                       className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
