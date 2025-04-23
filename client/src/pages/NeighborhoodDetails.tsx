@@ -299,16 +299,24 @@ export default function NeighborhoodDetails({ id }: NeighborhoodDetailsProps) {
           ) : (
             <div className="bg-card rounded-lg p-6 text-center">
               <p className="text-muted-foreground mb-4">No properties currently available in this neighborhood.</p>
-              <Button onClick={() => navigate('/properties')} variant="outline">
-                Browse All Properties
+              <Button 
+                onClick={() => navigate('/properties')} 
+                variant="outline"
+                className="gap-2"
+              >
+                <i className='bx bx-search mr-1'></i> Browse All Properties
               </Button>
             </div>
           )}
           
           {neighborhoodProperties.length > 0 && (
             <div className="text-center mt-8">
-              <Button onClick={() => navigate('/properties')} variant="outline">
-                View All Properties
+              <Button 
+                onClick={() => navigate('/properties')} 
+                variant="outline"
+                className="gap-2"
+              >
+                <i className='bx bx-building-house mr-1'></i> View All Properties
               </Button>
             </div>
           )}
@@ -326,7 +334,21 @@ export default function NeighborhoodDetails({ id }: NeighborhoodDetailsProps) {
                 <div 
                   key={n.id} 
                   className="bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => navigate(`/neighborhoods/${n.id}`)}
+                  onClick={() => {
+                    // Navigate to the new neighborhood and scroll to top
+                    navigate(`/neighborhoods/${n.id}`);
+                    window.scrollTo(0, 0);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/neighborhoods/${n.id}`);
+                      window.scrollTo(0, 0);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`View details about ${n.name} neighborhood`}
                 >
                   <div className="h-32 overflow-hidden">
                     <img 
@@ -349,7 +371,15 @@ export default function NeighborhoodDetails({ id }: NeighborhoodDetailsProps) {
         </div>
         
         <div className="text-center">
-          <Button onClick={() => navigate('/neighborhoods')} variant="outline" className="gap-2">
+          <Button 
+            onClick={() => {
+              navigate('/neighborhoods');
+              window.scrollTo(0, 0);
+            }} 
+            variant="outline" 
+            className="gap-2 px-6 py-2 h-auto"
+            size="lg"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to All Neighborhoods
           </Button>

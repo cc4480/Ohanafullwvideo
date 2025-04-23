@@ -1,6 +1,7 @@
 import { Neighborhood } from "@shared/schema";
 import { ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import northLaredoImg from "../../assets/north-laredo-industrial-park.png";
 import downtownLaredoImg from "../../assets/downtown-laredo.png";
 import delMarImg from "../../assets/del-mar.png";
@@ -13,6 +14,7 @@ interface NeighborhoodCardProps {
 export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps) {
   // Simple theme detection as fallback
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [, navigate] = useLocation();
   
   useEffect(() => {
     // Check for dark mode preference
@@ -39,8 +41,8 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
       className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg overflow-hidden shadow-md group mobile-optimized transform-gpu cursor-pointer`} 
       style={{ backfaceVisibility: 'hidden' }}
       onClick={() => {
-        // Navigate to the neighborhood details page
-        window.location.href = `/neighborhoods/${neighborhood.id}`;
+        // Navigate to the neighborhood details page using Wouter's navigate
+        navigate(`/neighborhoods/${neighborhood.id}`);
         // On mobile, this helps ensure the page starts from the top
         window.scrollTo(0, 0);
       }}

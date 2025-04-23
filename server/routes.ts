@@ -122,23 +122,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch neighborhoods" });
     }
   });
-
-  // Get neighborhood by ID
+  
+  // Get a single neighborhood by ID
   apiRouter.get("/neighborhoods/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid neighborhood ID" });
       }
-
+      
       const neighborhood = await storage.getNeighborhood(id);
       if (!neighborhood) {
         return res.status(404).json({ message: "Neighborhood not found" });
       }
-
+      
       res.json(neighborhood);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch neighborhood" });
+      res.status(500).json({ message: "Failed to fetch neighborhood details" });
     }
   });
 
