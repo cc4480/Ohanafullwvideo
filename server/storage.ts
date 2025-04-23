@@ -1,7 +1,7 @@
 import { properties, neighborhoods, messages, users } from "@shared/schema";
 import type { Property, InsertProperty, Neighborhood, InsertNeighborhood, Message, InsertMessage, User, InsertUser } from "@shared/schema";
 import { db } from './db';
-import { eq, sql, and, or } from 'drizzle-orm';
+import { eq, sql, and, or, type SQL } from 'drizzle-orm';
 
 // Add more CRUD methods for the storage interface
 export interface IStorage {
@@ -78,40 +78,51 @@ export class DatabaseStorage implements IStorage {
     city?: string;
     zipCode?: string;
   }): Promise<Property[]> {
-    // Start with base query
-    let query = db.select().from(properties);
+    // Create an array to hold query conditions
+    const conditions: Array<SQL> = [];
     
-    // Apply filters one by one
+    // Add conditions based on filters
     if (filters.type) {
-      query = query.where(eq(properties.type, filters.type));
+      conditions.push(eq(properties.type, filters.type));
     }
     
     if (filters.minPrice) {
-      query = query.where(sql`${properties.price} >= ${filters.minPrice}`);
+      conditions.push(sql`${properties.price} >= ${filters.minPrice}`);
     }
     
     if (filters.maxPrice) {
-      query = query.where(sql`${properties.price} <= ${filters.maxPrice}`);
+      conditions.push(sql`${properties.price} <= ${filters.maxPrice}`);
     }
     
     if (filters.minBeds) {
-      query = query.where(sql`${properties.bedrooms} >= ${filters.minBeds}`);
+      conditions.push(sql`${properties.bedrooms} >= ${filters.minBeds}`);
     }
     
     if (filters.minBaths) {
-      query = query.where(sql`${properties.bathrooms} >= ${filters.minBaths}`);
+      conditions.push(sql`${properties.bathrooms} >= ${filters.minBaths}`);
     }
     
     if (filters.city) {
-      query = query.where(sql`${properties.city} ILIKE ${`%${filters.city}%`}`);
+      conditions.push(sql`${properties.city} ILIKE ${`%${filters.city}%`}`);
     }
     
     if (filters.zipCode) {
-      query = query.where(eq(properties.zipCode, filters.zipCode));
+      conditions.push(eq(properties.zipCode, filters.zipCode));
     }
     
-    // Execute and return the query
-    return await query;
+    // Execute query with conditions if they exist
+    if (conditions.length > 0) {
+      // Combine conditions with AND logic
+      const whereClause = conditions.reduce((combined, current, index) => {
+        if (index === 0) return current;
+        return sql`${combined} AND ${current}`;
+      });
+      
+      return await db.select().from(properties).where(whereClause);
+    }
+    
+    // If no conditions, return all properties
+    return await db.select().from(properties);
   }
 
   async createProperty(insertProperty: InsertProperty): Promise<Property> {

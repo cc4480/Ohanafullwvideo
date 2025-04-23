@@ -45,39 +45,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { type, minPrice, maxPrice, minBeds, minBaths, city, zipCode } = req.query;
       
-      let properties = await storage.getProperties();
+      // Prepare filter object with correct types
+      const filters: {
+        type?: string;
+        minPrice?: number;
+        maxPrice?: number;
+        minBeds?: number;
+        minBaths?: number;
+        city?: string;
+        zipCode?: string;
+      } = {};
       
-      // Apply filters
-      if (type) {
-        properties = properties.filter(p => p.type.toLowerCase() === String(type).toLowerCase());
-      }
+      // Add only defined filters with proper type conversion
+      if (type) filters.type = String(type);
+      if (minPrice) filters.minPrice = Number(minPrice);
+      if (maxPrice) filters.maxPrice = Number(maxPrice);
+      if (minBeds) filters.minBeds = Number(minBeds);
+      if (minBaths) filters.minBaths = Number(minBaths);
+      if (city) filters.city = String(city);
+      if (zipCode) filters.zipCode = String(zipCode);
       
-      if (minPrice) {
-        properties = properties.filter(p => p.price >= Number(minPrice));
-      }
-      
-      if (maxPrice) {
-        properties = properties.filter(p => p.price <= Number(maxPrice));
-      }
-      
-      if (minBeds) {
-        properties = properties.filter(p => p.bedrooms && p.bedrooms >= Number(minBeds));
-      }
-      
-      if (minBaths) {
-        properties = properties.filter(p => p.bathrooms && p.bathrooms >= Number(minBaths));
-      }
-      
-      if (city) {
-        properties = properties.filter(p => p.city.toLowerCase().includes(String(city).toLowerCase()));
-      }
-      
-      if (zipCode) {
-        properties = properties.filter(p => p.zipCode === String(zipCode));
-      }
+      // Use the database-optimized search method
+      const properties = await storage.searchProperties(filters);
       
       res.json(properties);
     } catch (error) {
+      console.error("Property search error:", error);
       res.status(500).json({ message: "Failed to search properties" });
     }
   });
