@@ -3,7 +3,7 @@ import logo from "@assets/OIP.jfif";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-primary/95 to-primary/90 text-primary-foreground pt-12 sm:pt-16 pb-8 relative">
+    <footer className="bg-gradient-to-b from-[#0A2342] to-[#061A34] text-primary-foreground pt-12 sm:pt-16 pb-8 relative">
       {/* Decorative elements */}
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-secondary/80 to-transparent"></div>
       <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-black/10 to-transparent"></div>

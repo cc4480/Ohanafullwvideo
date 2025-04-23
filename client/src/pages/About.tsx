@@ -140,7 +140,7 @@ export default function About() {
       />
       <div>
         {/* Hero Section */}
-        <div className="bg-primary/10 py-20">
+        <div className="bg-[#0A2342]/10 py-20">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">About Ohana Realty</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
@@ -313,7 +313,7 @@ export default function About() {
         </div>
 
         {/* CTA */}
-        <div className="bg-primary text-primary-foreground py-16">
+        <div className="bg-gradient-to-b from-[#0A2342] to-[#061A34] text-primary-foreground py-16">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-serif font-semibold mb-4">Ready to Find Your Dream Home?</h2>
             <p className="max-w-2xl mx-auto mb-8">
