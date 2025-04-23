@@ -132,14 +132,14 @@ export default function Properties() {
         <div className="container mx-auto px-4 py-6 sm:py-8">
           {/* Filters */}
           <div 
-            className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8 -mt-10 sm:-mt-12 relative z-10 mobile-optimized"
+            className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-5 sm:p-6 mb-6 sm:mb-8 -mt-8 sm:-mt-12 relative z-10 mobile-optimized"
             role="search"
             aria-labelledby="property-filter-heading"
           >
             <h2 id="property-filter-heading" className="text-xl sm:text-2xl font-serif font-bold text-neutral-800 dark:text-white mb-4 sm:mb-6">
               Find Your Perfect Property
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-6">
               <div>
                 <label htmlFor="property-type-select" className="block text-sm font-medium text-neutral-600 dark:text-neutral-300 mb-1">
                   Property Type
@@ -296,7 +296,7 @@ export default function Properties() {
             </div>
           ) : filteredProperties?.length ? (
             <div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8" 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" 
               aria-labelledby="properties-results-heading"
               role="region"
             >
