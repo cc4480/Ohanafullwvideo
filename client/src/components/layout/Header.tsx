@@ -96,12 +96,16 @@ export default function Header() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
   
-  // Dynamic header styles based on scroll position
+  // Dynamic header styles based on scroll position - more transparent on mobile
   const headerClasses = scrolled
-    ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/10" 
+    ? isMobile 
+      ? "bg-background/70 backdrop-blur-sm shadow-md border-b border-border/5" 
+      : "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/10" 
     : location === "/"
       ? "bg-transparent"  // Completely transparent on homepage when not scrolled
-      : "bg-background/95 backdrop-blur-md";
+      : isMobile 
+        ? "bg-background/50 backdrop-blur-sm" 
+        : "bg-background/95 backdrop-blur-md";
       
   // Add glow for home page logo when not scrolled
   const logoGlowClass = (!scrolled && location === "/") 
@@ -125,19 +129,19 @@ export default function Header() {
   
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
-      <div className="container mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
+      <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-1.5' : 'py-3'} flex items-center justify-between`}>
         {/* Logo with improved styling for both mobile and desktop */}
         <Link href="/" className="flex items-center relative group">
-          <div className="p-1 rounded-md transform-gpu transition-all duration-300 hover:shadow-md">
-            {/* Enhanced image with better mobile optimization */}
+          <div className={`${isMobile ? 'p-0' : 'p-1'} rounded-md transform-gpu transition-all duration-300 hover:shadow-md`}>
+            {/* Enhanced image with better mobile optimization - smaller on mobile */}
             {isMobile ? (
               <img 
                 src={logoImg}
                 alt="Ohana Realty Logo"
                 style={{
-                  width: '90px',
+                  width: '70px',
                   height: 'auto',
-                  maxHeight: '40px',
+                  maxHeight: '32px',
                   objectFit: 'contain',
                   display: 'block'
                 }}
@@ -158,7 +162,7 @@ export default function Header() {
             )}
           </div>
           {/* Subtle decoration - now visible on hover without animation */}
-          <div className="absolute -bottom-2 -right-2 h-3 w-3 sm:h-4 sm:w-4 bg-secondary rounded-full opacity-40 sm:opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+          <div className="absolute -bottom-2 -right-2 h-2 w-2 sm:h-4 sm:w-4 bg-secondary rounded-full opacity-30 sm:opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
@@ -193,44 +197,44 @@ export default function Header() {
             </Button>
           </Link>
           
-          {/* Enhanced mobile contact button with pulse effect */}
+          {/* Enhanced mobile contact button with pulse effect - smaller on mobile */}
           <Link href="/contact" className="md:hidden">
             <Button 
               variant="secondary" 
               size="icon"
-              className="h-10 w-10 rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95 button-press-feedback"
+              className={`${isMobile ? 'h-8 w-8' : 'h-10 w-10'} rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95 button-press-feedback`}
               style={{
                 transform: 'translateZ(0)',
                 backfaceVisibility: 'hidden',
                 willChange: 'transform'
               }}
             >
-              <i className='bx bx-envelope text-lg'></i>
+              <i className={`bx bx-envelope ${isMobile ? 'text-sm' : 'text-lg'}`}></i>
             </Button>
           </Link>
           
-          {/* Enhanced mobile menu button with animated effects */}
+          {/* Enhanced mobile menu button with animated effects - smaller on mobile */}
           <button 
-            className={`md:hidden focus:outline-none h-10 w-10 flex items-center justify-center rounded-full ${
+            className={`md:hidden focus:outline-none ${isMobile ? 'h-8 w-8' : 'h-10 w-10'} flex items-center justify-center rounded-full ${
               scrolled || location !== "/" 
-                ? 'text-foreground bg-background/80 backdrop-blur-sm' 
-                : 'text-white bg-black/30 backdrop-blur-sm border border-white/20'
+                ? 'text-foreground bg-background/70 backdrop-blur-sm' 
+                : 'text-white bg-black/20 backdrop-blur-sm border border-white/10'
             } transition-all duration-300 button-press-feedback transform-gpu active:scale-95`}
             id="menuButton"
             onClick={toggleMobileMenu}
             aria-label="Toggle menu"
           >
-            <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} text-xl transform-gpu transition-transform duration-300 ${mobileMenuOpen ? 'rotate-90' : 'rotate-0'}`}></i>
+            <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} ${isMobile ? 'text-base' : 'text-xl'} transform-gpu transition-transform duration-300 ${mobileMenuOpen ? 'rotate-90' : 'rotate-0'}`}></i>
           </button>
         </div>
       </div>
       
-      {/* Enhanced mobile menu with smoother transitions */}
+      {/* Enhanced mobile menu with smoother transitions - adjusted for smaller header */}
       <div 
         id="mobileMenu" 
         className={`bg-background/95 backdrop-blur-md py-4 px-4 md:hidden shadow-xl border-t border-border/10 transition-all duration-500 ${
           mobileMenuOpen 
-            ? 'opacity-100 translate-y-0 max-h-[calc(100vh-70px)] overflow-auto' 
+            ? 'opacity-100 translate-y-0 max-h-[calc(100vh-48px)] overflow-auto' 
             : 'opacity-0 -translate-y-4 pointer-events-none max-h-0 overflow-hidden'
         }`}
         style={{ transformOrigin: 'top center' }}
