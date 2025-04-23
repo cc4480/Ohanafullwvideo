@@ -46,7 +46,43 @@
     
     /* Enhanced touch feedback */
     .mobile-optimized .active-state {
-      transition: transform 0.15s ease;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    
+    /* Global button press effect */
+    button:active, 
+    a[role="button"]:active,
+    [role="button"]:active,
+    .btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+    
+    /* Improved mobile feedback for button presses */
+    .button-press-feedback {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .button-press-feedback::after {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 80%);
+      transform: scale(10);
+      opacity: 0;
+      transition: transform 0.5s, opacity 0.5s;
+    }
+    
+    .button-press-feedback:active::after {
+      transform: scale(0);
+      opacity: 1;
+      transition: 0s;
     }
     
     .mobile-optimized .active-state:active {

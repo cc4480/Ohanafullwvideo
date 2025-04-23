@@ -158,10 +158,84 @@ export const useMobile = () => {
   // Apply mobile optimizations whenever relevant states change
   useEffect(() => {
     applyMobileOptimizations();
+    
+    // Enhanced mobile performance optimizations
+    if (isMobile) {
+      // Add mobile-optimized class to body for comprehensive CSS targeting
+      document.body.classList.add('mobile-optimized');
+      
+      // Force hardware acceleration for all animations and transitions
+      document.documentElement.style.willChange = 'transform';
+      document.documentElement.style.transform = 'translateZ(0)';
+      
+      // Apply additional touch specific enhancements
+      document.querySelectorAll('button, a[role="button"], [role="button"], .btn').forEach(button => {
+        if (button instanceof HTMLElement) {
+          // Add active state class for improved touch feedback
+          button.classList.add('button-press-feedback');
+          
+          // Ensure all buttons have proper touch target size
+          if (button.offsetHeight < 44 || button.offsetWidth < 44) {
+            button.style.minHeight = '44px';
+            button.style.minWidth = '44px';
+          }
+          
+          // Add proper touch event handling
+          button.addEventListener('touchstart', function() {
+            this.classList.add('active');
+          });
+          
+          button.addEventListener('touchend', function() {
+            this.classList.remove('active');
+            // Delay to ensure visual feedback is seen
+            setTimeout(() => {
+              if (this.classList.contains('active')) {
+                this.classList.remove('active');
+              }
+            }, 300);
+          });
+        }
+      });
+      
+      // Optimize images for mobile loading
+      document.querySelectorAll('img:not(.critical-image)').forEach(img => {
+        if (img instanceof HTMLImageElement && !img.hasAttribute('loading')) {
+          img.loading = 'lazy';
+          img.decoding = 'async';
+        }
+      });
+      
+      // Add delay to non-critical resource loading
+      setTimeout(() => {
+        // Load non-critical stylesheets
+        document.querySelectorAll('link[rel="stylesheet"][data-critical="false"]').forEach(link => {
+          if (link instanceof HTMLLinkElement) {
+            link.disabled = false;
+          }
+        });
+      }, 1000);
+    } else {
+      document.body.classList.remove('mobile-optimized');
+    }
   }, [isMobile, isTouchDevice, isPortrait, applyMobileOptimizations]);
   
   // Helper functions to get proper viewport heights
   const vh = (percentage: number) => `calc(var(--vh, 1vh) * ${percentage})`;
+  
+  // Add a function to check if current device is a high-end mobile device
+  const isHighEndMobile = () => {
+    const highEndBrowsers = [
+      'chrome/[7-9][0-9]', 'chrome/[1-9][0-9][0-9]',
+      'safari/[1-9][5-9]', 'safari/[6-9][0-9]',
+      'firefox/[7-9][0-9]', 'firefox/[1-9][0-9][0-9]'
+    ];
+    
+    const userAgent = navigator.userAgent.toLowerCase();
+    return isMobile && highEndBrowsers.some(browser => {
+      const regex = new RegExp(browser);
+      return regex.test(userAgent);
+    });
+  };
   
   return {
     isMobile,
@@ -169,6 +243,7 @@ export const useMobile = () => {
     isTouchDevice,
     viewportHeight,
     safeAreaInsets,
-    vh // Helper function for viewport height calculations
+    vh, // Helper function for viewport height calculations
+    isHighEndMobile: isHighEndMobile() // Check for high-end mobile device
   };
 };

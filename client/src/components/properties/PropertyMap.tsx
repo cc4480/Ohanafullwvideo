@@ -187,7 +187,7 @@ export default function PropertyMap() {
                     <Button 
                       size="sm"
                       variant="default"
-                      className="w-full text-sm font-medium h-[44px] sm:h-9"
+                      className="w-full text-sm font-medium h-[44px] sm:h-9 button-press-feedback"
                       aria-label={`View details of ${property.address}`}
                     >
                       View Details
@@ -197,7 +197,7 @@ export default function PropertyMap() {
                     size="sm"
                     variant="outline"
                     onClick={() => property.lat && property.lng ? openInGoogleMaps(property.lat, property.lng, property) : null}
-                    className="text-xs flex items-center justify-center gap-1 h-[44px] sm:h-9"
+                    className="text-xs flex items-center justify-center gap-1 h-[44px] sm:h-9 button-press-feedback"
                     aria-label={`View ${property.address} on Google Maps`}
                     style={{ 
                       WebkitTapHighlightColor: 'transparent', 

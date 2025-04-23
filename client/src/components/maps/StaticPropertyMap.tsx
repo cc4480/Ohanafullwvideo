@@ -109,7 +109,7 @@ export default function StaticPropertyMap({
               e.stopPropagation();
               openDirectionsToProperty();
             }}
-            className="shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm hover:bg-primary hover:text-white transition-colors duration-300 relative overflow-hidden group h-[44px] sm:h-9"
+            className="shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm hover:bg-primary hover:text-white transition-colors duration-300 relative overflow-hidden group h-[44px] sm:h-9 button-press-feedback"
             style={{ 
               WebkitTapHighlightColor: 'transparent', 
               touchAction: 'manipulation'
