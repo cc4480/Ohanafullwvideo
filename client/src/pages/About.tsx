@@ -207,11 +207,11 @@ export default function About() {
               </div>
             </div>
 
-            <div className="rounded-lg overflow-hidden shadow-lg">
+            <div className="rounded-lg overflow-hidden shadow-lg flex items-center justify-center p-8">
               <img 
-                src={propertyImage} 
-                alt="Ohana Realty property" 
-                className="w-full h-full object-cover"
+                src={logoImg} 
+                alt="Ohana Realty Logo" 
+                className="w-full max-w-md h-auto"
               />
             </div>
           </div>
