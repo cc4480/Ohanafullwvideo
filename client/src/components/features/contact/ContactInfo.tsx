@@ -65,29 +65,27 @@ interface SocialLinksProps {
 }
 
 function SocialLinks({ isDarkMode }: SocialLinksProps) {
+  const socialLinks = [
+    { icon: 'bxl-facebook', url: 'https://www.facebook.com/ohanarealty', label: 'Facebook' },
+    { icon: 'bxl-instagram', url: 'https://www.instagram.com/ohanarealty', label: 'Instagram' },
+    { icon: 'bxl-linkedin', url: 'https://www.linkedin.com/company/ohana-realty', label: 'LinkedIn' },
+    { icon: 'bxl-twitter', url: 'https://twitter.com/ohanarealty', label: 'Twitter' }
+  ];
+
   return (
     <div className="flex space-x-4">
-      <a 
-        href="#" 
-        className={`${isDarkMode ? 'bg-primary/20' : 'bg-primary/10'} p-3 rounded-full text-primary hover:bg-primary hover:text-white transition`}
-        aria-label="Facebook"
-      >
-        <i className='bx bxl-facebook text-xl'></i>
-      </a>
-      <a 
-        href="#" 
-        className={`${isDarkMode ? 'bg-primary/20' : 'bg-primary/10'} p-3 rounded-full text-primary hover:bg-primary hover:text-white transition`}
-        aria-label="Instagram"
-      >
-        <i className='bx bxl-instagram text-xl'></i>
-      </a>
-      <a 
-        href="#" 
-        className={`${isDarkMode ? 'bg-primary/20' : 'bg-primary/10'} p-3 rounded-full text-primary hover:bg-primary hover:text-white transition`}
-        aria-label="LinkedIn"
-      >
-        <i className='bx bxl-linkedin text-xl'></i>
-      </a>
+      {socialLinks.map((item) => (
+        <a 
+          key={item.icon}
+          href={item.url} 
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${isDarkMode ? 'bg-primary/20' : 'bg-primary/10'} p-3 rounded-full text-primary hover:bg-primary hover:text-white transition transform hover:scale-110`}
+          aria-label={`Visit our ${item.label} page`}
+        >
+          <i className={`bx ${item.icon} text-xl`}></i>
+        </a>
+      ))}
     </div>
   );
 }

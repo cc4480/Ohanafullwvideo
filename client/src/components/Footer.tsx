@@ -104,14 +104,16 @@ export default function Footer() {
             </ul>
             <div className="flex space-x-4 mt-4">
               {[
-                { icon: 'bxl-facebook', url: '#', label: 'Facebook' },
-                { icon: 'bxl-instagram', url: '#', label: 'Instagram' },
-                { icon: 'bxl-linkedin', url: '#', label: 'LinkedIn' },
-                { icon: 'bxl-twitter', url: '#', label: 'Twitter' }
+                { icon: 'bxl-facebook', url: 'https://www.facebook.com/ohanarealty', label: 'Facebook' },
+                { icon: 'bxl-instagram', url: 'https://www.instagram.com/ohanarealty', label: 'Instagram' },
+                { icon: 'bxl-linkedin', url: 'https://www.linkedin.com/company/ohana-realty', label: 'LinkedIn' },
+                { icon: 'bxl-twitter', url: 'https://twitter.com/ohanarealty', label: 'Twitter' }
               ].map((item, index) => (
                 <a 
                   key={item.icon}
                   href={item.url} 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={`Visit our ${item.label} page`}
                   className="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/10 flex items-center justify-center text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
                   style={{ 

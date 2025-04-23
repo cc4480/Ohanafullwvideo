@@ -135,22 +135,24 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-            {/* Larger social icons for mobile */}
+            {/* Larger social icons for mobile - Updated with proper external links */}
             <div className="flex space-x-4 mt-6">
               {[
-                { icon: 'bxl-facebook', url: '/contact' },
-                { icon: 'bxl-instagram', url: '/contact' },
-                { icon: 'bxl-linkedin', url: '/contact' },
-                { icon: 'bxl-twitter', url: '/contact' }
+                { icon: 'bxl-facebook', url: 'https://www.facebook.com/ohanarealty', label: 'Facebook' },
+                { icon: 'bxl-instagram', url: 'https://www.instagram.com/ohanarealty', label: 'Instagram' },
+                { icon: 'bxl-linkedin', url: 'https://www.linkedin.com/company/ohana-realty', label: 'LinkedIn' },
+                { icon: 'bxl-twitter', url: 'https://twitter.com/ohanarealty', label: 'Twitter' }
               ].map((item, index) => (
-                <Link
+                <a
                   key={item.icon}
                   href={item.url}
-                  onClick={() => window.scrollTo(0, 0)}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label={`Visit our ${item.label} page`}
                   className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-110"
                 >
                   <i className={`bx ${item.icon} text-2xl`}></i>
-                </Link>
+                </a>
               ))}
             </div>
           </div>
