@@ -48,8 +48,9 @@ export default function PropertySearch() {
   return (
     <section className={`py-12 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
       <div className="container mx-auto px-4">
-        <div className={`max-w-4xl mx-auto ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'} rounded-lg shadow-lg p-6 -mt-24 relative z-20`}>
-          <h2 className={`text-2xl font-serif font-bold ${isDarkMode ? 'text-white' : 'text-neutral-800'} mb-6`}>Find Your Perfect Property</h2>
+        {/* Adjusted the negative margin for better mobile spacing to prevent overlapping with realtor stats */}
+        <div className={`max-w-4xl mx-auto ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'} rounded-lg shadow-2xl p-6 -mt-10 sm:-mt-16 md:-mt-24 relative z-20 hardware-accelerated`}>
+          <h2 className={`text-2xl font-serif font-bold ${isDarkMode ? 'text-white' : 'text-neutral-800'} mb-4`}>Find Your Perfect Property</h2>
           <form className="grid grid-cols-1 md:grid-cols-3 gap-4" onSubmit={handleSearch}>
             <div>
               <label className={`block text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-neutral-600'} mb-1`}>Property Type</label>
@@ -91,7 +92,7 @@ export default function PropertySearch() {
             </div>
             <div className="md:col-span-3">
               <Link href={searchPath}>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary-dark">
+                <Button type="submit" className="w-full bg-primary hover:bg-primary-dark active-state">
                   Search Properties
                 </Button>
               </Link>
