@@ -104,10 +104,10 @@ export default function Footer() {
             </ul>
             <div className="flex space-x-4 mt-4">
               {[
-                { icon: 'bxl-facebook', url: 'https://www.facebook.com/ohanarealty', label: 'Facebook' },
-                { icon: 'bxl-instagram', url: 'https://www.instagram.com/ohanarealty', label: 'Instagram' },
-                { icon: 'bxl-linkedin', url: 'https://www.linkedin.com/company/ohana-realty', label: 'LinkedIn' },
-                { icon: 'bxl-twitter', url: 'https://twitter.com/ohanarealty', label: 'Twitter' }
+                { icon: 'bxl-facebook', url: 'https://www.facebook.com/valentincrealtor', label: 'Facebook' },
+                { icon: 'bxl-instagram', url: 'https://www.instagram.com/valentincrealtor', label: 'Instagram' },
+                { icon: 'bxl-linkedin', url: 'https://www.linkedin.com/in/valentin-cuellar-5827b4123', label: 'LinkedIn' },
+                { icon: 'bxl-twitter', url: 'https://twitter.com/valentinrealtor', label: 'Twitter' }
               ].map((item, index) => (
                 <a 
                   key={item.icon}
