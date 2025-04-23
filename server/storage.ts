@@ -1,7 +1,7 @@
 import { properties, neighborhoods, messages, users } from "@shared/schema";
 import type { Property, InsertProperty, Neighborhood, InsertNeighborhood, Message, InsertMessage, User, InsertUser } from "@shared/schema";
 import { db } from './db';
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, and, or } from 'drizzle-orm';
 
 // Add more CRUD methods for the storage interface
 export interface IStorage {
@@ -14,6 +14,15 @@ export interface IStorage {
   getProperties(): Promise<Property[]>;
   getProperty(id: number): Promise<Property | undefined>;
   getPropertiesByType(type: string): Promise<Property[]>;
+  searchProperties(filters: {
+    type?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    minBeds?: number;
+    minBaths?: number;
+    city?: string;
+    zipCode?: string;
+  }): Promise<Property[]>;
   createProperty(property: InsertProperty): Promise<Property>;
   updateProperty(id: number, property: Partial<Property>): Promise<Property | undefined>;
   deleteProperty(id: number): Promise<boolean>;
@@ -58,6 +67,51 @@ export class DatabaseStorage implements IStorage {
 
   async getPropertiesByType(type: string): Promise<Property[]> {
     return await db.select().from(properties).where(eq(properties.type, type));
+  }
+  
+  async searchProperties(filters: {
+    type?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    minBeds?: number;
+    minBaths?: number;
+    city?: string;
+    zipCode?: string;
+  }): Promise<Property[]> {
+    // Start with base query
+    let query = db.select().from(properties);
+    
+    // Apply filters one by one
+    if (filters.type) {
+      query = query.where(eq(properties.type, filters.type));
+    }
+    
+    if (filters.minPrice) {
+      query = query.where(sql`${properties.price} >= ${filters.minPrice}`);
+    }
+    
+    if (filters.maxPrice) {
+      query = query.where(sql`${properties.price} <= ${filters.maxPrice}`);
+    }
+    
+    if (filters.minBeds) {
+      query = query.where(sql`${properties.bedrooms} >= ${filters.minBeds}`);
+    }
+    
+    if (filters.minBaths) {
+      query = query.where(sql`${properties.bathrooms} >= ${filters.minBaths}`);
+    }
+    
+    if (filters.city) {
+      query = query.where(sql`${properties.city} ILIKE ${`%${filters.city}%`}`);
+    }
+    
+    if (filters.zipCode) {
+      query = query.where(eq(properties.zipCode, filters.zipCode));
+    }
+    
+    // Execute and return the query
+    return await query;
   }
 
   async createProperty(insertProperty: InsertProperty): Promise<Property> {
