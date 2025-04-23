@@ -122,7 +122,7 @@ export default function Header() {
     <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`} style={{ maxHeight: '70px' }}>
       <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-2 flex items-center justify-between">
         {/* Logo with improved styling for both mobile and desktop */}
-        <Link href="/" className="flex items-center relative group animate-fade-in">
+        <Link href="/" className="flex items-center relative group">
           <div className={`p-1 rounded-md ${location === "/" && !scrolled ? "bg-transparent" : "bg-white/90"} transform-gpu transition-all duration-300 hover:shadow-md`}>
             {/* Enhanced image with better mobile optimization */}
             {isMobile ? (
@@ -152,8 +152,8 @@ export default function Header() {
               />
             )}
           </div>
-          {/* Subtle decoration - now visible on mobile too */}
-          <div className="absolute -bottom-2 -right-2 h-3 w-3 sm:h-4 sm:w-4 bg-secondary rounded-full opacity-40 sm:opacity-0 group-hover:opacity-100 transition-all duration-300 animate-pulse"></div>
+          {/* Subtle decoration - now visible on hover without animation */}
+          <div className="absolute -bottom-2 -right-2 h-3 w-3 sm:h-4 sm:w-4 bg-secondary rounded-full opacity-40 sm:opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
