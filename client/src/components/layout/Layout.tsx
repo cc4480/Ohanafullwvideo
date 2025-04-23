@@ -62,7 +62,7 @@ export default function Layout({ children, transparentHeader = false }: LayoutPr
   }, [location]);
   
   return (
-    <div className="min-h-screen flex flex-col bg-transparent overflow-x-hidden">
+    <div className="min-h-screen h-screen-safe flex flex-col bg-transparent overflow-x-hidden mobile-optimized">
       {/* Professional subtle background animation */}
       <BackgroundAnimation 
         colorTheme={colorTheme} 
@@ -73,7 +73,7 @@ export default function Layout({ children, transparentHeader = false }: LayoutPr
       {/* Main content that scrolls over the animated background */}
       <main 
         ref={mainRef}
-        className="flex-grow relative z-1 bg-transparent"
+        className="flex-grow relative z-1 bg-transparent hardware-accelerated"
         style={{ 
           WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'none' // Prevents bounce effects on some browsers
@@ -81,8 +81,7 @@ export default function Layout({ children, transparentHeader = false }: LayoutPr
       >
         {/* Content container with improved mobile scroll handling */}
         <div 
-          className="overlay-content"
-          style={{ transform: 'translateZ(0)' }} // Enable hardware acceleration
+          className="overlay-content container-responsive"
         >
           {children}
         </div>

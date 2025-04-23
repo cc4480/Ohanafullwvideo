@@ -2,6 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom utility classes for optimized rendering and responsiveness */
+@layer utilities {
+  /* Hardware acceleration for smooth animations */
+  .hardware-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+  
+  /* Fix 100vh issue in mobile browsers, especially iOS Safari */
+  .h-screen-safe {
+    height: 100vh; /* fallback */
+    height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  /* Mobile safe area insets */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+  
+  /* Optimized touch targets for mobile */
+  @media (pointer: coarse) {
+    .mobile-optimized button,
+    .mobile-optimized a[role="button"],
+    .mobile-optimized [role="button"],
+    .mobile-optimized .btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0.5rem 1rem;
+      touch-action: manipulation;
+    }
+    
+    /* Improved spacing for mobile */
+    .mobile-optimized .card,
+    .mobile-optimized .property-card {
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Enhanced touch feedback */
+    .mobile-optimized .active-state {
+      transition: transform 0.15s ease;
+    }
+    
+    .mobile-optimized .active-state:active {
+      transform: scale(0.97);
+    }
+  }
+  
+  /* Responsive container padding */
+  .container-responsive {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .container-responsive {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-responsive {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  
+  /* Better card spacing on mobile */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .card-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .card-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+}
+
 /* Clean background settings without background image */
 html, body {
   background-color: hsl(var(--background));
