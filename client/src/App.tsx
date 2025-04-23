@@ -15,6 +15,7 @@ import NeighborhoodDetails from "@/pages/NeighborhoodDetails";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Favorites from "@/pages/Favorites";
+import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -99,28 +100,28 @@ function App() {
           <ErrorBoundary>
             <AuthProvider>
               <FavoritesProvider>
-              {/* Global header */}
-              <Header />
+                {/* Global header */}
+                <Header />
               
-              {/* Main content with layout wrapper */}
-              <Layout>
-                {/* Use Suspense for route-based code splitting */}
-                <Suspense fallback={<div className="min-h-screen flex items-center justify-center transform-gpu">
-                  <div className="animate-pulse text-primary">Loading...</div>
-                </div>}>
-                  <Switch>
-                    <Route path="/">
-                      {() => {
-                        return (
-                          <>
-                            <ScrollToTop />
-                            <ErrorBoundary>
-                              <Home />
-                            </ErrorBoundary>
-                          </>
-                        );
-                      }}
-                    </Route>
+                {/* Main content with layout wrapper */}
+                <Layout>
+                  {/* Use Suspense for route-based code splitting */}
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center transform-gpu">
+                    <div className="animate-pulse text-primary">Loading...</div>
+                  </div>}>
+                    <Switch>
+                      <Route path="/">
+                        {() => {
+                          return (
+                            <>
+                              <ScrollToTop />
+                              <ErrorBoundary>
+                                <Home />
+                              </ErrorBoundary>
+                            </>
+                          );
+                        }}
+                      </Route>
                     <Route path="/properties">
                       {() => {
                         return (
@@ -205,6 +206,18 @@ function App() {
                         );
                       }}
                     </Route>
+                    <Route path="/login">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <Login />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
                     <Route>
                       {() => {
                         return (
@@ -217,15 +230,15 @@ function App() {
                         );
                       }}
                     </Route>
-                </Switch>
-                </Suspense>
-              </Layout>
-              
-              {/* Global footer */}
-              <Footer />
-              
-              {/* Floating scroll to top button - always accessible on mobile */}
-              <ScrollToTopButton />
+                    </Switch>
+                  </Suspense>
+                </Layout>
+                
+                {/* Global footer */}
+                <Footer />
+                
+                {/* Floating scroll to top button - always accessible on mobile */}
+                <ScrollToTopButton />
             </FavoritesProvider>
             </AuthProvider>
           </ErrorBoundary>
