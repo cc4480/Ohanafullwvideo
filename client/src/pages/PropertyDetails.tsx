@@ -216,7 +216,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                 url: `${websiteUrl}/realtors/valentin-cuellar`,
                 image: valentinCuellarImg,
                 telephone: "+1-555-123-4567",
-                email: "valentin@ohanarealty.com"
+                email: "valentin_cuellar@hotmail.com"
               }
             }))
           }
