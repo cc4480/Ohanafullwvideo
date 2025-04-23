@@ -39,6 +39,7 @@ export function generatePropertyStructuredData(props: SimplePropertyStructuredDa
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
+    "@id": `${url}#listing`,
     "url": url,
     "name": `${property.bedrooms ? `${property.bedrooms} Bedroom ` : ''}${property.type} For Sale: ${property.address}`,
     "description": property.description || `${property.type} property located at ${property.address}, ${property.city}, ${property.state} ${property.zipCode}.`,
@@ -47,7 +48,8 @@ export function generatePropertyStructuredData(props: SimplePropertyStructuredDa
       "@type": "Offer",
       "price": property.price,
       "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock"
+      "availability": "https://schema.org/InStock",
+      "validFrom": new Date().toISOString().split('T')[0]
     },
     "address": {
       "@type": "PostalAddress",
@@ -56,7 +58,12 @@ export function generatePropertyStructuredData(props: SimplePropertyStructuredDa
       "addressRegion": property.state,
       "postalCode": property.zipCode,
       "addressCountry": "US"
-    }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": url
+    },
+    "datePosted": new Date().toISOString().split('T')[0]
   };
   
   // Add geographic coordinates if available

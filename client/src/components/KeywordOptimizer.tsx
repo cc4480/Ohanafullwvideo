@@ -91,6 +91,13 @@ export default function KeywordOptimizer({
   const nlpEnhancements = advancedNLP 
     ? generateNLPOptimizations(primaryKeywords, pageType)
     : [];
+  
+  // Generate temporal relevance signals
+  const temporalRelevance = [
+    `${new Date().getFullYear()} ${primaryKeywords[0] || 'real estate'} guide`,
+    `${locationKeywords[0] || 'Laredo'} property market ${new Date().getFullYear()}`,
+    `current ${primaryKeywords[0] || 'real estate'} trends`
+  ];
     
   // All keywords for meta tags, combined and deduplicated
   const allKeywords = Array.from(new Set([
@@ -99,7 +106,9 @@ export default function KeywordOptimizer({
     ...longTailKeywords,
     ...locationKeywords,
     ...semanticKeywords,
-    ...keywordCombinations
+    ...keywordCombinations,
+    ...temporalRelevance,
+    ...enhancedKeywords
   ]));
   
   // Meta description optimized for primary keywords
