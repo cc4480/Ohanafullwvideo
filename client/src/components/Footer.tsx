@@ -99,7 +99,7 @@ export default function Footer() {
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3 mt-0.5 group-hover:bg-secondary/20 transition-colors duration-300">
                   <i className='bx bx-envelope text-secondary'></i>
                 </div>
-                <a href="mailto:info@ohanarealty.com" className="hover:text-white text-white/90 transition-colors duration-300">info@ohanarealty.com</a>
+                <a href="mailto:valentin_cuellar@hotmail.com" className="hover:text-white text-white/90 transition-colors duration-300">valentin_cuellar@hotmail.com</a>
               </li>
             </ul>
             <div className="flex space-x-4 mt-4">

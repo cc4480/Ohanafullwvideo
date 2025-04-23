@@ -127,11 +127,11 @@ export default function Footer() {
                 </a>
               </li>
               <li className="group">
-                <a href="mailto:info@ohanarealty.com" className="flex items-start hover:text-white text-white/90 transition-colors duration-300 py-1 sm:py-0.5">
+                <a href="mailto:valentin_cuellar@hotmail.com" className="flex items-start hover:text-white text-white/90 transition-colors duration-300 py-1 sm:py-0.5">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mr-3 mt-0.5 group-hover:bg-secondary/20 transition-colors duration-300">
                     <i className='bx bx-envelope text-secondary text-xl'></i>
                   </div>
-                  <span className="group-hover:translate-x-1 transition-transform duration-300">info@ohanarealty.com</span>
+                  <span className="group-hover:translate-x-1 transition-transform duration-300">valentin_cuellar@hotmail.com</span>
                 </a>
               </li>
             </ul>
