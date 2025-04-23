@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 // Import logo from assets
 import logoImg from "@assets/logo.png";
@@ -16,10 +8,9 @@ import logoImg from "@assets/logo.png";
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [location, setLocation] = useLocation();
+  const [location] = useLocation();
   const [isDark, setIsDark] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { user, logout, initialized } = useAuth();
   
   // Check for mobile viewport
   useEffect(() => {
@@ -192,55 +183,6 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-2 sm:gap-4 animate-fade-in">
-          {initialized && (
-            <>
-              {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="hidden md:inline-flex items-center gap-2 border border-border/80 hover:bg-background/80 hover:border-border transition-all"
-                    >
-                      <span className="font-medium">{user.username}</span>
-                      <i className='bx bx-chevron-down'></i>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem className="flex items-center gap-2">
-                      <i className='bx bx-user text-lg'></i>
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="flex items-center gap-2">
-                      <i className='bx bx-heart text-lg'></i>
-                      <span>Favorites</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      className="flex items-center gap-2 text-destructive focus:text-destructive"
-                      onClick={async () => {
-                        await logout();
-                        setLocation('/');
-                      }}
-                    >
-                      <i className='bx bx-log-out text-lg'></i>
-                      <span>Logout</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Link href="/login" className="hidden md:block">
-                  <Button 
-                    variant="outline" 
-                    className="inline-flex items-center gap-2 border border-border/80 hover:bg-background/80 hover:border-border transition-all"
-                  >
-                    <i className='bx bx-log-in text-lg'></i>
-                    <span>Login</span>
-                  </Button>
-                </Link>
-              )}
-            </>
-          )}
-          
           <Link href="/contact">
             <Button 
               variant="secondary" 
@@ -323,38 +265,7 @@ export default function Header() {
             </Link>
           ))}
           
-          {/* Auth buttons for mobile */}
-          {initialized && (
-            <div className="transform-gpu transition-all duration-300" style={{ transitionDelay: '250ms' }}>
-              {user ? (
-                <Button 
-                  variant="outline" 
-                  className="w-full h-12 flex items-center justify-center gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 mt-2"
-                  onClick={async () => {
-                    await logout();
-                    setLocation('/');
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <i className='bx bx-log-out text-xl'></i>
-                  <span>Logout ({user.username})</span>
-                </Button>
-              ) : (
-                <Link href="/login" className="block w-full">
-                  <Button 
-                    variant="outline" 
-                    className="w-full h-12 flex items-center justify-center gap-2 border-primary/30 hover:bg-primary/10 mt-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <i className='bx bx-log-in text-xl'></i>
-                    <span>Login / Register</span>
-                  </Button>
-                </Link>
-              )}
-            </div>
-          )}
-          
-          <div className="pt-2 transform-gpu transition-all duration-300" style={{ transitionDelay: '300ms' }}>
+          <div className="pt-4 transform-gpu transition-all duration-300" style={{ transitionDelay: '300ms' }}>
             <Link href="/contact">
               <Button 
                 variant="secondary" 
