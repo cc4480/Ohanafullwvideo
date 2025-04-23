@@ -11,6 +11,7 @@ import Home from "@/pages/Home";
 import Properties from "@/pages/Properties";
 import PropertyDetails from "@/pages/PropertyDetails";
 import Neighborhoods from "@/pages/Neighborhoods";
+import NeighborhoodDetails from "@/pages/NeighborhoodDetails";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Favorites from "@/pages/Favorites";
@@ -118,6 +119,18 @@ function App() {
                             <ScrollToTop />
                             <ErrorBoundary>
                               <Neighborhoods />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/neighborhoods/:id">
+                      {(params) => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <NeighborhoodDetails id={parseInt(params.id)} />
                             </ErrorBoundary>
                           </>
                         );
