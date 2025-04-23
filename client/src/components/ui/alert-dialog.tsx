@@ -47,9 +47,9 @@ const AlertDialogContent = React.forwardRef<
       >
         {/* If no aria-describedby provided, add a visually hidden description */}
         {!hasAriaDescribedby && (
-          <span id={descriptionId} className="sr-only">
+          <AlertDialogPrimitive.Description id={descriptionId} className="sr-only">
             Alert dialog content
-          </span>
+          </AlertDialogPrimitive.Description>
         )}
         {props.children}
       </AlertDialogPrimitive.Content>
