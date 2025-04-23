@@ -81,7 +81,7 @@ export default function FullScreenImageViewer({
         <div id="fullscreen-viewer-description" className="sr-only">
           Full screen image viewer for property at {propertyAddress}, showing image {currentIndex + 1} of {images.length}.
         </div>
-        <div className="relative w-full h-full flex flex-col justify-center items-center">
+        <div className="relative w-full h-full flex flex-col justify-center items-center translate-y-6">
           {/* Close button - Made larger on mobile for easier touch */}
           <div className="absolute top-4 right-4 z-50">
             <Button
@@ -113,7 +113,7 @@ export default function FullScreenImageViewer({
               <img
                 src={images[currentIndex]}
                 alt={`Property image ${currentIndex + 1} of ${propertyAddress}`}
-                className="max-h-[80vh] w-auto max-w-[90vw] mx-auto object-contain select-none"
+                className="max-h-[75vh] w-auto max-w-[90vw] mx-auto object-contain select-none mt-4"
                 loading="eager"
                 draggable="false" // Prevent unwanted drag on mobile
                 style={{ 
