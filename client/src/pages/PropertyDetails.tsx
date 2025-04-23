@@ -197,15 +197,19 @@ export default function PropertyDetails({ id }: { id: number }) {
       </div>
       <div className="min-h-screen">
         {/* Property Header */}
-        <div className="bg-gradient-to-b from-secondary/95 to-secondary/90 text-white py-8 sm:py-12 mobile-optimized">
-          <div className="container mx-auto px-4">
+        <div className="bg-gradient-to-b from-[#0A2342] to-[#061A34] text-white py-8 sm:py-12 mobile-optimized relative">
+          {/* Decorative elements */}
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-secondary/80 to-transparent"></div>
+          <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none"></div>
+          
+          <div className="container mx-auto px-4 relative z-10">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center">
               <div>
                 <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2">{property.address}</h1>
                 <p className="text-base sm:text-lg">{property.city}, {property.state} {property.zipCode}</p>
               </div>
               <div className="mt-3 md:mt-0 flex flex-row md:flex-col items-baseline md:items-end justify-between">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white transform-gpu">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-secondary transform-gpu">
                   {formatPrice(property.price)}
                 </div>
                 <p className="text-xs sm:text-sm text-neutral-200 md:text-right">
