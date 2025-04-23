@@ -35,7 +35,7 @@ export default function PropertiesMapOverview({
       // If the property has images, create a more detailed maps URL
       if (property.images && Array.isArray(property.images) && property.images.length > 0) {
         const simpleAddress = encodeURIComponent(property.address);
-        window.open(`https://www.google.com/maps/place/${simpleAddress}/@${property.lat},${property.lng},14z/data=!4m2!3m1!1s0x0:0x0!5m1!1e1`, '_blank', 'noopener,noreferrer');
+        window.open(`https://www.google.com/maps/place/${simpleAddress}/@${property.lat},${property.lng},14z/data=!4m5!3m4!1s0x0:0x0!8m2!3d${property.lat}!4d${property.lng}`, '_blank', 'noopener,noreferrer');
       } else {
         // Fallback to standard search
         const formattedAddress = encodeURIComponent(`${property.address}, ${property.city}, ${property.state} ${property.zipCode}`);
@@ -44,9 +44,14 @@ export default function PropertiesMapOverview({
       return;
     }
     
-    // For multiple properties, create a custom view with each property
-    const customMapUrl = 'https://www.google.com/maps/d/u/0/edit?mid=1Qj5tUVEXxL92wxZUPTIr7_gpKcZgqb0&usp=sharing';
-    window.open(customMapUrl, '_blank', 'noopener,noreferrer');
+    // For multiple properties, create a dynamic map centered around the first one
+    // This creates URLs that will show photos and info about the properties
+    const centerLat = propertiesWithCoords[0].lat;
+    const centerLng = propertiesWithCoords[0].lng;
+    
+    // Create a more complex URL that will show the properties with their images
+    const mapUrl = `https://www.google.com/maps/search/property+for+sale/@${centerLat},${centerLng},13z`;
+    window.open(mapUrl, '_blank', 'noopener,noreferrer');
   };
   
   // Function to open directions to a specific property

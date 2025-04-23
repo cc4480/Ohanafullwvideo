@@ -74,21 +74,25 @@ export default function SEOLocationMap({
   // Format the address for Google Maps URL
   const formattedAddress = encodeURIComponent(`${address}, ${city}, ${state} ${zipCode}`);
   
-  // Create Google Maps URL
+  // Create Google Maps URL with property image support
   const getMapsUrl = () => {
-    // If we have coordinates, use them for more precise location
+    // If we have coordinates, use them for more precise location and to enable property image display
     if (latitude && longitude) {
-      return `https://www.google.com/maps?q=${latitude},${longitude}`;
+      // This special format encourages Google Maps to show property images when available
+      const simpleAddress = encodeURIComponent(address);
+      return `https://www.google.com/maps/place/${simpleAddress}/@${latitude},${longitude},14z/data=!4m5!3m4!1s0x0:0x0!8m2!3d${latitude}!4d${longitude}`;
     }
     
     // Otherwise use the address
     return `https://www.google.com/maps/search/?api=1&query=${formattedAddress}`;
   };
   
-  // Create Maps directions URL
+  // Create Maps directions URL with better property linking
   const getDirectionsUrl = () => {
     if (latitude && longitude) {
-      return `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+      // Use coordinates for more precise directions and include parameters
+      // to encourage Google Maps to show property images and details
+      return `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving&dir_action=navigate`;
     }
     
     return `https://www.google.com/maps/dir/?api=1&destination=${formattedAddress}`;
