@@ -22,7 +22,7 @@ export default function AboutRealtor() {
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <span className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm tracking-wide font-medium mb-4 animate-fade-in">OUR STORY</span>
           <div className="flex justify-center mb-6 animate-fade-in">
-            <div className="w-52 h-28 bg-white p-2 rounded-lg shadow-lg border border-primary/10 hover:shadow-xl transition-all duration-300">
+            <div className="w-52 h-28 p-2 hover:shadow-lg transition-all duration-300">
               <img 
                 src={ohanLogo} 
                 alt="Ohana Realty Logo" 
