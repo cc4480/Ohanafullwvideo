@@ -49,7 +49,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   };
   
   return (
-    <div className={`property-card ${isDarkMode ? 'bg-slate-800' : 'bg-card'} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 card-hover-effect border border-border/30 mobile-optimized group w-full`}>
+    <div className={`property-card ${isDarkMode ? 'bg-slate-800' : 'bg-card'} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 card-hover-effect border border-border/30 mobile-optimized group w-full hover:-translate-y-1`}>
       <Link href={`/properties/${property.id}`} onClick={() => window.scrollTo(0, 0)}>
         <div className="relative overflow-hidden h-52 sm:h-52 bg-slate-100 dark:bg-slate-700 transform-gpu">
           {property.images && Array.isArray(property.images) && property.images.length > 0 ? (
@@ -74,8 +74,8 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             </div>
           )}
           
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-70 transition-opacity duration-500"></div>
+          {/* Enhanced overlay gradient with shimmering effect */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500 after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/5 after:to-transparent after:translate-x-[-100%] group-hover:after:translate-x-[100%] after:transition-transform after:duration-1000 after:ease-in-out overflow-hidden"></div>
           
           {/* Property type badge - slides in from top, larger touch target on mobile */}
           <div className="absolute top-4 left-4 z-10 transition-transform duration-500 transform-gpu translate-y-0 group-hover:-translate-y-1">

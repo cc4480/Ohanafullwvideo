@@ -54,13 +54,15 @@ export default function PropertiesMapOverview({
         className="relative rounded-lg overflow-hidden"
         style={{ height }}
       >
-        {/* Static Map Background Image */}
-        <div className="absolute inset-0 z-0 bg-slate-200 dark:bg-slate-800">
+        {/* Enhanced Static Map Background Image with subtle zoom animation */}
+        <div className="absolute inset-0 z-0 bg-slate-200 dark:bg-slate-800 overflow-hidden">
           <img 
             src="/images/maps/laredo-map.png" 
             alt="Map of Laredo properties" 
-            className="w-full h-full object-cover opacity-60 dark:opacity-40"
+            className="w-full h-full object-cover opacity-60 dark:opacity-40 transition-transform duration-10000 ease-in-out transform hover:scale-110"
           />
+          {/* Subtle pulsing overlay for visual interest */}
+          <div className="absolute inset-0 bg-primary/5 dark:bg-primary/10 animate-pulse opacity-0 hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
         </div>
         {/* Map Interaction Area */}
         <div 
@@ -77,13 +79,17 @@ export default function PropertiesMapOverview({
           aria-label="View all properties on Google Maps"
         >
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-            <div className="bg-white dark:bg-slate-700 rounded-full p-3 shadow-lg mb-3">
-              <MapPin className="w-8 h-8 text-primary" />
+            {/* Pulsing map pin with hover effect */}
+            <div className="relative transform hover:scale-110 transition-transform duration-300 mb-3">
+              <div className="animate-ping absolute -inset-1 bg-primary/20 rounded-full opacity-75"></div>
+              <div className="bg-white dark:bg-slate-700 rounded-full p-3 shadow-lg relative z-10">
+                <MapPin className="w-8 h-8 text-primary animate-pulse" />
+              </div>
             </div>
-            <div className="bg-white/80 dark:bg-slate-800/80 p-4 rounded-lg backdrop-blur-sm">
-              <h3 className="text-lg font-bold mb-1">Interactive Property Map</h3>
+            <div className="bg-white/80 dark:bg-slate-800/80 p-4 rounded-lg backdrop-blur-sm shadow-lg transform hover:scale-105 transition-all duration-300">
+              <h3 className="text-lg font-bold mb-1 text-foreground dark:text-white">Interactive Property Map</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">View all properties on Google Maps</p>
-              <p className="text-primary text-sm">Click to open Google Maps</p>
+              <p className="text-primary text-sm font-medium">Click to open Google Maps</p>
             </div>
           </div>
         </div>
@@ -116,14 +122,15 @@ export default function PropertiesMapOverview({
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="h-7 w-7 p-0"
+                      className="h-7 w-7 p-0 hover:bg-primary/10 hover:text-primary transition-colors duration-300 relative group"
                       onClick={(e) => {
                         e.stopPropagation();
                         openDirectionsToProperty(property);
                       }}
                       aria-label={`Get directions to ${property.address}`}
                     >
-                      <Navigation className="h-4 w-4" />
+                      <div className="absolute inset-0 rounded-full bg-primary/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                      <Navigation className="h-4 w-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
                     </Button>
                   </div>
                 </div>
@@ -169,11 +176,18 @@ export default function PropertiesMapOverview({
             <Button 
               variant="outline" 
               onClick={() => openDirectionsToProperty(selectedProperty)}
+              className="hover:bg-primary/10 hover:border-primary transition-colors duration-300 relative overflow-hidden group"
             >
-              <Navigation className="w-4 h-4 mr-2" /> Get Directions
+              <span className="absolute inset-0 w-full h-full bg-primary/5 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
+              <Navigation className="w-4 h-4 mr-2 group-hover:text-primary transition-colors duration-300 group-hover:animate-pulse" /> 
+              <span className="group-hover:text-primary transition-colors duration-300">Get Directions</span>
             </Button>
             <Link href={`/properties/${selectedProperty.id}`}>
-              <Button>View Property</Button>
+              <Button className="bg-primary hover:bg-primary/90 transition-colors duration-300 shadow-md hover:shadow-lg relative overflow-hidden group">
+                <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
+                <span className="relative z-10">View Property</span>
+                <i className="bx bx-right-arrow-alt ml-2 transform-gpu transition-transform duration-300 group-hover:translate-x-1 relative z-10"></i>
+              </Button>
             </Link>
           </div>
         </div>

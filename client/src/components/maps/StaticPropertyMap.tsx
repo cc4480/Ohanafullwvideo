@@ -50,9 +50,9 @@ export default function StaticPropertyMap({
           />
         </div>
 
-        {/* Map Overlay with Property Pin */}
+        {/* Map Overlay with Property Pin - Enhanced with animations */}
         <div 
-          className="absolute inset-0 cursor-pointer"
+          className="absolute inset-0 cursor-pointer group"
           onClick={openPropertyLocationMap}
           role="button"
           tabIndex={0}
@@ -65,11 +65,15 @@ export default function StaticPropertyMap({
           }}
         >
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg mb-2">
-              <MapPin className="w-6 h-6 text-primary" />
+            {/* Pulsing animation ring around pin */}
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping opacity-75 scale-150"></div>
+              <div className="bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg mb-2 transform transition-transform duration-300 group-hover:scale-110 relative z-10">
+                <MapPin className="w-6 h-6 text-primary" />
+              </div>
             </div>
-            <div className="bg-white/90 dark:bg-slate-800/90 p-3 rounded-lg backdrop-blur-sm max-w-[80%]">
-              <h3 className="text-sm font-bold mb-1 text-center">{property.address}</h3>
+            <div className="bg-white/90 dark:bg-slate-800/90 p-3 rounded-lg backdrop-blur-sm max-w-[80%] shadow-lg transform transition-all duration-300 group-hover:scale-105">
+              <h3 className="text-sm font-bold mb-1 text-center group-hover:text-primary transition-colors duration-300">{property.address}</h3>
               <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
                 Click to view on Google Maps
               </p>
@@ -77,8 +81,8 @@ export default function StaticPropertyMap({
           </div>
         </div>
 
-        {/* Action Button */}
-        <div className="absolute bottom-3 right-3">
+        {/* Enhanced Action Button with hover animation */}
+        <div className="absolute bottom-3 right-3 transform transition-transform duration-300 hover:scale-105">
           <Button 
             variant="secondary" 
             size="sm"
@@ -86,9 +90,11 @@ export default function StaticPropertyMap({
               e.stopPropagation();
               openDirectionsToProperty();
             }}
-            className="shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm"
+            className="shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm hover:bg-primary hover:text-white transition-colors duration-300 relative overflow-hidden group"
           >
-            <Navigation className="w-4 h-4 mr-2" /> Get Directions
+            <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
+            <Navigation className="w-4 h-4 mr-2 relative z-10 group-hover:animate-pulse" /> 
+            <span className="relative z-10">Get Directions</span>
           </Button>
         </div>
       </div>
