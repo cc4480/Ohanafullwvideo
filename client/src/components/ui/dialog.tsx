@@ -39,12 +39,12 @@ const DialogContent = React.forwardRef<
   // Check for aria-describedby
   const hasAriaDescribedby = Boolean(props['aria-describedby']);
   
-  // Check for DialogPrimitive.Description in children (more reliable than DialogDescription)
+  // Simplified check for description
   const hasDescriptionInChildren = React.Children.toArray(children).some(
     child => React.isValidElement(child) && 
-    (child.type === DialogPrimitive.Description || 
-     (typeof child.type === 'object' && 
-      child.type?.displayName === DialogPrimitive.Description.displayName))
+    // Simple string comparison of the displayName instead of accessing the property directly
+    (String(child.type) === String(DialogPrimitive.Description) || 
+     String((child.type as any)?.displayName) === "DialogDescription")
   );
   
   // Only add fallback description if neither is present

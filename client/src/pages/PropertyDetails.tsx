@@ -26,10 +26,47 @@ export default function PropertyDetails({ id }: { id: number }) {
   const [isFullScreenViewerOpen, setIsFullScreenViewerOpen] = useState<boolean>(false);
   const [fullScreenImageIndex, setFullScreenImageIndex] = useState<number>(0);
   
-  // Ensure we scroll to the top when the component mounts
+  // Enhanced scroll-to-top when the component mounts
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    // Use multiple methods for maximum compatibility
+    if ('scrollBehavior' in document.documentElement.style) {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant' // Use 'instant' instead of 'smooth' to prevent scroll animation
+      });
+    } else {
+      // Fallback for browsers without scrollBehavior support
+      window.scrollTo(0, 0);
+    }
+    
+    // Ensure scrolling works on all browsers including Safari
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    
+    // Force multiple scroll attempts for extra reliability
+    const timers = [
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      }, 0),
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      }, 50),
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      }, 100)
+    ];
+    
+    return () => {
+      timers.forEach(id => clearTimeout(id));
+    };
+  }, [id]); // Also run when the property id changes
   
   const { data: property, isLoading, error } = useQuery<Property>({
     queryKey: [`/api/properties/${id}`],
