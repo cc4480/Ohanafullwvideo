@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import logoImage from "@/assets/logo.png";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -337,12 +338,26 @@ export default function Hero() {
       
       {/* Removed background logo */}
       
-      {/* Content - completely rebuilt for mobile */}
+      {/* Content - with logo at the very top */}
       <div className="container mx-auto px-4 relative z-20 py-2 md:py-8" ref={contentRef}>
-        <div className="max-w-3xl mt-12 sm:mt-0">
+        {/* Logo at the very top */}
+        <div className="flex justify-center mb-6 animate-slide-down">
+          <img 
+            src={logoImage}
+            alt="Ohana Realty" 
+            className="h-20 sm:h-24 md:h-28 object-contain filter drop-shadow-xl"
+            style={{ 
+              willChange: 'transform',
+              transform: 'translateZ(0)',
+              maxWidth: '100%'
+            }}
+          />
+        </div>
+        
+        <div className="max-w-3xl mt-6 sm:mt-0 mx-auto">
           <div className="mb-4 opacity-90">
             <span className="inline-block px-4 py-1 bg-secondary/90 text-white rounded-full text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm">
-              OHANA REALTY - ESTABLISHED IN LAREDO
+              ESTABLISHED IN LAREDO
             </span>
           </div>
           
