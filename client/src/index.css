@@ -4,6 +4,19 @@
 
 /* Custom utility classes for optimized rendering and responsiveness */
 @layer utilities {
+  /* Text shadow for better readability against varying backgrounds */
+  .text-shadow-sm {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+  
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  }
+  
+  .text-shadow-lg {
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
+  }
+  
   /* Hardware acceleration for smooth animations */
   .hardware-accelerated {
     transform: translateZ(0);

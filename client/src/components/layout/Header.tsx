@@ -96,16 +96,12 @@ export default function Header() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
   
-  // Dynamic header styles based on scroll position - more transparent on mobile
+  // Dynamic header styles - completely transparent when not scrolled
   const headerClasses = scrolled
     ? isMobile 
       ? "bg-background/70 backdrop-blur-sm shadow-md border-b border-border/5" 
       : "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/10" 
-    : location === "/"
-      ? "bg-transparent"  // Completely transparent on homepage when not scrolled
-      : isMobile 
-        ? "bg-background/50 backdrop-blur-sm" 
-        : "bg-background/95 backdrop-blur-md";
+    : "bg-transparent"; // Completely transparent on all pages when not scrolled
         
   // Force scroll to top on navigation
   const handleLinkClick = () => {
@@ -126,13 +122,9 @@ export default function Header() {
         ${isActive ? 'text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-primary after:rounded-full' : 'text-foreground'}`;
     }
     
-    if (location === "/" && !scrolled) {
-      return `hover:text-white hover:brightness-125 font-medium transition-all duration-300 
-        ${isActive ? 'text-secondary font-bold after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-secondary after:rounded-full' : 'text-white'}`;
-    }
-    
-    return `hover:text-primary font-medium transition-all duration-300 relative
-      ${isActive ? 'text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-primary after:rounded-full' : 'text-foreground'}`;
+    // When not scrolled - use white text on all pages for better visibility with transparent header
+    return `hover:text-white hover:brightness-125 font-medium transition-all duration-300 text-shadow-sm
+      ${isActive ? 'text-secondary font-bold after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-secondary after:rounded-full' : 'text-white'}`;
   };
   
   return (
@@ -210,7 +202,7 @@ export default function Header() {
           {/* Enhanced mobile menu button with animated effects - smaller on mobile */}
           <button 
             className={`md:hidden focus:outline-none ${isMobile ? 'h-6 w-6' : 'h-9 w-9'} flex items-center justify-center rounded-full ${
-              scrolled || location !== "/" 
+              scrolled
                 ? 'text-foreground bg-background/70 backdrop-blur-sm' 
                 : 'text-white bg-black/20 backdrop-blur-sm border border-white/10'
             } transition-all duration-300 button-press-feedback transform-gpu active:scale-95`}
