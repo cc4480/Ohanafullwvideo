@@ -182,15 +182,7 @@ function App() {
         ]}
       />
       
-      {/* Advanced Sitemap Generator */}
-      <EnterpriseGradeSitemapGenerator
-        baseUrl={baseUrl}
-        generateHtmlSitemap={true}
-        generateRssFeed={true}
-        includeImageSitemap={true}
-        categories={["Residential", "Commercial", "Neighborhoods", "Services"]}
-        pingSearchEngines={false}
-      />
+      {/* Sitemaps are now generated server-side */}
       
       {/* Schema Graph - Knowledge Graph Implementation */}
       <SchemaGraph
