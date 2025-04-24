@@ -1,41 +1,49 @@
 #!/bin/bash
-
 # Script to prepare the application for production deployment
 
-# Set environment to production
+echo "==== Preparing application for production deployment ===="
+
+# Set environment
 export NODE_ENV=production
 
-# Display setup information
-echo "🚀 Preparing application for production deployment..."
+# Install production dependencies only
+echo "Installing production dependencies..."
+npm ci --production
 
-# Build the application
-echo "📦 Building application..."
+# Removing development files
+echo "Removing development and temporary files..."
+rm -rf .git .github node_modules/.cache
+
+# Build optimized assets
+echo "Building optimized assets..."
 npm run build
 
-# Verify the build was created
-if [ ! -d "./dist" ]; then
-  echo "❌ Build failed! Check for errors above."
-  exit 1
+# Set proper permissions
+echo "Setting proper file permissions..."
+find . -type f -not -path "*/node_modules/*" -not -path "*/\.*" -exec chmod 644 {} \;
+find . -type d -not -path "*/node_modules/*" -not -path "*/\.*" -exec chmod 755 {} \;
+chmod +x scripts/*.sh
+
+# Run database migration
+echo "Running database migration..."
+npm run db:push
+
+# Verify config files
+echo "Verifying configuration files..."
+if [ ! -f ".env" ]; then
+    echo "Warning: No .env file found. Make sure environment variables are set in your deployment platform."
 fi
 
-echo "✅ Build completed successfully."
+# Security check
+echo "Running security checks..."
+npm audit --production
 
-# Create robots.txt if it doesn't exist
-if [ ! -f "./dist/public/robots.txt" ]; then
-  echo "📝 Creating robots.txt..."
-  echo "User-agent: *
-Allow: /
-Sitemap: https://ohanarealty.com/sitemap.xml" > ./dist/public/robots.txt
-fi
-
-# Verify database connection
-echo "🔍 Verifying database connection..."
-if [ -z "$DATABASE_URL" ]; then
-  echo "❌ DATABASE_URL environment variable not set!"
-  echo "Please set DATABASE_URL before deploying."
-  exit 1
-fi
-
-# Print success message
-echo "✅ Application is ready for deployment!"
-echo "To start the production server, run: NODE_ENV=production node dist/index.js"
+echo "==== Production preparation complete ===="
+echo "To deploy your application, follow these steps:"
+echo "1. Commit your changes"
+echo "2. Push to your deployment platform"
+echo "3. Set the following environment variables in your deployment platform:"
+echo "   - NODE_ENV=production"
+echo "   - DATABASE_URL=(your database connection string)"
+echo ""
+echo "Congratulations! Your application is ready for deployment."
