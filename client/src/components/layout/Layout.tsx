@@ -148,15 +148,13 @@ export default function Layout({ children, transparentHeader = false }: LayoutPr
       {/* Main content that scrolls over the animated background - with enhanced performance */}
       <main 
         ref={mainRef}
-        className="flex-grow relative z-1 bg-transparent hardware-accelerated transform-gpu"
+        className={`flex-grow relative z-1 bg-transparent hardware-accelerated transform-gpu ${isMobileRef.current ? 'webkit-touch-scroll' : ''}`}
         style={{ 
           overscrollBehavior: 'none', // Prevents bounce effects on some browsers
           backfaceVisibility: 'hidden',
           perspective: '1000px',
           contain: 'paint layout style', // Modern browsers only - helps performance
-          willChange: 'transform',
-          // Apply WebkitOverflowScrolling as a string property
-          ...(isMobileRef.current ? { '-webkit-overflow-scrolling': 'touch' } as any : {})
+          willChange: 'transform'
         }}
       >
         {/* Content container with improved mobile scroll handling & hardware acceleration */}

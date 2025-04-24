@@ -22,6 +22,26 @@
     transform: translateZ(0);
     backface-visibility: hidden;
     will-change: transform;
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    -webkit-transform-style: preserve-3d;
+  }
+  
+  /* Enhanced performance classes for best render times */
+  .transform-gpu {
+    transform: translate3d(0, 0, 0) !important;
+    backface-visibility: hidden !important;
+    perspective: 1000px !important;
+    transform-style: preserve-3d !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    -webkit-backface-visibility: hidden !important;
+    -webkit-perspective: 1000 !important;
+    -webkit-transform-style: preserve-3d !important;
+  }
+  
+  /* Class for webkit overflow scrolling via CSS */
+  .webkit-touch-scroll {
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Fix 100vh issue in mobile browsers, especially iOS Safari */

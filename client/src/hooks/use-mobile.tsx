@@ -163,10 +163,17 @@ export const useMobile = () => {
     if (isMobile) {
       // Add mobile-optimized class to body for comprehensive CSS targeting
       document.body.classList.add('mobile-optimized');
+      document.body.classList.add('hardware-accelerated');
+      document.body.classList.add('transform-gpu');
       
-      // Force hardware acceleration for all animations and transitions
+      // Force hardware acceleration for all animations and transitions with maximum performance gains
       document.documentElement.style.willChange = 'transform';
-      document.documentElement.style.transform = 'translateZ(0)';
+      document.documentElement.style.transform = 'translate3d(0,0,0)';
+      document.documentElement.style.backfaceVisibility = 'hidden';
+      document.documentElement.style.perspective = '1000px';
+      (document.documentElement.style as any)['-webkit-transform'] = 'translate3d(0,0,0)';
+      (document.documentElement.style as any)['-webkit-backface-visibility'] = 'hidden';
+      (document.documentElement.style as any)['-webkit-perspective'] = '1000';
       
       // Apply additional touch specific enhancements
       document.querySelectorAll('button, a[role="button"], [role="button"], .btn').forEach(button => {
@@ -216,6 +223,19 @@ export const useMobile = () => {
       }, 1000);
     } else {
       document.body.classList.remove('mobile-optimized');
+      
+      // Keep hardware acceleration but with lighter settings for desktop
+      document.documentElement.style.willChange = 'auto';
+      document.documentElement.style.transform = 'translateZ(0)';
+      document.documentElement.style.backfaceVisibility = 'hidden';
+      document.documentElement.style.perspective = 'none';
+      
+      // Apply only essential hardware acceleration to desktop
+      document.querySelectorAll('.animate-element, .parallax-element').forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.classList.add('hardware-accelerated');
+        }
+      });
     }
   }, [isMobile, isTouchDevice, isPortrait, applyMobileOptimizations]);
   

@@ -184,6 +184,21 @@ export default function PerformanceOptimizer({
           .hardware-accelerated * {
             transform: translateZ(0);
             backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+          
+          /* Advanced GPU acceleration */
+          .transform-gpu {
+            transform: translate3d(0, 0, 0) !important;
+            backface-visibility: hidden !important;
+            perspective: 1000px !important;
+            transform-style: preserve-3d !important;
+            -webkit-transform: translate3d(0, 0, 0) !important;
+            -webkit-backface-visibility: hidden !important;
+            -webkit-perspective: 1000 !important;
+            -webkit-transform-style: preserve-3d !important;
           }
           
           /* Optimize paint performance */
@@ -197,6 +212,11 @@ export default function PerformanceOptimizer({
             button, a, input, select, textarea {
               min-height: 44px;
               min-width: 44px;
+              touch-action: manipulation;
+            }
+            
+            .webkit-touch-scroll {
+              -webkit-overflow-scrolling: touch;
             }
           }
         `}</style>
@@ -209,10 +229,29 @@ export default function PerformanceOptimizer({
       
       {/* Advanced performance-related meta tags */}
       <meta httpEquiv="x-dns-prefetch-control" content="on" />
+      
+      {/* Hardware acceleration optimization meta tags */}
+      {enableHardwareAcceleration && (
+        <>
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+          <meta name="format-detection" content="telephone=no" />
+          <meta name="msapplication-tap-highlight" content="no" />
+          <meta name="renderer" content="webkit|ie-comp|ie-stand" />
+          <meta name="color-scheme" content="dark light" />
+          
+          {/* Optimize for mobile devices and hardware acceleration */}
+          <meta name="HandheldFriendly" content="true" />
+          <meta name="MobileOptimized" content="width" />
+        </>
+      )}
+      
       {optimizeCoreWebVitals && (
         <>
-          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, minimum-scale=1, maximum-scale=5" />
           <link rel="preload" href="/src/main.tsx" as="script" />
+          <meta name="web-vitals" content="LCP:2.5,FID:100,CLS:0.1" /> {/* Target Core Web Vitals thresholds */}
         </>
       )}
     </Helmet>
