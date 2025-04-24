@@ -340,12 +340,12 @@ export default function Hero() {
       
       {/* Content - with logo at the very top */}
       <div className="container mx-auto px-4 relative z-20 py-2 md:py-8" ref={contentRef}>
-        {/* Logo at the very top */}
-        <div className="flex justify-center mb-6 animate-slide-down">
+        {/* Large logo at the very top - Mobile version only */}
+        <div className="flex justify-center mb-8 animate-slide-down sm:hidden">
           <img 
             src={logoImage}
             alt="Ohana Realty" 
-            className="h-20 sm:h-24 md:h-28 object-contain filter drop-shadow-xl"
+            className="h-36 object-contain filter drop-shadow-xl"
             style={{ 
               willChange: 'transform',
               transform: 'translateZ(0)',
