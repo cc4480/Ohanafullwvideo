@@ -12,5 +12,15 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Connect to database with pooled connections
+export const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  // Add connection pooling configuration for production
+  max: process.env.NODE_ENV === 'production' ? 10 : 3, // Max 10 connections in production, 3 in development
+  idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
+  connectionTimeoutMillis: 10000, // Return an error after 10 seconds if connection cannot be established
+  allowExitOnIdle: process.env.NODE_ENV !== 'production' // Only allow exit on idle in non-production environments
+});
+
+// Initialize Drizzle ORM with our schema
 export const db = drizzle(pool, { schema });
