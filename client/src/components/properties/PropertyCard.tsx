@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { Property } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import { useFavorites } from "@/contexts/FavoritesContext";
+import { useFavorites } from "@/hooks/useFavorites";
+import FavoriteButton from "@/components/FavoriteButton";
 
 interface PropertyCardProps {
   property: Property;
@@ -12,7 +13,7 @@ interface PropertyCardProps {
 export default function PropertyCard({ property }: PropertyCardProps) {
   // Simple theme detection as fallback
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { toggleFavorite, isFavorite } = useFavorites();
+  const { toggleFavorite, isFavorite } = useFavorites(1); // Using user ID 1 for now
   
   useEffect(() => {
     // Check for dark mode preference
@@ -123,24 +124,22 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             </span>
           </div>
           
-          {/* Favorite button - bounces slightly on hover, larger touch target on mobile */}
-          <div className="absolute bottom-4 right-4 z-10 transition-transform duration-300 transform-gpu group-hover:scale-110">
-            <button 
-              type="button"
-              className={`${
-                isFavorite(property.id) 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-background/80 text-primary backdrop-blur-sm'
-              } p-2.5 sm:p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-lg`}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleFavorite(property.id);
-              }}
-              aria-label={isFavorite(property.id) ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <Heart className={`h-5 w-5 ${isFavorite(property.id) ? 'fill-current' : ''}`} />
-            </button>
+          {/* Favorite button using our new component */}
+          <div className="absolute bottom-4 right-4 z-10 transition-transform duration-300 transform-gpu group-hover:scale-110"
+               onClick={(e) => {
+                 e.preventDefault();
+                 e.stopPropagation();
+               }}
+          >
+            <FavoriteButton
+              propertyId={property.id}
+              isFavorite={isFavorite(property.id)}
+              onToggle={toggleFavorite}
+              size="icon"
+              variant="ghost"
+              showText={false}
+              className="bg-background/80 text-primary backdrop-blur-sm hover:bg-primary hover:text-primary-foreground shadow-lg"
+            />
           </div>
           
           {/* Price tag - slides in from bottom, more visible on mobile */}
