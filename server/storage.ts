@@ -1,7 +1,7 @@
 import { properties, neighborhoods, messages, users, favorites } from "@shared/schema";
 import type { Property, InsertProperty, Neighborhood, InsertNeighborhood, Message, InsertMessage, User, InsertUser, Favorite, InsertFavorite } from "@shared/schema";
 import { db } from './db';
-import { eq, sql, and, or, type SQL } from 'drizzle-orm';
+import { eq, sql, and, or, asc, desc, type SQL } from 'drizzle-orm';
 
 // Add more CRUD methods for the storage interface
 export interface IStorage {
@@ -238,30 +238,24 @@ export class DatabaseStorage implements IStorage {
     if (filters.sortBy) {
       const column = filters.sortBy;
       
-      // Determine which column to sort by
-      let sortColumn: SQL;
-      if (column === 'price') {
-        sortColumn = properties.price;
-      } else if (column === 'bedrooms') {
-        sortColumn = properties.bedrooms;
-      } else if (column === 'bathrooms') {
-        sortColumn = properties.bathrooms;
-      } else if (column === 'squareFeet') {
-        sortColumn = properties.squareFeet;
+      // Determine column name for sorting
+      let columnName: string;
+      if (column === 'price' || column === 'bedrooms' || column === 'bathrooms' || column === 'squareFeet') {
+        columnName = column;
       } else {
         // Default to price if invalid column
-        sortColumn = properties.price;
+        columnName = 'price';
       }
       
       // Apply sort direction
       if (filters.order && filters.order.toLowerCase() === 'asc') {
-        query = query.orderBy(sql`${sortColumn} ASC`);
+        query = query.orderBy(asc(properties[columnName as keyof typeof properties]));
       } else {
-        query = query.orderBy(sql`${sortColumn} DESC`);
+        query = query.orderBy(desc(properties[columnName as keyof typeof properties]));
       }
     } else {
       // Default sorting by price descending
-      query = query.orderBy(sql`${properties.price} DESC`);
+      query = query.orderBy(desc(properties.price));
     }
     
     // Apply pagination if specified
@@ -359,7 +353,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getMessages(): Promise<Message[]> {
-    return await db.select().from(messages).orderBy(sql`${messages.createdAt} DESC`);
+    return await db.select().from(messages).orderBy(desc(messages.createdAt));
   }
   
   // Get featured properties (top properties by price)
@@ -373,7 +367,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .select()
       .from(properties)
-      .orderBy(sql`${properties.price} DESC`)
+      .orderBy(desc(properties.price))
       .limit(validLimit);
     
     // Only return the specified number of properties, enforced by JavaScript
