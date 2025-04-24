@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage, initializeSampleData } from "./storage";
 import { insertMessageSchema } from "@shared/schema";
 import { z } from "zod";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database with sample data
@@ -495,6 +497,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error checking favorite status:", error);
       res.status(500).json({ message: "Failed to check favorite status" });
+    }
+  });
+
+  // Health check endpoint for deployment monitoring
+  apiRouter.get("/health", async (req, res) => {
+    try {
+      // Check database connection
+      await db.execute(sql`SELECT 1`);
+      
+      // Return health status with basic system information
+      res.json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development',
+        server: {
+          node: process.version,
+          memory: process.memoryUsage(),
+        }
+      });
+    } catch (error) {
+      console.error('Health check failed:', error);
+      res.status(500).json({ 
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: process.env.NODE_ENV === 'production' ? 'Service unavailable' : String(error)
+      });
     }
   });
 

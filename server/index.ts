@@ -7,8 +7,55 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Add security headers middleware for production
+app.use((req, res, next) => {
+  // Only apply strict security headers in production
+  if (process.env.NODE_ENV === 'production') {
+    // Content Security Policy
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; " +
+      "script-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; " +
+      "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; " +
+      "img-src 'self' data: https://*; " +
+      "font-src 'self' https://fonts.gstatic.com https://unpkg.com; " +
+      "connect-src 'self' https://api.ohanarealty.com; " +
+      "frame-src 'self' https://*.stripe.com; " +
+      "object-src 'none';"
+    );
+    
+    // Other security headers
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    
+    // HSTS (HTTP Strict Transport Security)
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    
+    // Remove server info
+    res.removeHeader('X-Powered-By');
+  }
+  
+  next();
+});
+
 // Serve static files from the client/public directory
-app.use(express.static(path.join(process.cwd(), "client/public")));
+app.use(express.static(path.join(process.cwd(), "client/public"), {
+  // Add cache control headers for static assets in production
+  setHeaders: (res, filePath) => {
+    if (process.env.NODE_ENV === 'production') {
+      // Cache images, fonts, and assets for 1 week (in seconds)
+      if (filePath.match(/\.(jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+      } 
+      // Cache CSS and JS for 1 day (in seconds)
+      else if (filePath.match(/\.(css|js)$/)) {
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+      }
+    }
+  }
+}));
 
 app.use((req, res, next) => {
   const start = Date.now();
