@@ -96,7 +96,7 @@ export default function Header() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
   
-  // Dynamic header styles - completely transparent when not scrolled
+  // Dynamic header styles - completely transparent when not scrolled (no blur)
   const headerClasses = scrolled
     ? isMobile 
       ? "bg-background/70 backdrop-blur-sm shadow-md border-b border-border/5 transition-all duration-300" 
@@ -199,12 +199,12 @@ export default function Header() {
             </Button>
           </Link>
           
-          {/* Enhanced mobile menu button with animated effects - smaller on mobile */}
+          {/* Enhanced mobile menu button with animated effects - smaller on mobile and fully transparent when not scrolled */}
           <button 
             className={`md:hidden focus:outline-none ${isMobile ? 'h-6 w-6' : 'h-9 w-9'} flex items-center justify-center rounded-full ${
               scrolled
                 ? 'text-foreground bg-background/70 backdrop-blur-sm' 
-                : 'text-white bg-black/20 backdrop-blur-sm border border-white/10'
+                : 'text-white bg-black/20 border border-white/10'
             } transition-all duration-300 button-press-feedback transform-gpu active:scale-95`}
             id="menuButton"
             onClick={toggleMobileMenu}
