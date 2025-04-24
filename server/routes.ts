@@ -53,7 +53,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Search properties with filters
   apiRouter.get("/properties/search", async (req, res) => {
     try {
-      const { type, minPrice, maxPrice, minBeds, minBaths, city, zipCode, neighborhood } = req.query;
+      const { 
+        type, 
+        minPrice, 
+        maxPrice, 
+        minBeds, 
+        minBaths, 
+        city, 
+        zipCode, 
+        neighborhood,
+        sortBy,
+        order,
+        limit,
+        offset
+      } = req.query;
       
       // Prepare filter object with correct types
       const filters: {
@@ -65,27 +78,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
         city?: string;
         zipCode?: string;
         neighborhood?: number;
+        sortBy?: string;
+        order?: 'asc' | 'desc';
+        limit?: number;
+        offset?: number;
       } = {};
       
       // Add only defined filters with proper type conversion
       if (type) filters.type = String(type);
-      if (minPrice) filters.minPrice = Number(minPrice);
-      if (maxPrice) filters.maxPrice = Number(maxPrice);
-      if (minBeds) filters.minBeds = Number(minBeds);
-      if (minBaths) filters.minBaths = Number(minBaths);
+      
+      if (minPrice) {
+        const price = Number(minPrice);
+        if (!isNaN(price) && price >= 0) {
+          filters.minPrice = price;
+        }
+      }
+      
+      if (maxPrice) {
+        const price = Number(maxPrice);
+        if (!isNaN(price) && price >= 0) {
+          filters.maxPrice = price;
+        }
+      }
+      
+      if (minBeds) {
+        const beds = Number(minBeds);
+        if (!isNaN(beds) && beds >= 0) {
+          filters.minBeds = beds;
+        }
+      }
+      
+      if (minBaths) {
+        const baths = Number(minBaths);
+        if (!isNaN(baths) && baths >= 0) {
+          filters.minBaths = baths;
+        }
+      }
+      
       if (city) filters.city = String(city);
       if (zipCode) filters.zipCode = String(zipCode);
+      
       if (neighborhood) {
         const neighborhoodId = Number(neighborhood);
-        if (!isNaN(neighborhoodId)) {
+        if (!isNaN(neighborhoodId) && neighborhoodId > 0) {
           filters.neighborhood = neighborhoodId;
         }
       }
       
+      // Add sorting parameters
+      if (sortBy) {
+        const validSortFields = ['price', 'bedrooms', 'bathrooms', 'squareFeet'];
+        const field = String(sortBy);
+        if (validSortFields.includes(field)) {
+          filters.sortBy = field;
+        }
+      }
+      
+      if (order) {
+        const direction = String(order).toLowerCase();
+        if (direction === 'asc' || direction === 'desc') {
+          filters.order = direction;
+        }
+      }
+      
+      // Add pagination parameters
+      if (limit) {
+        const limitVal = Number(limit);
+        if (!isNaN(limitVal) && limitVal > 0 && limitVal <= 100) {
+          filters.limit = limitVal;
+        }
+      }
+      
+      if (offset) {
+        const offsetVal = Number(offset);
+        if (!isNaN(offsetVal) && offsetVal >= 0) {
+          filters.offset = offsetVal;
+        }
+      }
+      
+      // Log the search filters for debugging
+      console.log("Searching properties with filters:", JSON.stringify(filters, null, 2));
+      
+      // Calculate total count for pagination
+      const totalCount = await storage.getPropertiesCount(filters);
+      
       // Use the database-optimized search method
       const properties = await storage.searchProperties(filters);
       
-      res.json(properties);
+      // Return structured response with metadata
+      res.json({
+        properties,
+        meta: {
+          total: totalCount,
+          limit: filters.limit || properties.length,
+          offset: filters.offset || 0,
+          hasMore: totalCount > (filters.offset || 0) + (filters.limit || properties.length)
+        }
+      });
     } catch (error) {
       console.error("Property search error:", error);
       res.status(500).json({ message: "Failed to search properties" });

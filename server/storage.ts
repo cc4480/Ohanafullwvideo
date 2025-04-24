@@ -15,6 +15,16 @@ export interface IStorage {
   getProperty(id: number): Promise<Property | undefined>;
   getPropertiesByType(type: string): Promise<Property[]>;
   getFeaturedProperties(limit?: number): Promise<Property[]>;
+  getPropertiesCount(filters?: {
+    type?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    minBeds?: number;
+    minBaths?: number;
+    city?: string;
+    zipCode?: string;
+    neighborhood?: number;
+  }): Promise<number>;
   searchProperties(filters: {
     type?: string;
     minPrice?: number;
@@ -23,6 +33,11 @@ export interface IStorage {
     minBaths?: number;
     city?: string;
     zipCode?: string;
+    neighborhood?: number;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+    limit?: number;
+    offset?: number;
   }): Promise<Property[]>;
   createProperty(property: InsertProperty): Promise<Property>;
   updateProperty(id: number, property: Partial<Property>): Promise<Property | undefined>;
