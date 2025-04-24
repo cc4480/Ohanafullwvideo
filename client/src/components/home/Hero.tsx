@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import logoImage from "@/assets/logo.png";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -238,7 +237,7 @@ export default function Hero() {
   return (
     <section 
       ref={sectionRef}
-      className="relative bg-neutral-900 h-[50vh] sm:h-screen flex items-center overflow-hidden transition-transform duration-500 ease-out"
+      className="relative bg-neutral-900 h-screen flex items-center overflow-hidden transition-transform duration-500 ease-out"
       style={{ 
         transformOrigin: 'center center',
         willChange: 'transform, scale'
@@ -338,26 +337,12 @@ export default function Hero() {
       
       {/* Removed background logo */}
       
-      {/* Content - with logo at the very top */}
+      {/* Content - completely rebuilt for mobile */}
       <div className="container mx-auto px-4 relative z-20 py-2 md:py-8" ref={contentRef}>
-        {/* Large logo at the very top - Mobile version only */}
-        <div className="flex justify-center mb-8 animate-slide-down sm:hidden">
-          <img 
-            src={logoImage}
-            alt="Ohana Realty" 
-            className="h-36 object-contain filter drop-shadow-xl"
-            style={{ 
-              willChange: 'transform',
-              transform: 'translateZ(0)',
-              maxWidth: '100%'
-            }}
-          />
-        </div>
-        
-        <div className="max-w-3xl mt-6 sm:mt-0 mx-auto">
+        <div className="max-w-3xl mt-12 sm:mt-0">
           <div className="mb-4 opacity-90">
             <span className="inline-block px-4 py-1 bg-secondary/90 text-white rounded-full text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm">
-              ESTABLISHED IN LAREDO
+              OHANA REALTY - ESTABLISHED IN LAREDO
             </span>
           </div>
           
