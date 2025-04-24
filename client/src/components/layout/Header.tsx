@@ -128,8 +128,8 @@ export default function Header() {
   };
   
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
-      <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-0.5' : 'py-3'} flex items-center justify-between`}>
+    <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${headerClasses}`}>
+      <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-1.5' : 'py-3'} flex items-center justify-between`}>
         {/* Logo with improved styling for both mobile and desktop */}
         <Link href="/" className="flex items-center relative group" onClick={handleLinkClick}>
           <div className={`${isMobile ? 'p-0' : 'p-1'} rounded-md transform-gpu transition-all duration-300 hover:shadow-md`}>
