@@ -99,9 +99,9 @@ export default function Header() {
   // Dynamic header styles - completely transparent when not scrolled
   const headerClasses = scrolled
     ? isMobile 
-      ? "bg-background/70 backdrop-blur-sm shadow-md border-b border-border/5" 
-      : "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/10" 
-    : "bg-transparent"; // Completely transparent on all pages when not scrolled
+      ? "bg-background/70 backdrop-blur-sm shadow-md border-b border-border/5 transition-all duration-300" 
+      : "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/10 transition-all duration-300" 
+    : "bg-transparent transition-all duration-300"; // Completely transparent on all pages when not scrolled
         
   // Force scroll to top on navigation
   const handleLinkClick = () => {
