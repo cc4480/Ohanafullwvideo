@@ -15,7 +15,7 @@ export default function ScrollToTop() {
   const [location] = useLocation();
   const prevLocationRef = useRef(location);
   const scrollAttemptsRef = useRef(0);
-  const maxScrollAttempts = 10; // Maximum number of redundant attempts
+  const maxScrollAttempts = 4; // Reduced maximum number of attempts to prevent excessive logging
   
   // DOM mutation observer to detect when content is actually loaded
   useEffect(() => {
@@ -56,7 +56,8 @@ export default function ScrollToTop() {
       scrollAttemptsRef.current++; // Track attempts
     }
     
-    // Maximum reliability approach with escalating delays
+    // Reduced number of attempts to avoid excessive console logging
+    // while still ensuring scroll reset works properly
     const timers = [
       setTimeout(() => {
         if (scrollAttemptsRef.current < maxScrollAttempts) {
@@ -69,25 +70,13 @@ export default function ScrollToTop() {
           forceScrollReset(true);
           scrollAttemptsRef.current++;
         }
-      }, 10),
-      setTimeout(() => {
-        if (scrollAttemptsRef.current < maxScrollAttempts) {
-          forceScrollReset(true);
-          scrollAttemptsRef.current++;
-        }
       }, 50),
       setTimeout(() => {
         if (scrollAttemptsRef.current < maxScrollAttempts) {
           forceScrollReset(true);
           scrollAttemptsRef.current++;
         }
-      }, 100),
-      setTimeout(() => {
-        if (scrollAttemptsRef.current < maxScrollAttempts) {
-          forceScrollReset(true);
-          scrollAttemptsRef.current++;
-        }
-      }, 250),
+      }, 200),
       setTimeout(() => {
         if (scrollAttemptsRef.current < maxScrollAttempts) {
           forceScrollReset(true);
