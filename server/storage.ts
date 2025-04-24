@@ -1,14 +1,15 @@
-import { properties, neighborhoods, messages, users } from "@shared/schema";
-import type { Property, InsertProperty, Neighborhood, InsertNeighborhood, Message, InsertMessage, User, InsertUser } from "@shared/schema";
+import { properties, neighborhoods, messages, users, favorites } from "@shared/schema";
+import type { Property, InsertProperty, Neighborhood, InsertNeighborhood, Message, InsertMessage, User, InsertUser, Favorite, InsertFavorite } from "@shared/schema";
 import { db } from './db';
 import { eq, sql, and, or, type SQL } from 'drizzle-orm';
 
 // Add more CRUD methods for the storage interface
 export interface IStorage {
-  // User methods (simplified)
+  // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserLastLogin(id: number): Promise<User | undefined>;
   
   // Property methods
   getProperties(): Promise<Property[]>;
@@ -52,6 +53,12 @@ export interface IStorage {
   // Message methods
   createMessage(message: InsertMessage): Promise<Message>;
   getMessages(): Promise<Message[]>;
+  
+  // Favorites methods
+  addFavorite(favorite: InsertFavorite): Promise<Favorite>;
+  removeFavorite(userId: number, propertyId: number): Promise<boolean>;
+  getUserFavorites(userId: number): Promise<Property[]>;
+  isFavorite(userId: number, propertyId: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -86,6 +93,80 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(properties).where(eq(properties.type, type));
   }
   
+  // Get count of properties based on filters (for pagination)
+  async getPropertiesCount(filters?: {
+    type?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    minBeds?: number;
+    minBaths?: number;
+    city?: string;
+    zipCode?: string;
+    neighborhood?: number;
+  }): Promise<number> {
+    // If no filters, get total count of all properties quickly
+    if (!filters) {
+      const [result] = await db.select({ count: sql`count(*)` }).from(properties);
+      return Number(result.count);
+    }
+    
+    // Otherwise, create conditions array based on filters
+    const conditions: Array<SQL> = [];
+    
+    // Add conditions based on filters
+    if (filters.type) {
+      conditions.push(eq(properties.type, filters.type));
+    }
+    
+    if (filters.minPrice) {
+      conditions.push(sql`${properties.price} >= ${filters.minPrice}`);
+    }
+    
+    if (filters.maxPrice) {
+      conditions.push(sql`${properties.price} <= ${filters.maxPrice}`);
+    }
+    
+    if (filters.minBeds) {
+      conditions.push(sql`${properties.bedrooms} >= ${filters.minBeds}`);
+    }
+    
+    if (filters.minBaths) {
+      conditions.push(sql`${properties.bathrooms} >= ${filters.minBaths}`);
+    }
+    
+    if (filters.city) {
+      conditions.push(sql`${properties.city} ILIKE ${`%${filters.city}%`}`);
+    }
+    
+    if (filters.zipCode) {
+      conditions.push(eq(properties.zipCode, filters.zipCode));
+    }
+    
+    if (filters.neighborhood) {
+      conditions.push(eq(properties.neighborhood, filters.neighborhood));
+    }
+    
+    // If no conditions, return total count
+    if (conditions.length === 0) {
+      const [result] = await db.select({ count: sql`count(*)` }).from(properties);
+      return Number(result.count);
+    }
+    
+    // Otherwise, apply conditions to count query
+    const whereClause = conditions.reduce((combined, current, index) => {
+      if (index === 0) return current;
+      return sql`${combined} AND ${current}`;
+    });
+    
+    const [result] = await db
+      .select({ count: sql`count(*)` })
+      .from(properties)
+      .where(whereClause);
+      
+    return Number(result.count);
+  }
+
+  // Enhanced search properties method with sorting and pagination
   async searchProperties(filters: {
     type?: string;
     minPrice?: number;
@@ -95,6 +176,10 @@ export class DatabaseStorage implements IStorage {
     city?: string;
     zipCode?: string;
     neighborhood?: number;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+    limit?: number;
+    offset?: number;
   }): Promise<Property[]> {
     // Create an array to hold query conditions
     const conditions: Array<SQL> = [];
@@ -135,7 +220,10 @@ export class DatabaseStorage implements IStorage {
     // Log the search filters for debugging
     console.log("Searching properties with filters:", JSON.stringify(filters, null, 2));
     
-    // Execute query with conditions if they exist
+    // Start building the query
+    let query = db.select().from(properties);
+    
+    // Apply filtering conditions if they exist
     if (conditions.length > 0) {
       // Combine conditions with AND logic
       const whereClause = conditions.reduce((combined, current, index) => {
@@ -143,11 +231,50 @@ export class DatabaseStorage implements IStorage {
         return sql`${combined} AND ${current}`;
       });
       
-      return await db.select().from(properties).where(whereClause);
+      query = query.where(whereClause);
     }
     
-    // If no conditions, return all properties
-    return await db.select().from(properties);
+    // Apply sorting if specified
+    if (filters.sortBy) {
+      const column = filters.sortBy;
+      
+      // Determine which column to sort by
+      let sortColumn: SQL;
+      if (column === 'price') {
+        sortColumn = properties.price;
+      } else if (column === 'bedrooms') {
+        sortColumn = properties.bedrooms;
+      } else if (column === 'bathrooms') {
+        sortColumn = properties.bathrooms;
+      } else if (column === 'squareFeet') {
+        sortColumn = properties.squareFeet;
+      } else {
+        // Default to price if invalid column
+        sortColumn = properties.price;
+      }
+      
+      // Apply sort direction
+      if (filters.order && filters.order.toLowerCase() === 'asc') {
+        query = query.orderBy(sql`${sortColumn} ASC`);
+      } else {
+        query = query.orderBy(sql`${sortColumn} DESC`);
+      }
+    } else {
+      // Default sorting by price descending
+      query = query.orderBy(sql`${properties.price} DESC`);
+    }
+    
+    // Apply pagination if specified
+    if (filters.limit && filters.limit > 0) {
+      query = query.limit(filters.limit);
+      
+      if (filters.offset && filters.offset >= 0) {
+        query = query.offset(filters.offset);
+      }
+    }
+    
+    // Execute the final query
+    return await query;
   }
 
   async createProperty(insertProperty: InsertProperty): Promise<Property> {
@@ -251,6 +378,112 @@ export class DatabaseStorage implements IStorage {
     
     // Only return the specified number of properties, enforced by JavaScript
     return result.slice(0, validLimit);
+  }
+  
+  // Update user's last login timestamp
+  async updateUserLastLogin(id: number): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ lastLogin: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+  
+  // Add a property to user's favorites
+  async addFavorite(insertFavorite: InsertFavorite): Promise<Favorite> {
+    try {
+      // Check if this favorite already exists
+      const existing = await db
+        .select()
+        .from(favorites)
+        .where(and(
+          eq(favorites.userId, insertFavorite.userId),
+          eq(favorites.propertyId, insertFavorite.propertyId)
+        ));
+      
+      // If it already exists, return it
+      if (existing.length > 0) {
+        return existing[0];
+      }
+      
+      // Otherwise, create a new favorite
+      const [favorite] = await db
+        .insert(favorites)
+        .values(insertFavorite)
+        .returning();
+      
+      return favorite;
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+      throw error;
+    }
+  }
+  
+  // Remove a property from user's favorites
+  async removeFavorite(userId: number, propertyId: number): Promise<boolean> {
+    try {
+      await db
+        .delete(favorites)
+        .where(and(
+          eq(favorites.userId, userId),
+          eq(favorites.propertyId, propertyId)
+        ));
+      
+      return true;
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+      return false;
+    }
+  }
+  
+  // Get all favorited properties for a user
+  async getUserFavorites(userId: number): Promise<Property[]> {
+    try {
+      // First get all favorites for the user
+      const userFavorites = await db
+        .select()
+        .from(favorites)
+        .where(eq(favorites.userId, userId));
+      
+      // If the user has no favorites, return empty array
+      if (userFavorites.length === 0) {
+        return [];
+      }
+      
+      // Extract the property IDs
+      const propertyIds = userFavorites.map(fav => fav.propertyId);
+      
+      // Then get all those properties
+      // Use the "in" operator to get all properties in one query
+      const favoriteProperties = await db
+        .select()
+        .from(properties)
+        .where(sql`${properties.id} IN (${propertyIds.join(',')})`);
+      
+      return favoriteProperties;
+    } catch (error) {
+      console.error("Error getting user favorites:", error);
+      return [];
+    }
+  }
+  
+  // Check if a property is in user's favorites
+  async isFavorite(userId: number, propertyId: number): Promise<boolean> {
+    try {
+      const favorite = await db
+        .select()
+        .from(favorites)
+        .where(and(
+          eq(favorites.userId, userId),
+          eq(favorites.propertyId, propertyId)
+        ));
+      
+      return favorite.length > 0;
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+      return false;
+    }
   }
 }
 

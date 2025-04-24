@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, real } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { relations } from "drizzle-orm";
 import { z } from "zod";
@@ -75,17 +75,61 @@ export const insertMessageSchema = createInsertSchema(messages);
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type Message = typeof messages.$inferSelect;
 
-// Users table schema remains as is
+// Users table schema with enhanced fields
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  email: text("email"),
+  fullName: text("fullName"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  lastLogin: timestamp("lastLogin"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  email: true,
+  fullName: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// User favorites table for saved properties
+export const favorites = pgTable("favorites", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull().references(() => users.id),
+  propertyId: integer("propertyId").notNull().references(() => properties.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const insertFavoriteSchema = createInsertSchema(favorites).pick({
+  userId: true,
+  propertyId: true,
+});
+
+export type InsertFavorite = z.infer<typeof insertFavoriteSchema>;
+export type Favorite = typeof favorites.$inferSelect;
+
+// Define relations for favorites
+export const favoriteRelations = relations(favorites, ({ one }) => ({
+  user: one(users, {
+    fields: [favorites.userId],
+    references: [users.id],
+  }),
+  property: one(properties, {
+    fields: [favorites.propertyId],
+    references: [properties.id],
+  }),
+}));
+
+// Add relation from users to favorites
+export const userRelations = relations(users, ({ many }) => ({
+  favorites: many(favorites),
+}));
+
+// Add relation from properties to favorites
+export const propertyFavoriteRelations = relations(properties, ({ many }) => ({
+  favorites: many(favorites),
+}));
