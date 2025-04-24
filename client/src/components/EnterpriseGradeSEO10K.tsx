@@ -478,8 +478,9 @@ export default function EnterpriseGradeSEO10K({
       if (entityOptimization.locations) allKeywords.push(...entityOptimization.locations);
     }
     
-    // Remove duplicates and join
-    return [...new Set(allKeywords)].join(', ');
+    // Remove duplicates and join using Array.from to fix TypeScript issue with Set
+    const uniqueKeywords = Array.from(new Set(allKeywords));
+    return uniqueKeywords.join(', ');
   }, [primaryKeywords, secondaryKeywords, localSEOTerms, propertyDetails, entityOptimization]);
   
   // Create long-tail keyword combinations for deeper semantic optimization

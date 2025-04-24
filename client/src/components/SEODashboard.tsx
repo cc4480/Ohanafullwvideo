@@ -123,6 +123,7 @@ interface SEODashboardProps {
       addressLocality: string;
       addressRegion: string;
       postalCode: string;
+      addressCountry?: string;
     };
     geo?: {
       latitude: number;
@@ -530,7 +531,7 @@ export default function SEODashboard({
               addressLocality: propertyDetails.address?.addressLocality || 'Laredo',
               addressRegion: propertyDetails.address?.addressRegion || 'TX',
               postalCode: propertyDetails.address?.postalCode || '78040',
-              addressCountry: 'US'
+              addressCountry: propertyDetails.address?.addressCountry || 'US'
             },
             floorSize: propertyDetails.floorSize ? {
               value: propertyDetails.floorSize,
