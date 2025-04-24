@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import EnterpriseGradeSEO10K from './EnterpriseGradeSEO10K';
-import EnterpriseGradeSitemapGenerator from './EnterpriseGradeSitemapGenerator';
 import EnterpriseStructuredData from './EnterpriseStructuredData';
 
 interface SEODashboardProps {
@@ -505,15 +504,7 @@ export default function SEODashboard({
         criticalPreloads={getCriticalPreloads()}
       />
       
-      {/* Sitemap Generator */}
-      <EnterpriseGradeSitemapGenerator
-        baseUrl={baseUrl}
-        generateHtmlSitemap={true}
-        generateRssFeed={true}
-        includeImageSitemap={true}
-        alternateLanguages={Object.keys(alternateLanguages)}
-        pingSearchEngines={false}
-      />
+      {/* Sitemaps are now generated server-side */}
       
       {/* Additional Structured Data */}
       {pageType === 'propertyDetail' && propertyDetails && (

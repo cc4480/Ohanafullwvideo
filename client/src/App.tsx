@@ -26,7 +26,6 @@ import { useMobile } from "@/hooks/use-mobile";
 
 // Import our $10,000 Enterprise-Grade SEO Solution
 import SEODashboard from "@/components/SEODashboard";
-import EnterpriseGradeSitemapGenerator from "@/components/EnterpriseGradeSitemapGenerator";
 import SchemaGraph from "@/components/SchemaGraph";
 import { 
   createRealEstateBusinessEntity,
