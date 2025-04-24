@@ -11,47 +11,188 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
+  options: {
+    retries?: number;
+    retryDelay?: number;
+    timeout?: number;
+  } = {},
 ): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  // Set defaults for options
+  const retries = options.retries ?? (process.env.NODE_ENV === 'production' ? 3 : 0);
+  const retryDelay = options.retryDelay ?? 1000;
+  const timeout = options.timeout ?? 30000; // 30 seconds timeout
 
-  await throwIfResNotOk(res);
-  return res;
+  // Create AbortController for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  let attempt = 0;
+  let lastError: Error | null = null;
+
+  while (attempt <= retries) {
+    try {
+      // Calculate exponential backoff delay
+      if (attempt > 0) {
+        const delay = Math.min(retryDelay * Math.pow(2, attempt - 1), 30000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          ...(data ? { "Content-Type": "application/json" } : {}),
+          // Add cache control for GET requests
+          ...(method.toUpperCase() === 'GET' && process.env.NODE_ENV === 'production' 
+            ? { 'Cache-Control': 'no-cache' } 
+            : {})
+        },
+        body: data ? JSON.stringify(data) : undefined,
+        credentials: "include",
+        signal: controller.signal,
+        // Improve network reliability in production
+        ...(process.env.NODE_ENV === 'production' ? { 
+          keepalive: true,
+          mode: 'cors',
+          redirect: 'follow',
+        } : {})
+      });
+
+      // Clear timeout since request succeeded
+      clearTimeout(timeoutId);
+
+      await throwIfResNotOk(res);
+      return res;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Don't retry certain error types
+      if (
+        error instanceof DOMException && error.name === 'AbortError' ||
+        lastError.message.includes('404') ||
+        lastError.message.includes('401') ||
+        lastError.message.includes('403')
+      ) {
+        clearTimeout(timeoutId);
+        throw lastError;
+      }
+      
+      // If this was the last attempt, throw the error
+      if (attempt >= retries) {
+        clearTimeout(timeoutId);
+        throw lastError;
+      }
+      
+      // Otherwise, increment attempt counter and retry
+      attempt++;
+    }
+  }
+
+  // This should never happen due to the while loop, but TypeScript requires a return
+  clearTimeout(timeoutId);
+  throw lastError || new Error('Unknown error occurred');
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
+
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
-      credentials: "include",
-    });
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeout = process.env.NODE_ENV === 'production' ? 20000 : 30000; // 20 seconds timeout in production
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
+    try {
+      const isProduction = process.env.NODE_ENV === 'production';
+      const res = await fetch(queryKey[0] as string, {
+        credentials: "include",
+        signal: controller.signal,
+        // Production specific optimizations
+        ...(isProduction ? {
+          // Cache control
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          },
+          // Better connection handling
+          keepalive: true,
+          mode: 'cors',
+          redirect: 'follow'
+        } : {})
+      });
+
+      // Clear the timeout since request completed
+      clearTimeout(timeoutId);
+
+      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+        return null;
+      }
+
+      await throwIfResNotOk(res);
+      
+      // Parse the JSON data
+      const data = await res.json();
+      
+      // Add timestamp for tracking data freshness (useful for debugging stale data)
+      if (isProduction && typeof data === 'object' && data !== null) {
+        (data as any)._fetchedAt = new Date().toISOString();
+      }
+      
+      return data;
+    } catch (error) {
+      // Clear the timeout to avoid memory leaks
+      clearTimeout(timeoutId);
+      
+      // Improve error reporting in production
+      if (process.env.NODE_ENV === 'production') {
+        console.error(`API fetch error for ${queryKey[0]}:`, error);
+        
+        // For timeout errors, provide a more user-friendly message
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          throw new Error(`Request timeout: The server took too long to respond`);
+        }
+      }
+      
+      throw error;
     }
-
-    await throwIfResNotOk(res);
-    return await res.json();
   };
+
+// Define a custom retry function for production
+const customRetry = (failureCount: number, error: Error) => {
+  // Don't retry for specific error types like 404, 401, etc.
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    if (message.includes('404') || message.includes('401') || message.includes('403')) {
+      return false;
+    }
+  }
+  
+  // In production, retry network requests up to 3 times
+  const isProduction = process.env.NODE_ENV === 'production';
+  return isProduction && failureCount < 3;
+};
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      // In production, refetch on window focus to keep data fresh
+      refetchOnWindowFocus: process.env.NODE_ENV === 'production',
+      // In production, use shorter stale time (5 minutes) for data freshness
+      staleTime: process.env.NODE_ENV === 'production' ? 5 * 60 * 1000 : Infinity,
+      // Custom retry strategy
+      retry: customRetry,
+      // Add exponential backoff for retries 
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
     mutations: {
-      retry: false,
+      // Retry certain mutations in production
+      retry: customRetry,
+      // Add exponential backoff for retries
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
   },
 });
