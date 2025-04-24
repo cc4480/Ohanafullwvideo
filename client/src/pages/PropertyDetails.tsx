@@ -7,7 +7,9 @@ import { Separator } from "@/components/ui/separator";
 import ContactSection from "@/components/features/ContactSection";
 import { useEffect, useState } from "react";
 import valentinCuellarImg from "../assets/valentin-realtor.png";
-import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle, Maximize2 } from "lucide-react";
+import { Calendar, MapPin, Phone, Mail, Check, Home, Building, Bath, Ruler, HelpCircle, Maximize2, Heart } from "lucide-react";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import FavoriteButton from "@/components/FavoriteButton";
 
 // Import our enterprise-grade SEO components
 import SafeHelmet from "../components/SafeHelmet";
@@ -25,6 +27,7 @@ export default function PropertyDetails({ id }: { id: number }) {
   const [activeImage, setActiveImage] = useState<string>("");
   const [isFullScreenViewerOpen, setIsFullScreenViewerOpen] = useState<boolean>(false);
   const [fullScreenImageIndex, setFullScreenImageIndex] = useState<number>(0);
+  const { toggleFavorite, isFavorite } = useFavorites();
   
   // Enhanced scroll-to-top when the component mounts
   useEffect(() => {
@@ -242,19 +245,45 @@ export default function PropertyDetails({ id }: { id: number }) {
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-              <div>
-                <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2">{property.address}</h1>
-                <p className="text-base sm:text-lg">{property.city}, {property.state} {property.zipCode}</p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2">{property.address}</h1>
+                  <p className="text-base sm:text-lg">{property.city}, {property.state} {property.zipCode}</p>
+                </div>
+                <div className="hidden sm:block">
+                  <FavoriteButton
+                    propertyId={property.id}
+                    isFavorite={isFavorite(property.id)}
+                    onToggle={toggleFavorite}
+                    size="lg"
+                    variant="outline"
+                    showText={true}
+                    className="bg-white/10 hover:bg-white/20 border-white/30"
+                  />
+                </div>
               </div>
               <div className="mt-3 md:mt-0 flex flex-row md:flex-col items-baseline md:items-end justify-between">
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-secondary transform-gpu">
                   {formatPrice(property.price)}
                 </div>
-                <p className="text-xs sm:text-sm text-neutral-200 md:text-right">
-                  {property.type === "RESIDENTIAL" 
-                    ? `${property.bedrooms} bed • ${property.bathrooms} bath • ${property.squareFeet} sq. ft.`
-                    : `${property.squareFeet} sq. ft.`}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs sm:text-sm text-neutral-200 md:text-right">
+                    {property.type === "RESIDENTIAL" 
+                      ? `${property.bedrooms} bed • ${property.bathrooms} bath • ${property.squareFeet} sq. ft.`
+                      : `${property.squareFeet} sq. ft.`}
+                  </p>
+                  <div className="sm:hidden">
+                    <FavoriteButton
+                      propertyId={property.id}
+                      isFavorite={isFavorite(property.id)}
+                      onToggle={toggleFavorite}
+                      size="sm"
+                      variant="ghost"
+                      showText={false}
+                      className="bg-white/10 hover:bg-white/20"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
