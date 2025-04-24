@@ -196,6 +196,7 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-1 sm:gap-4 animate-fade-in">
+          {/* Desktop contact button shown only on larger screens */}
           <Link href="/contact" onClick={handleLinkClick}>
             <Button 
               variant="secondary" 
@@ -203,22 +204,6 @@ export default function Header() {
             >
               <span>Contact Valentin</span>
               <i className='bx bx-envelope'></i>
-            </Button>
-          </Link>
-          
-          {/* Enhanced mobile contact button with pulse effect - smaller on mobile */}
-          <Link href="/contact" className="md:hidden" onClick={handleLinkClick}>
-            <Button 
-              variant="secondary" 
-              size="icon"
-              className={`${isMobile ? 'h-6 w-6' : 'h-9 w-9'} rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95 button-press-feedback`}
-              style={{
-                transform: 'translateZ(0)',
-                backfaceVisibility: 'hidden',
-                willChange: 'transform'
-              }}
-            >
-              <i className={`bx bx-envelope ${isMobile ? 'text-xs' : 'text-sm'}`}></i>
             </Button>
           </Link>
           
