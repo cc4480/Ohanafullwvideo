@@ -9,61 +9,42 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Use Helmet for production security headers
+if (process.env.NODE_ENV === 'production') {
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://fonts.googleapis.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https://*"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://unpkg.com"],
+        connectSrc: ["'self'", "https://api.ohanarealty.com"],
+        frameSrc: ["'self'", "https://*.stripe.com"],
+        objectSrc: ["'none'"]
+      }
+    },
+    crossOriginEmbedderPolicy: false // Allow embedding of cross-origin resources
+  }));
+} else {
+  // Less restrictive security for development
+  app.use(helmet({
+    contentSecurityPolicy: false
+  }));
+}
+
 // Health check endpoint (useful for deployment monitoring)
-app.get('/api/health', async (req, res) => {
-  try {
-    // Check database connection
-    const dbResult = await db.execute(sql`SELECT 1`);
-    
-    res.status(200).json({
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development',
-      database: dbResult ? 'connected' : 'error',
-      uptime: process.uptime() + 's'
-    });
-  } catch (error) {
-    console.error('Health check failed:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Health check failed',
-      timestamp: new Date().toISOString()
-    });
-  }
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    uptime: process.uptime() + 's',
+    version: '1.0.0'
+  });
 });
 
-// Add security headers middleware for production
-app.use((req, res, next) => {
-  // Only apply strict security headers in production
-  if (process.env.NODE_ENV === 'production') {
-    // Content Security Policy
-    res.setHeader(
-      'Content-Security-Policy',
-      "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; " +
-      "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; " +
-      "img-src 'self' data: https://*; " +
-      "font-src 'self' https://fonts.gstatic.com https://unpkg.com; " +
-      "connect-src 'self' https://api.ohanarealty.com; " +
-      "frame-src 'self' https://*.stripe.com; " +
-      "object-src 'none';"
-    );
-    
-    // Other security headers
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    
-    // HSTS (HTTP Strict Transport Security)
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-    
-    // Remove server info
-    res.removeHeader('X-Powered-By');
-  }
-  
-  next();
-});
+// Security headers are now being set by Helmet above
 
 // Serve static files from the client/public directory
 app.use(express.static(path.join(process.cwd(), "client/public"), {
