@@ -522,7 +522,7 @@ export default function SEODashboard({
               addressLocality: propertyDetails.address?.addressLocality || 'Laredo',
               addressRegion: propertyDetails.address?.addressRegion || 'TX',
               postalCode: propertyDetails.address?.postalCode || '78040',
-              addressCountry: propertyDetails.address?.addressCountry || 'US'
+              addressCountry: 'US' // Default to US
             },
             floorSize: propertyDetails.floorSize ? {
               value: propertyDetails.floorSize,

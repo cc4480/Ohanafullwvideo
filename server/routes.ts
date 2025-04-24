@@ -629,6 +629,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // HTML Sitemap
+  app.get('/sitemap.html', async (req, res) => {
+    try {
+      // Get all properties and neighborhoods from the database
+      const properties = await storage.getProperties();
+      const neighborhoods = await storage.getNeighborhoods();
+      
+      // Base URL for the website
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://ohanarealty.com'
+        : `http://${req.headers.host}`;
+      
+      // Generate HTML sitemap
+      let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Map - Ohana Realty</title>
+  <meta name="robots" content="index, follow">
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; color: #333; }
+    h1 { color: #0A2342; }
+    h2 { color: #1D3557; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px; }
+    h3 { color: #457B9D; margin-top: 20px; }
+    ul { list-style-type: none; padding-left: 20px; }
+    li { margin: 8px 0; }
+    a { text-decoration: none; color: #2A6496; }
+    a:hover { text-decoration: underline; }
+    .category { display: flex; flex-wrap: wrap; }
+    .category-column { flex: 1; min-width: 250px; margin-right: 20px; }
+    header { display: flex; align-items: center; margin-bottom: 30px; }
+    .logo { max-width: 200px; margin-right: 20px; }
+    .back-link { margin-top: 40px; display: inline-block; padding: 10px 20px; background-color: #0A2342; color: white; border-radius: 4px; }
+    footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; }
+    @media (max-width: 768px) {
+      .category { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ohana Realty Sitemap</h1>
+  </header>
+  
+  <p>Welcome to our complete site map. Find quick links to all pages on the Ohana Realty website below.</p>
+  
+  <h2>Main Pages</h2>
+  <ul>
+    <li><a href="${baseUrl}/">Home</a></li>
+    <li><a href="${baseUrl}/properties">Properties</a></li>
+    <li><a href="${baseUrl}/neighborhoods">Neighborhoods</a></li>
+    <li><a href="${baseUrl}/about">About Us</a></li>
+    <li><a href="${baseUrl}/contact">Contact</a></li>
+    <li><a href="${baseUrl}/favorites">Favorites</a></li>
+  </ul>
+  
+  <h2>Property Listings</h2>
+  <div class="category">
+    <div class="category-column">
+      <h3>Residential Properties</h3>
+      <ul>
+        ${properties
+          .filter(p => p.type === 'RESIDENTIAL')
+          .map(p => `<li><a href="${baseUrl}/properties/${p.id}">${p.address}, ${p.city}</a></li>`)
+          .join('\n        ')}
+      </ul>
+    </div>
+    
+    <div class="category-column">
+      <h3>Commercial Properties</h3>
+      <ul>
+        ${properties
+          .filter(p => p.type === 'COMMERCIAL')
+          .map(p => `<li><a href="${baseUrl}/properties/${p.id}">${p.address}, ${p.city}</a></li>`)
+          .join('\n        ')}
+      </ul>
+    </div>
+  </div>
+  
+  <h2>Neighborhoods</h2>
+  <ul>
+    ${neighborhoods
+      .map(n => `<li><a href="${baseUrl}/neighborhoods/${n.id}">${n.name}</a></li>`)
+      .join('\n    ')}
+  </ul>
+  
+  <a href="${baseUrl}" class="back-link">Back to Home</a>
+  
+  <footer>
+    <p>© ${new Date().getFullYear()} Ohana Realty. All rights reserved.</p>
+    <p>123 Main Street, Laredo, TX 78040 | (956) 123-4567 | info@ohanarealty.com</p>
+  </footer>
+</body>
+</html>`;
+      
+      // Send the HTML sitemap
+      res.setHeader('Content-Type', 'text/html');
+      res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+      res.send(html);
+    } catch (error) {
+      console.error('Error generating HTML sitemap:', error);
+      res.status(500).send('Error generating HTML sitemap');
+    }
+  });
+  
   // Robots.txt
   app.get('/robots.txt', (req, res) => {
     const baseUrl = process.env.NODE_ENV === 'production' 
@@ -654,8 +760,10 @@ Allow: /neighborhoods
 Allow: /about
 Allow: /contact
 
-# Sitemap location
+# Sitemap locations
 Sitemap: ${baseUrl}/sitemap.xml
+# HTML Sitemap for users
+# ${baseUrl}/sitemap.html
 
 # Crawl delay to avoid overloading the server
 Crawl-delay: 1
