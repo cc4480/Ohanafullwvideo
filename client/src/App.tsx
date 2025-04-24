@@ -150,6 +150,38 @@ function App() {
     };
   }, []);
   
+  // Add hardware acceleration CSS class to document root on mount
+  useEffect(() => {
+    // Add hardware acceleration class to html and body elements for better performance
+    document.documentElement.classList.add('hardware-accelerated');
+    document.body.classList.add('hardware-accelerated');
+    document.getElementById('root')?.classList.add('hardware-accelerated');
+    
+    // Set content-visibility for better paint performance and faster initial load
+    const contentElements = document.querySelectorAll('main, section, article, footer');
+    contentElements.forEach(element => {
+      if (element instanceof HTMLElement) {
+        element.style.contentVisibility = 'auto';
+        element.style.containIntrinsicSize = 'auto';
+      }
+    });
+    
+    // Force hardware acceleration on key interactive elements
+    const interactiveElements = document.querySelectorAll('button, a, .card, .property-card');
+    interactiveElements.forEach(element => {
+      if (element instanceof HTMLElement) {
+        element.classList.add('transform-gpu');
+      }
+    });
+    
+    return () => {
+      // Cleanup if needed (though App component shouldn't unmount)
+      document.documentElement.classList.remove('hardware-accelerated');
+      document.body.classList.remove('hardware-accelerated');
+      document.getElementById('root')?.classList.remove('hardware-accelerated');
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* $10,000 Enterprise-grade SEO Implementation */}
@@ -234,7 +266,7 @@ function App() {
               {/* Global header */}
               <Header />
               
-              {/* Main content with layout wrapper */}
+              {/* Main content with layout wrapper - add hardware acceleration */}
               <Layout>
                 {/* Use Suspense for route-based code splitting */}
                 <Suspense fallback={<div className="min-h-screen flex items-center justify-center transform-gpu">
