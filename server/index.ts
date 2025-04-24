@@ -2,10 +2,35 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
+import helmet from "helmet";
+import { db } from "./db";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Health check endpoint (useful for deployment monitoring)
+app.get('/api/health', async (req, res) => {
+  try {
+    // Check database connection
+    const dbResult = await db.execute(sql`SELECT 1`);
+    
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      database: dbResult ? 'connected' : 'error',
+      uptime: process.uptime() + 's'
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Health check failed',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
 
 // Add security headers middleware for production
 app.use((req, res, next) => {
