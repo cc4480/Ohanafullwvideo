@@ -12,18 +12,28 @@ export default function Header() {
   const [isDark, setIsDark] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   
-  // Check for mobile viewport
+  // Check for mobile viewport - improved detection for better mobile experience
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
+      // Detect mobile devices more reliably
+      setIsMobile(window.innerWidth < 768);
     };
     
     // Check immediately
     checkMobile();
     
-    // Add resize listener
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    // Add resize listener with debounce for better performance
+    let timeoutId: number;
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(checkMobile, 100);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeoutId);
+    };
   }, []);
   
   // Detect dark mode from document class
@@ -128,7 +138,7 @@ export default function Header() {
   };
   
   return (
-    <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${headerClasses}`}>
+    <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${headerClasses}`} style={{ backgroundColor: scrolled ? undefined : 'transparent' }}>
       <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-1.5' : 'py-3'} flex items-center justify-between`}>
         {/* Logo with improved styling for both mobile and desktop */}
         <Link href="/" className="flex items-center relative group" onClick={handleLinkClick}>
@@ -215,10 +225,10 @@ export default function Header() {
         </div>
       </div>
       
-      {/* Enhanced mobile menu with smoother transitions - adjusted for smaller header */}
+      {/* Enhanced mobile menu with smoother transitions - optimized for mobile */}
       <div 
         id="mobileMenu" 
-        className={`bg-background/95 backdrop-blur-md py-3 px-3 md:hidden shadow-xl border-t border-border/10 transition-all duration-500 ${
+        className={`fixed left-0 right-0 top-[38px] bg-background/95 backdrop-blur-md py-3 px-3 md:hidden shadow-xl border-t border-border/10 transition-all duration-500 ${
           mobileMenuOpen 
             ? 'opacity-100 translate-y-0 max-h-[calc(100vh-38px)] overflow-auto' 
             : 'opacity-0 -translate-y-4 pointer-events-none max-h-0 overflow-hidden'
