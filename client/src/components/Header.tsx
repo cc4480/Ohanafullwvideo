@@ -105,10 +105,10 @@ export default function Header() {
   
   return (
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-1 sm:py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center group animate-fade-in">
           <div className="flex items-center gap-3 hover:scale-105 transition-transform duration-300">
-            <div className="w-16 h-16 overflow-hidden rounded-full border-2 border-secondary shadow-lg transition-all duration-300">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 overflow-hidden rounded-full border-2 border-secondary shadow-lg transition-all duration-300">
               <img 
                 src={profileImg} 
                 alt="Valentin Cuellar - Ohana Realty" 
@@ -116,7 +116,7 @@ export default function Header() {
               />
             </div>
             <div className="flex flex-col">
-              <span className={`font-serif font-bold text-lg ${location === "/" && !scrolled ? "text-white" : "text-primary"}`}>
+              <span className={`font-serif font-bold text-sm sm:text-lg ${location === "/" && !scrolled ? "text-white" : "text-primary"}`}>
                 Valentin Cuellar
               </span>
               <span className={`text-xs ${location === "/" && !scrolled ? "text-white/90" : "text-muted-foreground"}`}>
@@ -167,7 +167,7 @@ export default function Header() {
       {/* Mobile menu with improved mobile UX */}
       <div 
         id="mobileMenu" 
-        className={`fixed top-[64px] left-0 right-0 bg-background/98 backdrop-blur-lg py-4 px-4 md:hidden shadow-xl border-t border-border/10 z-50 transform-gpu transition-all duration-300 ${
+        className={`fixed top-[48px] left-0 right-0 bg-background/98 backdrop-blur-lg py-4 px-4 md:hidden shadow-xl border-t border-border/10 z-50 transform-gpu transition-all duration-300 ${
           mobileMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-[-100%] opacity-0 pointer-events-none'
         }`}
         style={{
@@ -207,15 +207,7 @@ export default function Header() {
             </Link>
           ))}
           
-          {/* Mobile-specific bottom actions for enhanced UX */}
-          <div className="mt-4 pt-4 border-t border-border/30">
-            <Link href="/contact">
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 rounded-xl shadow-md">
-                <i className='bx bx-phone-call mr-2 text-xl'></i>
-                Contact Valentin
-              </Button>
-            </Link>
-          </div>
+          {/* Mobile-specific bottom actions removed as requested */}
         </div>
       </div>
     </header>

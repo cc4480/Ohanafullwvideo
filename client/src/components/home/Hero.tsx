@@ -238,7 +238,7 @@ export default function Hero() {
   return (
     <section 
       ref={sectionRef}
-      className="relative bg-neutral-900 h-screen flex items-center overflow-hidden transition-transform duration-500 ease-out"
+      className="relative bg-neutral-900 h-[50vh] sm:h-screen flex items-center overflow-hidden transition-transform duration-500 ease-out"
       style={{ 
         transformOrigin: 'center center',
         willChange: 'transform, scale'
