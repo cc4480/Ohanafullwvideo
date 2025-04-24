@@ -137,7 +137,7 @@ export default function Header() {
   
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${headerClasses}`}>
-      <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-1.5' : 'py-3'} flex items-center justify-between`}>
+      <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-0.5' : 'py-3'} flex items-center justify-between`}>
         {/* Logo with improved styling for both mobile and desktop */}
         <Link href="/" className="flex items-center relative group" onClick={handleLinkClick}>
           <div className={`${isMobile ? 'p-0' : 'p-1'} rounded-md transform-gpu transition-all duration-300 hover:shadow-md`}>
@@ -147,9 +147,9 @@ export default function Header() {
                 src={logoImg}
                 alt="Ohana Realty Logo"
                 style={{
-                  width: '70px',
+                  width: '60px',
                   height: 'auto',
-                  maxHeight: '32px',
+                  maxHeight: '24px',
                   objectFit: 'contain',
                   display: 'block'
                 }}
@@ -170,7 +170,7 @@ export default function Header() {
             )}
           </div>
           {/* Subtle decoration - now visible on hover without animation */}
-          <div className="absolute -bottom-2 -right-2 h-2 w-2 sm:h-4 sm:w-4 bg-secondary rounded-full opacity-30 sm:opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+          <div className="absolute -bottom-2 -right-2 h-1 w-1 sm:h-4 sm:w-4 bg-secondary rounded-full opacity-30 sm:opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
@@ -195,7 +195,7 @@ export default function Header() {
           ))}
         </nav>
         
-        <div className="flex items-center gap-2 sm:gap-4 animate-fade-in">
+        <div className="flex items-center gap-1 sm:gap-4 animate-fade-in">
           <Link href="/contact" onClick={handleLinkClick}>
             <Button 
               variant="secondary" 
@@ -211,20 +211,20 @@ export default function Header() {
             <Button 
               variant="secondary" 
               size="icon"
-              className={`${isMobile ? 'h-8 w-8' : 'h-10 w-10'} rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95 button-press-feedback`}
+              className={`${isMobile ? 'h-6 w-6' : 'h-9 w-9'} rounded-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform-gpu active:scale-95 button-press-feedback`}
               style={{
                 transform: 'translateZ(0)',
                 backfaceVisibility: 'hidden',
                 willChange: 'transform'
               }}
             >
-              <i className={`bx bx-envelope ${isMobile ? 'text-sm' : 'text-lg'}`}></i>
+              <i className={`bx bx-envelope ${isMobile ? 'text-xs' : 'text-sm'}`}></i>
             </Button>
           </Link>
           
           {/* Enhanced mobile menu button with animated effects - smaller on mobile */}
           <button 
-            className={`md:hidden focus:outline-none ${isMobile ? 'h-8 w-8' : 'h-10 w-10'} flex items-center justify-center rounded-full ${
+            className={`md:hidden focus:outline-none ${isMobile ? 'h-6 w-6' : 'h-9 w-9'} flex items-center justify-center rounded-full ${
               scrolled || location !== "/" 
                 ? 'text-foreground bg-background/70 backdrop-blur-sm' 
                 : 'text-white bg-black/20 backdrop-blur-sm border border-white/10'
@@ -233,7 +233,7 @@ export default function Header() {
             onClick={toggleMobileMenu}
             aria-label="Toggle menu"
           >
-            <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} ${isMobile ? 'text-base' : 'text-xl'} transform-gpu transition-transform duration-300 ${mobileMenuOpen ? 'rotate-90' : 'rotate-0'}`}></i>
+            <i className={`bx ${mobileMenuOpen ? 'bx-x' : 'bx-menu'} ${isMobile ? 'text-xs' : 'text-sm'} transform-gpu transition-transform duration-300 ${mobileMenuOpen ? 'rotate-90' : 'rotate-0'}`}></i>
           </button>
         </div>
       </div>
@@ -241,14 +241,14 @@ export default function Header() {
       {/* Enhanced mobile menu with smoother transitions - adjusted for smaller header */}
       <div 
         id="mobileMenu" 
-        className={`bg-background/95 backdrop-blur-md py-4 px-4 md:hidden shadow-xl border-t border-border/10 transition-all duration-500 ${
+        className={`bg-background/95 backdrop-blur-md py-3 px-3 md:hidden shadow-xl border-t border-border/10 transition-all duration-500 ${
           mobileMenuOpen 
-            ? 'opacity-100 translate-y-0 max-h-[calc(100vh-48px)] overflow-auto' 
+            ? 'opacity-100 translate-y-0 max-h-[calc(100vh-38px)] overflow-auto' 
             : 'opacity-0 -translate-y-4 pointer-events-none max-h-0 overflow-hidden'
         }`}
         style={{ transformOrigin: 'top center' }}
       >
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-2">
           {[
             { path: '/', label: 'Home', icon: 'bx-home' },
             { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
@@ -260,7 +260,7 @@ export default function Header() {
             <Link 
               key={item.path} 
               href={item.path} 
-              className={`group flex items-center gap-3 text-foreground hover:text-primary font-medium py-4 px-3 rounded-lg hover:bg-primary/5 transition-all duration-300 ${
+              className={`group flex items-center gap-2 text-foreground hover:text-primary font-medium py-2.5 px-2.5 rounded-lg hover:bg-primary/5 transition-all duration-300 ${
                 location === item.path ? 'bg-primary/10 text-primary' : ''
               } transform-gpu ${mobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'} button-press-feedback active:bg-primary/10`}
               style={{ 
@@ -274,15 +274,15 @@ export default function Header() {
                 setMobileMenuOpen(false); // Close mobile menu when a link is clicked
               }}
             >
-              <i className={`bx ${item.icon} text-2xl ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
-              <span className="text-base">{item.label}</span>
+              <i className={`bx ${item.icon} text-lg ${location === item.path ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}></i>
+              <span className="text-sm">{item.label}</span>
               {location === item.path && (
-                <div className="ml-auto w-1.5 h-8 bg-primary rounded-full"></div>
+                <div className="ml-auto w-1 h-6 bg-primary rounded-full"></div>
               )}
             </Link>
           ))}
           
-          <div className="pt-4 transform-gpu transition-all duration-300" style={{ transitionDelay: '300ms' }}>
+          <div className="pt-2 transform-gpu transition-all duration-300" style={{ transitionDelay: '300ms' }}>
             <Link 
               href="/contact" 
               onClick={() => {
@@ -292,9 +292,9 @@ export default function Header() {
             >
               <Button 
                 variant="secondary" 
-                className="w-full h-12 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-2 flex items-center justify-center gap-2 text-base button-press-feedback"
+                className="w-full h-10 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/80 hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 mt-1 flex items-center justify-center gap-2 text-sm button-press-feedback"
               >
-                <i className='bx bx-envelope-open text-xl'></i>
+                <i className='bx bx-envelope-open text-base'></i>
                 <span>Contact Valentin</span>
               </Button>
             </Link>
