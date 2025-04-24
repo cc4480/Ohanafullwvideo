@@ -454,12 +454,17 @@ export class DatabaseStorage implements IStorage {
       // Extract the property IDs
       const propertyIds = userFavorites.map(fav => fav.propertyId);
       
-      // Then get all those properties
-      // Use the "in" operator to get all properties in one query
-      const favoriteProperties = await db
-        .select()
-        .from(properties)
-        .where(sql`${properties.id} IN (${propertyIds.join(',')})`);
+      // Execute separate queries for each property
+      // This avoids issues with SQL parameter formatting
+      const favoriteProperties: Property[] = [];
+      
+      // Get each property individually
+      for (const propId of propertyIds) {
+        const property = await this.getProperty(propId);
+        if (property) {
+          favoriteProperties.push(property);
+        }
+      }
       
       return favoriteProperties;
     } catch (error) {
