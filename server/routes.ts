@@ -1,7 +1,7 @@
 import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import { storage, initializeSampleData } from "./storage";
-import { insertMessageSchema, type Property, type Neighborhood } from "@shared/schema";
+import { insertMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
@@ -532,263 +532,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // SEO Routes - Sitemap and Robots.txt
   
-  // Enterprise-Grade XML Sitemap Index
+  // XML Sitemap
   app.get('/sitemap.xml', async (req, res) => {
     try {
-      // Base URL for the sitemap
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://ohanarealty.com'
-        : `http://${req.headers.host}`;
-      
-      // Generate sitemap index XML content
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      xml += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-      
-      // Main sitemap
-      xml += '  <sitemap>\n';
-      xml += `    <loc>${baseUrl}/sitemap-main.xml</loc>\n`;
-      xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-      xml += '  </sitemap>\n';
-      
-      // Properties sitemap
-      xml += '  <sitemap>\n';
-      xml += `    <loc>${baseUrl}/sitemap-properties.xml</loc>\n`;
-      xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-      xml += '  </sitemap>\n';
-      
-      // Neighborhoods sitemap
-      xml += '  <sitemap>\n';
-      xml += `    <loc>${baseUrl}/sitemap-neighborhoods.xml</loc>\n`;
-      xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-      xml += '  </sitemap>\n';
-      
-      // Blog sitemap (for future content)
-      xml += '  <sitemap>\n';
-      xml += `    <loc>${baseUrl}/sitemap-blog.xml</loc>\n`;
-      xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-      xml += '  </sitemap>\n';
-      
-      xml += '</sitemapindex>';
-      
-      res.header('Content-Type', 'application/xml');
-      res.header('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-      res.header('X-Robots-Tag', 'all'); // Ensure robots.txt itself is indexable
-      res.send(xml);
-    } catch (error) {
-      console.error('Error generating sitemap index:', error);
-      res.status(500).send('Error generating sitemap index');
-    }
-  });
-  
-  // Properties Sitemap
-  app.get('/sitemap-properties.xml', async (req, res) => {
-    try {
-      // Get all properties from the database
-      const properties = await storage.getProperties();
-      
-      // Base URL for the sitemap
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://ohanarealty.com'
-        : `http://${req.headers.host}`;
-      
-      // Generate sitemap XML content with property schema
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ' +
-             'xmlns:xhtml="http://www.w3.org/1999/xhtml" ' +
-             'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" ' +
-             'xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n';
-      
-      // Add all property detail pages with rich metadata
-      for (const property of properties) {
-        // Format price with commas for display
-        const formattedPrice = property.price.toLocaleString('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        });
-        
-        // Generate page title with property features
-        const title = `${property.bedrooms || 0} BR, ${property.bathrooms || 0} BA ${property.address}, ${property.city} ${property.state} - ${formattedPrice}`;
-        
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/properties/${property.id}</loc>\n`;
-        xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-        xml += '    <changefreq>daily</changefreq>\n';
-        xml += '    <priority>0.8</priority>\n';
-        
-        // Add property images if available
-        if (property.images && property.images.length > 0) {
-          property.images.slice(0, 10).forEach((image, index) => {
-            xml += '    <image:image>\n';
-            xml += `      <image:loc>${image}</image:loc>\n`;
-            xml += `      <image:title><![CDATA[${title} - Photo ${index + 1}]]></image:title>\n`;
-            xml += `      <image:caption><![CDATA[${property.address}, ${property.city} ${property.state} - ${property.type} Property]]></image:caption>\n`;
-            xml += '    </image:image>\n';
-          });
-        }
-        
-        xml += '  </url>\n';
-      }
-      
-      // Add property filter pages by type
-      const propertyTypes = ['RESIDENTIAL', 'COMMERCIAL', 'RENTAL', 'LAND', 'NEW_CONSTRUCTION'];
-      
-      for (const type of propertyTypes) {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/properties?type=${type.toLowerCase()}</loc>\n`;
-        xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-        xml += '    <changefreq>daily</changefreq>\n';
-        xml += '    <priority>0.7</priority>\n';
-        xml += '  </url>\n';
-      }
-      
-      // Add price range filters
-      const priceRanges = [
-        { min: 0, max: 100000 },
-        { min: 100000, max: 200000 },
-        { min: 200000, max: 300000 },
-        { min: 300000, max: 400000 },
-        { min: 400000, max: 500000 },
-        { min: 500000, max: 750000 },
-        { min: 750000, max: 1000000 },
-        { min: 1000000, max: null } // $1M+
-      ];
-      
-      for (const range of priceRanges) {
-        let url = `${baseUrl}/properties?minPrice=${range.min}`;
-        if (range.max) url += `&maxPrice=${range.max}`;
-        
-        xml += '  <url>\n';
-        xml += `    <loc>${url}</loc>\n`;
-        xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-        xml += '    <changefreq>daily</changefreq>\n';
-        xml += '    <priority>0.6</priority>\n';
-        xml += '  </url>\n';
-      }
-      
-      xml += '</urlset>';
-      
-      // Set headers and send response
-      res.header('Content-Type', 'application/xml');
-      res.header('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
-      res.header('X-Robots-Tag', 'all');
-      res.send(xml);
-    } catch (error) {
-      console.error('Error generating properties sitemap:', error);
-      res.status(500).send('Error generating properties sitemap');
-    }
-  });
-  
-  // Neighborhoods Sitemap
-  app.get('/sitemap-neighborhoods.xml', async (req, res) => {
-    try {
-      // Get all neighborhoods and properties from the database
-      const neighborhoods = await storage.getNeighborhoods();
-      
-      // Base URL for the sitemap
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://ohanarealty.com'
-        : `http://${req.headers.host}`;
-      
-      // Generate sitemap XML content
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ' +
-             'xmlns:xhtml="http://www.w3.org/1999/xhtml" ' +
-             'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
-      
-      // Add main neighborhoods list page
-      xml += '  <url>\n';
-      xml += `    <loc>${baseUrl}/neighborhoods</loc>\n`;
-      xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-      xml += '    <changefreq>daily</changefreq>\n';
-      xml += '    <priority>0.8</priority>\n';
-      xml += '  </url>\n';
-      
-      // Add each neighborhood page with rich metadata
-      for (const neighborhood of neighborhoods) {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/neighborhoods/${neighborhood.id}</loc>\n`;
-        xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-        xml += '    <changefreq>weekly</changefreq>\n';
-        xml += '    <priority>0.8</priority>\n';
-        
-        // Add neighborhood featured image if available
-        if (neighborhood.image) {
-          xml += '    <image:image>\n';
-          xml += `      <image:loc>${neighborhood.image}</image:loc>\n`;
-          xml += `      <image:title><![CDATA[${neighborhood.name} - Laredo Neighborhood]]></image:title>\n`;
-          xml += `      <image:caption><![CDATA[${neighborhood.description ? neighborhood.description.substring(0, 150) + '...' : neighborhood.name + ' in Laredo, TX'}]]></image:caption>\n`;
-          xml += '    </image:image>\n';
-        }
-        
-        xml += '  </url>\n';
-        
-        // Add neighborhood properties filter page
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/properties?neighborhood=${neighborhood.id}</loc>\n`;
-        xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-        xml += '    <changefreq>daily</changefreq>\n';
-        xml += '    <priority>0.7</priority>\n';
-        xml += '  </url>\n';
-      }
-      
-      xml += '</urlset>';
-      
-      // Set headers and send response
-      res.header('Content-Type', 'application/xml');
-      res.header('Cache-Control', 'public, max-age=7200'); // Cache for 2 hours
-      res.header('X-Robots-Tag', 'all');
-      res.send(xml);
-    } catch (error) {
-      console.error('Error generating neighborhoods sitemap:', error);
-      res.status(500).send('Error generating neighborhoods sitemap');
-    }
-  });
-  
-  // Blog Sitemap (for future content)
-  app.get('/sitemap-blog.xml', async (req, res) => {
-    try {
-      // Base URL for the sitemap
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://ohanarealty.com'
-        : `http://${req.headers.host}`;
-      
-      // Generate sitemap XML content for future blog posts
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ' +
-             'xmlns:xhtml="http://www.w3.org/1999/xhtml" ' +
-             'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" ' +
-             'xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">\n';
-      
-      // Add main blog page
-      xml += '  <url>\n';
-      xml += `    <loc>${baseUrl}/blog</loc>\n`;
-      xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
-      xml += '    <changefreq>weekly</changefreq>\n';
-      xml += '    <priority>0.7</priority>\n';
-      xml += '  </url>\n';
-      
-      // In the future, blog articles will be added here
-      // For now, just return the main structure
-            
-      xml += '</urlset>';
-      
-      // Set headers and send response
-      res.header('Content-Type', 'application/xml');
-      res.header('Cache-Control', 'public, max-age=7200'); // Cache for 2 hours
-      res.header('X-Robots-Tag', 'all');
-      res.send(xml);
-    } catch (error) {
-      console.error('Error generating blog sitemap:', error);
-      res.status(500).send('Error generating blog sitemap');
-    }
-  });
-  
-  // Main XML Sitemap with primary pages
-  app.get('/sitemap-main.xml', async (req, res) => {
-    try {
-      // Get data for sitemap
+      // Get all properties and neighborhoods from the database
       const properties = await storage.getProperties();
       const neighborhoods = await storage.getNeighborhoods();
       
@@ -799,38 +546,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Generate sitemap XML content
       let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
+      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
       
-      // Add main pages with enhanced metadata
+      // Add main pages
       const mainPages = [
-        { url: '', changefreq: 'weekly', priority: 1.0, title: 'Ohana Realty - Laredo\'s Premier Real Estate Agency', image: '/assets/images/hero-home.jpg' },
-        { url: 'properties', changefreq: 'daily', priority: 0.9, title: 'Properties - Ohana Realty', image: '/assets/images/properties-banner.jpg' },
-        { url: 'neighborhoods', changefreq: 'weekly', priority: 0.8, title: 'Laredo Neighborhoods - Ohana Realty', image: '/assets/images/neighborhoods-banner.jpg' },
-        { url: 'about', changefreq: 'monthly', priority: 0.7, title: 'About Ohana Realty - Your Trusted Laredo Real Estate Partner', image: '/assets/images/about-banner.jpg' },
-        { url: 'contact', changefreq: 'monthly', priority: 0.7, title: 'Contact Ohana Realty - Get in Touch with Our Real Estate Experts', image: '/assets/images/contact-banner.jpg' },
-        { url: 'featured-properties', changefreq: 'daily', priority: 0.9, title: 'Featured Properties - Ohana Realty', image: '/assets/images/featured-properties-banner.jpg' },
-        { url: 'testimonials', changefreq: 'weekly', priority: 0.7, title: 'Client Testimonials - Ohana Realty', image: '/assets/images/testimonials-banner.jpg' },
-        { url: 'privacy-policy', changefreq: 'yearly', priority: 0.5, title: 'Privacy Policy - Ohana Realty', image: null },
-        { url: 'terms-of-service', changefreq: 'yearly', priority: 0.5, title: 'Terms of Service - Ohana Realty', image: null },
-        { url: 'sitemap.html', changefreq: 'weekly', priority: 0.5, title: 'Site Map - Ohana Realty', image: null }
+        { url: '', changefreq: 'weekly', priority: 1.0 },
+        { url: 'properties', changefreq: 'daily', priority: 0.9 },
+        { url: 'neighborhoods', changefreq: 'weekly', priority: 0.8 },
+        { url: 'about', changefreq: 'monthly', priority: 0.7 },
+        { url: 'contact', changefreq: 'monthly', priority: 0.7 }
       ];
       
-      // Add main pages to sitemap with enhanced metadata
+      // Add main pages to sitemap
       for (const page of mainPages) {
         xml += '  <url>\n';
         xml += `    <loc>${baseUrl}/${page.url}</loc>\n`;
-        xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
         xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
         xml += `    <priority>${page.priority.toFixed(1)}</priority>\n`;
-        
-        // Add image data if available
-        if (page.image) {
-          xml += '    <image:image>\n';
-          xml += `      <image:loc>${baseUrl}${page.image}</image:loc>\n`;
-          xml += `      <image:title><![CDATA[${page.title}]]></image:title>\n`;
-          xml += '    </image:image>\n';
-        }
-        
         xml += '  </url>\n';
       }
       
@@ -1003,19 +735,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Enhanced Enterprise-Grade Robots.txt
+  // Robots.txt
   app.get('/robots.txt', (req, res) => {
     const baseUrl = process.env.NODE_ENV === 'production' 
       ? 'https://ohanarealty.com'
       : `http://${req.headers.host}`;
     
     const robotsTxt = `
-# Ohana Realty - Enterprise SEO Robots.txt Configuration
+# Ohana Realty Robots.txt
 # Website: ${baseUrl}
 # Generated: ${new Date().toISOString()}
-# Last Updated: ${new Date().toDateString()}
 
-# Global settings for all bots
 User-agent: *
 Allow: /
 
@@ -1023,76 +753,24 @@ Allow: /
 Disallow: /admin/
 Disallow: /internal/
 Disallow: /api/
-Disallow: /tmp/
-Disallow: /assets/temp/
-Disallow: /*?*utm_
-Disallow: /*?*fbclid=
-Disallow: /*?*gclid=
-Disallow: /*?*ref=
 
-# Special instructions for Google
-User-agent: Googlebot
-Allow: /
-Disallow: /api/
-# Speed up Google crawling for a better Core Web Vitals score
-Crawl-delay: 0.5
-
-# Google Image crawler settings
-User-agent: Googlebot-Image
-Allow: /assets/images/
-Allow: /public/images/
-Disallow: /assets/temp/
-
-# Google Mobile crawler
-User-agent: Googlebot-Mobile
-Allow: /
-
-# Bing settings
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
-
-# DuckDuckGo settings
-User-agent: DuckDuckBot
-Allow: /
-Crawl-delay: 2
-
-# Yandex settings
-User-agent: Yandex
-Allow: /
-Crawl-delay: 2
-
-# Baidu settings (Chinese search engine)
-User-agent: Baiduspider
-Allow: /
-Crawl-delay: 3
-
-# Priority pages for all search engines to process
+# Allow search engines to process important pages
 Allow: /properties
 Allow: /neighborhoods
 Allow: /about
 Allow: /contact
-Allow: /featured-properties
-Allow: /new-listings
-Allow: /testimonials
-Allow: /blog
 
-# Sitemap locations - comprehensive sitemap structure
+# Sitemap locations
 Sitemap: ${baseUrl}/sitemap.xml
-Sitemap: ${baseUrl}/sitemap-properties.xml
-Sitemap: ${baseUrl}/sitemap-neighborhoods.xml
-Sitemap: ${baseUrl}/sitemap-blog.xml
-
-# HTML Sitemap for users and search engines
+# HTML Sitemap for users
 # ${baseUrl}/sitemap.html
 
-# Host directive to specify the preferred domain
-Host: ${baseUrl.replace(/^https?:\/\//, '')}
+# Crawl delay to avoid overloading the server
+Crawl-delay: 1
     `.trim();
     
     res.header('Content-Type', 'text/plain');
     res.header('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-    res.header('X-Robots-Tag', 'all'); // Ensure robots.txt itself is indexable
     res.send(robotsTxt);
   });
 
