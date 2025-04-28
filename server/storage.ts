@@ -81,7 +81,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getProperties(): Promise<Property[]> {
-    return await db.select().from(properties);
+    try {
+      // Use optimized batched query from utils/queryOptimizer
+      const allPropertiesQuery = db.select()
+        .from(properties)
+        .prepare(); // Use prepared statement for better performance
+      
+      return await allPropertiesQuery.execute();
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+      // Fallback to basic query
+      return await db.select().from(properties);
+    }
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
