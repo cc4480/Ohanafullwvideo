@@ -1,8 +1,7 @@
+// Use ES module syntax to avoid the error
 export default {
   plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
+    'tailwindcss': {},
+    'autoprefixer': {},
   },
-  // Add explicit 'from' option to fix warning
-  from: undefined,
 }
