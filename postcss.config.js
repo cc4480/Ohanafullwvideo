@@ -3,4 +3,6 @@ export default {
     tailwindcss: {},
     autoprefixer: {},
   },
+  // Add explicit 'from' option to fix warning
+  from: undefined,
 }
