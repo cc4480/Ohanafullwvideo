@@ -24,6 +24,52 @@ const initializeTheme = () => {
   }
 };
 
+// Register service worker for offline support and faster loading
+const registerServiceWorker = () => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try {
+        // Register the service worker with scope
+        const registration = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+        });
+        
+        console.log('Service Worker registered successfully with scope:', registration.scope);
+        
+        // Check if there's a waiting service worker (update available)
+        if (registration.waiting) {
+          // Notify user about update if needed
+          console.log('New version available! Ready to update.');
+        }
+        
+        // Handle updates - when a new service worker has installed and is waiting
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('New content is available, please refresh.');
+              }
+            });
+          }
+        });
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+      }
+    });
+    
+    // Handle service worker updates
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+  }
+};
+
 // Apply critical performance optimizations
 const applyPerformanceOptimizations = () => {
   // Optimize image rendering
@@ -73,7 +119,14 @@ const applyPerformanceOptimizations = () => {
   boxiconsLink.setAttribute('onload', "this.media='all'");
   document.head.appendChild(boxiconsLink);
   
-  // Enable cooperative scheduling with main thread
+  // Add critical resource hints for faster loading
+  // Preconnect to API server
+  const apiServerPreconnect = document.createElement('link');
+  apiServerPreconnect.setAttribute('rel', 'preconnect');
+  apiServerPreconnect.setAttribute('href', window.location.origin);
+  document.head.appendChild(apiServerPreconnect);
+  
+  // Enable cooperative scheduling with main thread for better perf
   if ('requestIdleCallback' in window) {
     (window as any).requestIdleCallback(() => {
       // Preload critical pages for faster navigation
@@ -88,6 +141,10 @@ const applyPerformanceOptimizations = () => {
         link.setAttribute('href', href);
         document.head.appendChild(link);
       });
+      
+      // Preload API data for common routes
+      void fetch('/api/properties').catch(() => {});
+      void fetch('/api/neighborhoods').catch(() => {});
     });
   }
 };
@@ -95,6 +152,7 @@ const applyPerformanceOptimizations = () => {
 // Call the initialization functions
 initializeTheme();
 applyPerformanceOptimizations();
+registerServiceWorker();
 
 // Create root with optimized rendering settings
 const root = createRoot(document.getElementById("root")!, {

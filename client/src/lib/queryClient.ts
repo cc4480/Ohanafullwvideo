@@ -190,9 +190,8 @@ export const queryClient = new QueryClient({
       // Custom retry strategy with optimized settings
       retry: customRetry,
       retryDelay: attemptIndex => Math.min(500 * 2 ** attemptIndex, 10000),
-      // Add performance optimizations
-      suspense: false, // Disable suspense for better control over loading states
-      useErrorBoundary: false, // Handle errors gracefully without breaking the UI
+      // Handle errors gracefully without breaking the UI
+      useErrorBoundary: false,
       // Enable structural sharing for optimal render performance
       structuralSharing: true,
     },
