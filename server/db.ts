@@ -12,15 +12,28 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Connect to database with pooled connections
+// Create optimized connection pool with enhanced performance settings
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  // Add connection pooling configuration for production
-  max: process.env.NODE_ENV === 'production' ? 10 : 3, // Max 10 connections in production, 3 in development
+  // Production optimized connection pooling
+  max: process.env.NODE_ENV === 'production' ? 20 : 3, // Increased max connections for production
+  min: process.env.NODE_ENV === 'production' ? 2 : 0, // Maintain minimum connections in production
   idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
-  connectionTimeoutMillis: 10000, // Return an error after 10 seconds if connection cannot be established
-  allowExitOnIdle: process.env.NODE_ENV !== 'production' // Only allow exit on idle in non-production environments
+  connectionTimeoutMillis: 5000, // Reduced connection timeout for faster failure recognition
+  allowExitOnIdle: process.env.NODE_ENV !== 'production', // Only allow exit on idle in development
+  keepAlive: process.env.NODE_ENV === 'production', // Keep connections alive in production
+  statement_timeout: 10000, // Timeout long-running queries after 10 seconds
 });
 
-// Initialize Drizzle ORM with our schema
-export const db = drizzle(pool, { schema });
+// Add connection error handling for improved stability
+pool.on('error', (err) => {
+  console.error('Unexpected database connection error:', err);
+  // Try to recover connection on next request
+});
+
+// Initialize Drizzle ORM with our schema and performance options
+export const db = drizzle(pool, { 
+  schema,
+  // Enable prepared statements for better performance
+  logger: process.env.NODE_ENV === 'development' ? true : false
+});

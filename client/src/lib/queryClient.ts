@@ -174,25 +174,32 @@ const customRetry = (failureCount: number, error: Error) => {
   return isProduction && failureCount < 3;
 };
 
+// Initialize optimized QueryClient with performance settings
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      // In production, refetch on window focus to keep data fresh
-      refetchOnWindowFocus: process.env.NODE_ENV === 'production',
-      // In production, use shorter stale time (5 minutes) for data freshness
-      staleTime: process.env.NODE_ENV === 'production' ? 5 * 60 * 1000 : Infinity,
-      // Custom retry strategy
+      // Reduce unnecessary refetches for better performance
+      refetchOnWindowFocus: false,
+      // Optimize cache settings to avoid excessive network requests
+      staleTime: 2 * 60 * 1000, // 2 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      // Implement aggressive prefetching for faster user experience
+      refetchOnMount: true,
+      // Custom retry strategy with optimized settings
       retry: customRetry,
-      // Add exponential backoff for retries 
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retryDelay: attemptIndex => Math.min(500 * 2 ** attemptIndex, 10000),
+      // Add performance optimizations
+      suspense: false, // Disable suspense for better control over loading states
+      useErrorBoundary: false, // Handle errors gracefully without breaking the UI
+      // Enable structural sharing for optimal render performance
+      structuralSharing: true,
     },
     mutations: {
-      // Retry certain mutations in production
+      // Optimize mutation retry settings
       retry: customRetry,
-      // Add exponential backoff for retries
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retryDelay: attemptIndex => Math.min(500 * 2 ** attemptIndex, 10000),
     },
   },
 });

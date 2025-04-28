@@ -39,29 +39,38 @@ const applyPerformanceOptimizations = () => {
     });
   }
   
-  // Add global styles from external sources with preload
+  // Optimize font loading with resource hints for better performance
   const fontLink = document.createElement('link');
-  fontLink.setAttribute('rel', 'preload');
-  fontLink.setAttribute('as', 'style');
-  fontLink.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
-  
-  // Type assertion to handle the event properly
-  (fontLink as any).onload = function(this: HTMLLinkElement) {
-    this.onload = null;
-    this.rel = 'stylesheet';
-  };
+  fontLink.setAttribute('rel', 'preconnect');
+  fontLink.setAttribute('href', 'https://fonts.googleapis.com');
   document.head.appendChild(fontLink);
   
-  const boxiconsLink = document.createElement('link');
-  boxiconsLink.setAttribute('rel', 'preload');
-  boxiconsLink.setAttribute('as', 'style');
-  boxiconsLink.setAttribute('href', 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+  const fontGstaticLink = document.createElement('link');
+  fontGstaticLink.setAttribute('rel', 'preconnect');
+  fontGstaticLink.setAttribute('href', 'https://fonts.gstatic.com');
+  fontGstaticLink.setAttribute('crossorigin', 'anonymous');
+  document.head.appendChild(fontGstaticLink);
   
-  // Type assertion to handle the event properly
-  (boxiconsLink as any).onload = function(this: HTMLLinkElement) {
-    this.onload = null;
-    this.rel = 'stylesheet';
-  };
+  // Load fonts with optimized strategy
+  const fontStyleLink = document.createElement('link');
+  fontStyleLink.setAttribute('rel', 'stylesheet');
+  fontStyleLink.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+  fontStyleLink.setAttribute('media', 'print');
+  fontStyleLink.setAttribute('onload', "this.media='all'");
+  document.head.appendChild(fontStyleLink);
+  
+  // Preconnect to boxicons CDN for faster loading
+  const boxiconsPreconnect = document.createElement('link');
+  boxiconsPreconnect.setAttribute('rel', 'preconnect');
+  boxiconsPreconnect.setAttribute('href', 'https://unpkg.com');
+  document.head.appendChild(boxiconsPreconnect);
+  
+  // Load boxicons with optimized strategy
+  const boxiconsLink = document.createElement('link');
+  boxiconsLink.setAttribute('rel', 'stylesheet');
+  boxiconsLink.setAttribute('href', 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+  boxiconsLink.setAttribute('media', 'print');
+  boxiconsLink.setAttribute('onload', "this.media='all'");
   document.head.appendChild(boxiconsLink);
   
   // Enable cooperative scheduling with main thread
