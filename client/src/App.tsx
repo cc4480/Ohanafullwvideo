@@ -2,27 +2,30 @@ import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { queryClient } from "./lib/queryClient";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Layout from "@/components/layout/Layout";
-import Home from "@/pages/Home";
-import Properties from "@/pages/Properties";
-import PropertyDetails from "@/pages/PropertyDetails";
-import Neighborhoods from "@/pages/Neighborhoods";
-import NeighborhoodDetails from "@/pages/NeighborhoodDetails";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
-import Favorites from "@/pages/Favorites";
-import NotFound from "@/pages/not-found";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { useMobile } from "@/hooks/use-mobile";
+import AppLoading from "@/components/ui/app-loading";
+
+// Use lazy loading for all pages to improve initial load performance
+const Home = lazy(() => import("@/pages/Home"));
+const Properties = lazy(() => import("@/pages/Properties"));
+const PropertyDetails = lazy(() => import("@/pages/PropertyDetails"));
+const Neighborhoods = lazy(() => import("@/pages/Neighborhoods"));
+const NeighborhoodDetails = lazy(() => import("@/pages/NeighborhoodDetails"));
+const About = lazy(() => import("@/pages/About"));
+const Contact = lazy(() => import("@/pages/Contact"));
+const Favorites = lazy(() => import("@/pages/Favorites"));
+const NotFound = lazy(() => import("@/pages/not-found"));
 
 // Import our $10,000 Enterprise-Grade SEO Solution
 import SEODashboard from "@/components/SEODashboard";
@@ -37,6 +40,9 @@ const LOGO_URL = "https://ohanarealty.com/logo.png";
 
 function App() {
   // Main App component with advanced optimizations and enterprise-grade SEO
+  
+  // Track app loading state to show loading screen
+  const [isAppLoaded, setIsAppLoaded] = useState<boolean>(false);
   
   // Get current location for route change detection
   const [location] = useLocation();
@@ -151,6 +157,7 @@ function App() {
   }, []);
   
   // Add hardware acceleration CSS class to document root on mount
+  // and initialize app loading state
   useEffect(() => {
     // Add hardware acceleration class to html and body elements for better performance
     document.documentElement.classList.add('hardware-accelerated');
@@ -174,16 +181,46 @@ function App() {
       }
     });
     
+    // Initialize app loading state
+    const markAppAsLoaded = () => {
+      // Wait for critical resources to load
+      Promise.all([
+        document.fonts.ready, 
+        // Add a small delay for better UX
+        new Promise(resolve => setTimeout(resolve, 800))
+      ])
+      .then(() => {
+        // Mark app as loaded
+        setIsAppLoaded(true);
+      })
+      .catch(error => {
+        console.error('Error during app loading:', error);
+        // Still mark as loaded if there's an error to prevent getting stuck
+        setIsAppLoaded(true);
+      });
+    };
+    
+    // Start loading process
+    if (document.readyState === 'complete') {
+      markAppAsLoaded();
+    } else {
+      window.addEventListener('load', markAppAsLoaded);
+    }
+    
     return () => {
       // Cleanup if needed (though App component shouldn't unmount)
       document.documentElement.classList.remove('hardware-accelerated');
       document.body.classList.remove('hardware-accelerated');
       document.getElementById('root')?.classList.remove('hardware-accelerated');
+      window.removeEventListener('load', markAppAsLoaded);
     };
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Show app loading screen while the app is initializing */}
+      {!isAppLoaded && <AppLoading minimumDuration={1000} />}
+      
       {/* $10,000 Enterprise-grade SEO Implementation */}
       
       {/* Main SEO Dashboard - comprehensive solution */}
