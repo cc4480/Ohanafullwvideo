@@ -1,5 +1,12 @@
-import { properties, neighborhoods, messages, users, favorites } from "@shared/schema";
-import type { Property, InsertProperty, Neighborhood, InsertNeighborhood, Message, InsertMessage, User, InsertUser, Favorite, InsertFavorite } from "@shared/schema";
+import { properties, neighborhoods, messages, users, favorites, airbnbRentals } from "@shared/schema";
+import type { 
+  Property, InsertProperty, 
+  Neighborhood, InsertNeighborhood, 
+  Message, InsertMessage, 
+  User, InsertUser, 
+  Favorite, InsertFavorite,
+  AirbnbRental, InsertAirbnbRental
+} from "@shared/schema";
 import { db } from './db';
 import { eq, sql, and, or, asc, desc, type SQL } from 'drizzle-orm';
 
@@ -59,6 +66,27 @@ export interface IStorage {
   removeFavorite(userId: number, propertyId: number): Promise<boolean>;
   getUserFavorites(userId: number): Promise<Property[]>;
   isFavorite(userId: number, propertyId: number): Promise<boolean>;
+  
+  // Airbnb rental methods
+  getAirbnbRentals(): Promise<AirbnbRental[]>;
+  getAirbnbRental(id: number): Promise<AirbnbRental | undefined>;
+  getFeaturedAirbnbRentals(limit?: number): Promise<AirbnbRental[]>;
+  searchAirbnbRentals(filters: {
+    minPrice?: number;
+    maxPrice?: number;
+    minBeds?: number;
+    minBaths?: number;
+    guests?: number;
+    city?: string;
+    neighborhood?: number;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+    limit?: number;
+    offset?: number;
+  }): Promise<AirbnbRental[]>;
+  createAirbnbRental(rental: InsertAirbnbRental): Promise<AirbnbRental>;
+  updateAirbnbRental(id: number, rental: Partial<AirbnbRental>): Promise<AirbnbRental | undefined>;
+  deleteAirbnbRental(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -512,13 +540,213 @@ export class DatabaseStorage implements IStorage {
       return false;
     }
   }
+
+  // Airbnb rental methods implementation
+  async getAirbnbRentals(): Promise<AirbnbRental[]> {
+    try {
+      return await db.select().from(airbnbRentals);
+    } catch (error) {
+      console.error("Error fetching Airbnb rentals:", error);
+      return [];
+    }
+  }
+
+  async getAirbnbRental(id: number): Promise<AirbnbRental | undefined> {
+    try {
+      const [rental] = await db.select().from(airbnbRentals).where(eq(airbnbRentals.id, id));
+      return rental || undefined;
+    } catch (error) {
+      console.error(`Error fetching Airbnb rental with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getFeaturedAirbnbRentals(limit: number = 4): Promise<AirbnbRental[]> {
+    try {
+      // Ensure limit is a valid number
+      const validLimit = isNaN(limit) || limit <= 0 ? 4 : limit;
+      
+      console.log(`Fetching featured Airbnb rentals with limit: ${validLimit}`);
+      
+      // Build a query to get the top rated rentals
+      const result = await db
+        .select()
+        .from(airbnbRentals)
+        .orderBy(desc(airbnbRentals.rating))
+        .limit(validLimit);
+      
+      return result.slice(0, validLimit);
+    } catch (error) {
+      console.error("Error fetching featured Airbnb rentals:", error);
+      return [];
+    }
+  }
+
+  async searchAirbnbRentals(filters: {
+    minPrice?: number;
+    maxPrice?: number;
+    minBeds?: number;
+    minBaths?: number;
+    guests?: number;
+    city?: string;
+    neighborhood?: number;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+    limit?: number;
+    offset?: number;
+  }): Promise<AirbnbRental[]> {
+    try {
+      // First get all Airbnb rentals
+      const allRentals = await db.select().from(airbnbRentals);
+      
+      // Then filter in memory
+      let filteredRentals = allRentals.filter(rental => {
+        let includeRental = true;
+        
+        // Filter by price range
+        if (filters.minPrice && rental.price < filters.minPrice) {
+          includeRental = false;
+        }
+        
+        if (filters.maxPrice && rental.price > filters.maxPrice) {
+          includeRental = false;
+        }
+        
+        // Filter by bedrooms
+        if (filters.minBeds && rental.bedrooms < filters.minBeds) {
+          includeRental = false;
+        }
+        
+        // Filter by bathrooms
+        if (filters.minBaths && rental.bathrooms < filters.minBaths) {
+          includeRental = false;
+        }
+        
+        // Filter by guest capacity
+        if (filters.guests && rental.guests < filters.guests) {
+          includeRental = false;
+        }
+        
+        // Filter by city
+        if (filters.city && rental.city.toLowerCase().indexOf(filters.city.toLowerCase()) === -1) {
+          includeRental = false;
+        }
+        
+        // Filter by neighborhood
+        if (filters.neighborhood && rental.neighborhood !== filters.neighborhood) {
+          includeRental = false;
+        }
+        
+        return includeRental;
+      });
+      
+      // Sort the filtered results
+      if (filters.sortBy) {
+        const column = filters.sortBy;
+        
+        // Determine column name for sorting
+        let columnName: keyof AirbnbRental;
+        if (column === 'price' || column === 'bedrooms' || column === 'bathrooms' || column === 'guests' || column === 'rating') {
+          columnName = column as keyof AirbnbRental;
+        } else {
+          // Default to price if invalid column
+          columnName = 'price';
+        }
+        
+        // Apply sort direction
+        filteredRentals = filteredRentals.sort((a, b) => {
+          const valueA = a[columnName] as number | null;
+          const valueB = b[columnName] as number | null;
+          
+          // Handle null values (null values always go last)
+          if (valueA === null && valueB === null) return 0;
+          if (valueA === null) return 1;
+          if (valueB === null) return -1;
+          
+          // Regular comparison
+          if (filters.order && filters.order.toLowerCase() === 'asc') {
+            return valueA - valueB;
+          } else {
+            return valueB - valueA;
+          }
+        });
+      } else {
+        // Default sorting by rating descending
+        filteredRentals = filteredRentals.sort((a, b) => {
+          return (b.rating || 0) - (a.rating || 0);
+        });
+      }
+      
+      // Apply pagination if specified
+      if (filters.limit && filters.limit > 0) {
+        const startIndex = filters.offset || 0;
+        const endIndex = startIndex + filters.limit;
+        filteredRentals = filteredRentals.slice(startIndex, endIndex);
+      }
+      
+      // Log the filter criteria and result count
+      console.log(`Search completed with ${filteredRentals.length} Airbnb rentals found`);
+      
+      return filteredRentals;
+    } catch (error) {
+      console.error("Error in searchAirbnbRentals:", error);
+      return [];
+    }
+  }
+
+  async createAirbnbRental(insertRental: InsertAirbnbRental): Promise<AirbnbRental> {
+    try {
+      const [rental] = await db
+        .insert(airbnbRentals)
+        .values(insertRental)
+        .returning();
+      return rental;
+    } catch (error) {
+      console.error("Error creating Airbnb rental:", error);
+      throw error;
+    }
+  }
+
+  async updateAirbnbRental(id: number, rentalData: Partial<AirbnbRental>): Promise<AirbnbRental | undefined> {
+    try {
+      const [rental] = await db
+        .update(airbnbRentals)
+        .set(rentalData)
+        .where(eq(airbnbRentals.id, id))
+        .returning();
+      return rental;
+    } catch (error) {
+      console.error(`Error updating Airbnb rental with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async deleteAirbnbRental(id: number): Promise<boolean> {
+    try {
+      const result = await db
+        .delete(airbnbRentals)
+        .where(eq(airbnbRentals.id, id));
+      return !!result;
+    } catch (error) {
+      console.error(`Error deleting Airbnb rental with ID ${id}:`, error);
+      return false;
+    }
+  }
 }
 
 // Initialize sample data function
+
 export async function initializeSampleData() {
   // Check if data already exists
   const existingProperties = await db.select({ count: sql`count(*)` }).from(properties);
   if (Number(existingProperties[0].count) > 0) {
+    // Check if we need to add Airbnb rentals
+    const existingRentals = await db.select({ count: sql`count(*)` }).from(airbnbRentals);
+    if (Number(existingRentals[0].count) === 0) {
+      console.log("Adding Airbnb rentals to existing data");
+      await addAirbnbRentals();
+      return;
+    }
     console.log("Data already exists, skipping initialization");
     return; // Data already exists
   }
@@ -634,6 +862,68 @@ export async function initializeSampleData() {
     console.log("Sample data initialized successfully");
   } catch (error) {
     console.error("Error initializing sample data:", error);
+  }
+}
+
+// Function to add Airbnb rentals
+async function addAirbnbRentals() {
+  // Sample Airbnb rental based on user request
+  const sampleRentals = [
+    {
+      title: "Cozy Modern 2BR Apartment in Laredo",
+      address: "425 Market Street",
+      city: "Laredo",
+      state: "Texas",
+      zipCode: "78040",
+      price: 120, // Price per night
+      description: "Enjoy this beautiful rental unit in the heart of Laredo. Perfect for both short and extended stays with all the comforts of home.",
+      guests: 4,
+      bedrooms: 2,
+      beds: 2,
+      bathrooms: 2,
+      amenities: [
+        "Free WiFi", 
+        "Full kitchen", 
+        "Washer/dryer", 
+        "Air conditioning",
+        "TV with streaming services",
+        "Free parking",
+        "Pool access",
+        "Gym access"
+      ],
+      highlights: [
+        "Exceptional check-in experience",
+        "Peace and quiet",
+        "Great location",
+        "Free cancellation before 4:00 PM on Apr 30"
+      ],
+      images: [
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1584622781339-b9710130d393?w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800&auto=format&fit=crop"
+      ],
+      rating: 4.9,
+      reviewCount: 125,
+      lat: 27.505823,
+      lng: -99.502912,
+      neighborhood: 2, // Downtown Laredo
+      cancellationPolicy: "Free cancellation before 4:00 PM on Apr 30. Get a full refund if you change your mind.",
+      propertyId: null // Not linked to a regular property
+    }
+  ];
+
+  try {
+    // Insert the Airbnb rentals
+    await db.insert(airbnbRentals).values(sampleRentals);
+    console.log("Airbnb rentals added successfully");
+  } catch (error) {
+    console.error("Error adding Airbnb rentals:", error);
   }
 }
 

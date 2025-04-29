@@ -7,7 +7,9 @@ import { z } from "zod";
 export const PropertyType = {
   RESIDENTIAL: 'RESIDENTIAL',
   COMMERCIAL: 'COMMERCIAL',
-  LAND: 'LAND'
+  LAND: 'LAND',
+  RENTAL: 'RENTAL',
+  AIRBNB: 'AIRBNB'
 } as const;
 
 // Define the Neighborhood table schema first so we can reference it
@@ -132,4 +134,52 @@ export const userRelations = relations(users, ({ many }) => ({
 // Add relation from properties to favorites
 export const propertyFavoriteRelations = relations(properties, ({ many }) => ({
   favorites: many(favorites),
+}));
+
+// Define the AirbnbRentals table schema
+export const airbnbRentals = pgTable("airbnb_rentals", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  address: text("address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zipCode").notNull(),
+  price: integer("price").notNull(), // Price per night
+  description: text("description").notNull(),
+  guests: integer("guests").notNull(),
+  bedrooms: integer("bedrooms").notNull(),
+  beds: integer("beds").notNull(),
+  bathrooms: integer("bathrooms").notNull(),
+  amenities: text("amenities").array().notNull(),
+  highlights: text("highlights").array().notNull(), // Special features like "Exceptional check-in experience"
+  images: text("images").array().notNull(),
+  rating: real("rating"),
+  reviewCount: integer("reviewCount"),
+  lat: real("lat"),
+  lng: real("lng"),
+  neighborhood: integer("neighborhood").references(() => neighborhoods.id),
+  propertyId: integer("propertyId").references(() => properties.id), // Optional link to regular property
+  cancellationPolicy: text("cancellationPolicy"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const insertAirbnbRentalSchema = createInsertSchema(airbnbRentals);
+export type InsertAirbnbRental = z.infer<typeof insertAirbnbRentalSchema>;
+export type AirbnbRental = typeof airbnbRentals.$inferSelect;
+
+// Define relations for Airbnb rentals
+export const airbnbRentalRelations = relations(airbnbRentals, ({ one }) => ({
+  neighborhood: one(neighborhoods, {
+    fields: [airbnbRentals.neighborhood],
+    references: [neighborhoods.id],
+  }),
+  property: one(properties, {
+    fields: [airbnbRentals.propertyId],
+    references: [properties.id],
+  }),
+}));
+
+// Update neighborhood relations to include Airbnb rentals
+export const neighborhoodAirbnbRelations = relations(neighborhoods, ({ many }) => ({
+  airbnbRentals: many(airbnbRentals),
 }));
