@@ -130,6 +130,8 @@ export default function Header() {
           {[
             { path: '/', label: 'Home' },
             { path: '/properties', label: 'Properties' },
+            { path: '/airbnb', label: 'Vacation Rentals' },
+            { path: '/neighborhoods', label: 'Neighborhoods' },
             { path: '/#about', label: 'About' }
           ].map((item, index) => (
             <Link 
@@ -183,6 +185,7 @@ export default function Header() {
           {[
             { path: '/', label: 'Home', icon: 'bx-home' },
             { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
+            { path: '/airbnb', label: 'Vacation Rentals', icon: 'bx-hotel' },
             { path: '/neighborhoods', label: 'Neighborhoods', icon: 'bx-map-alt' },
             { path: '/#about', label: 'About', icon: 'bx-user' },
             { path: '/contact', label: 'Contact', icon: 'bx-envelope' }

@@ -25,6 +25,8 @@ const NeighborhoodDetails = lazy(() => import("@/pages/NeighborhoodDetails"));
 const About = lazy(() => import("@/pages/About"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const Favorites = lazy(() => import("@/pages/Favorites"));
+const AirbnbRentals = lazy(() => import("@/pages/AirbnbRentals"));
+const AirbnbRentalDetails = lazy(() => import("@/pages/AirbnbRentalDetails"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 // Import our $10,000 Enterprise-Grade SEO Solution
@@ -401,6 +403,30 @@ function App() {
                             <ScrollToTop />
                             <ErrorBoundary>
                               <Favorites />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/airbnb">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <AirbnbRentals />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/airbnb/:id">
+                      {(params) => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <AirbnbRentalDetails />
                             </ErrorBoundary>
                           </>
                         );
