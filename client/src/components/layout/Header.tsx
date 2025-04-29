@@ -180,6 +180,7 @@ export default function Header() {
             { path: '/', label: 'Home' },
             { path: '/properties', label: 'Properties' },
             { path: '/neighborhoods', label: 'Neighborhoods' },
+            { path: '/airbnb', label: 'Airbnb Rentals' },
             { path: '/favorites', label: 'Favorites' },
             { path: '/about', label: 'About' },
             { path: '/contact', label: 'Contact' }
@@ -240,6 +241,7 @@ export default function Header() {
             { path: '/', label: 'Home', icon: 'bx-home' },
             { path: '/properties', label: 'Properties', icon: 'bx-building-house' },
             { path: '/neighborhoods', label: 'Neighborhoods', icon: 'bx-map-alt' },
+            { path: '/airbnb', label: 'Airbnb Rentals', icon: 'bx-building' },
             { path: '/favorites', label: 'Favorites', icon: 'bx-heart' },
             { path: '/about', label: 'About', icon: 'bx-user' },
             { path: '/contact', label: 'Contact', icon: 'bx-envelope' }
