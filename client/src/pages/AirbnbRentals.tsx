@@ -147,11 +147,11 @@ export default function AirbnbRentals() {
         canonicalPath="/airbnb"
       />
       
-      <SEOBreadcrumbs
+      <SimpleBreadcrumbs
         items={[
-          { name: "Home", href: "/" },
-          { name: "Vacation Rentals", href: "/airbnb" },
+          { label: "Vacation Rentals", path: "/airbnb" }
         ]}
+        includeHome={true}
       />
       
       <div className="mb-8">
