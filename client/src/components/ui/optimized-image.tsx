@@ -11,10 +11,15 @@ function normalizeImagePath(src: string): string {
     return src;
   }
   
-  // Handle attached_assets paths
+  // Handle attached_assets paths with leading slash
   if (src.startsWith('/attached_assets/')) {
     // Remove leading slash to make it relative to root
     return src.substring(1);
+  }
+  
+  // Handle attached_assets paths without leading slash
+  if (src.startsWith('attached_assets/')) {
+    return src;
   }
   
   // Return the original path for other cases
@@ -160,6 +165,12 @@ export function OptimizedImage({
     setError(true);
     const normalizedSrc = normalizeImagePath(src);
     console.error(`Failed to load image: ${src} (normalized path: ${normalizedSrc})`);
+    // Log more details to help with debugging
+    console.log(`Image details:
+      - Original src: ${src}
+      - Normalized src: ${normalizedSrc}
+      - Full path: ${window.location.origin}/${normalizedSrc}
+    `);
   };
   
   // Generate unique ID for this image based on source URL

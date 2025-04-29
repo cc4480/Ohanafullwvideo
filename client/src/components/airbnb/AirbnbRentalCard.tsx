@@ -40,7 +40,10 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
                       src={image}
                       alt={`${rental.title} - Image ${index + 1}`}
                       className="w-full h-full object-cover rounded-t-lg"
-                      onError={() => setImageError(prev => ({ ...prev, [image]: true }))}
+                      onError={() => {
+                        console.log(`Error loading image at ${index}:`, image);
+                        setImageError(prev => ({ ...prev, [image]: true }));
+                      }}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       priority={index === 0 && featured}
                     />
