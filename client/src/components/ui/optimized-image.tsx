@@ -1,6 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
+/**
+ * Utility function to normalize image paths
+ * Handles paths that might be prefixed with /attached_assets/ or other patterns
+ */
+function normalizeImagePath(src: string): string {
+  // If it's an external URL (starts with http or https), return as is
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    return src;
+  }
+  
+  // Handle attached_assets paths
+  if (src.startsWith('/attached_assets/')) {
+    // Remove leading slash to make it relative to root
+    return src.substring(1);
+  }
+  
+  // Return the original path for other cases
+  return src;
+}
+
 interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   /**
    * Source URL of the image
@@ -78,7 +98,8 @@ export function OptimizedImage({
     // Skip for priority images, they load immediately
     if (priority) return;
     
-    const element = document.getElementById(`optimized-img-${src.replace(/[^a-zA-Z0-9]/g, '-')}`);
+    const normalizedSrc = normalizeImagePath(src);
+    const element = document.getElementById(`optimized-img-${normalizedSrc.replace(/[^a-zA-Z0-9]/g, '-')}`);
     
     if (!element) return;
     
@@ -137,11 +158,12 @@ export function OptimizedImage({
   // Handler for image load error
   const handleImageError = () => {
     setError(true);
-    console.error(`Failed to load image: ${src}`);
+    const normalizedSrc = normalizeImagePath(src);
+    console.error(`Failed to load image: ${src} (normalized path: ${normalizedSrc})`);
   };
   
   // Generate unique ID for this image based on source URL
-  const id = `optimized-img-${src.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  const id = `optimized-img-${normalizeImagePath(src).replace(/[^a-zA-Z0-9]/g, '-')}`;
   
   return (
     <div 
@@ -155,7 +177,7 @@ export function OptimizedImage({
       {/* Show placeholder while loading */}
       {placeholder && !isLoaded && !error && (
         <img 
-          src={placeholder} 
+          src={normalizeImagePath(placeholder)} 
           alt={`${alt} placeholder`}
           style={placeholderStyle}
           aria-hidden="true"
@@ -165,7 +187,7 @@ export function OptimizedImage({
       {/* Main image, only load src when in viewport */}
       {(isInView || priority) && (
         <img
-          src={src}
+          src={normalizeImagePath(src)}
           alt={alt}
           loading={priority ? "eager" : "lazy"}
           onLoad={handleImageLoad}
