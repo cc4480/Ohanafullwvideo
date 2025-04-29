@@ -139,7 +139,7 @@ export default function Header() {
   
   return (
     <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${headerClasses}`} style={{ backgroundColor: scrolled ? undefined : 'transparent' }}>
-      <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-1.5' : 'py-3'} flex items-center justify-between`}>
+      <div className={`container mx-auto px-3 sm:px-4 ${isMobile ? 'py-3' : 'py-4'} flex items-center justify-between`}>
         {/* Logo with improved styling for both mobile and desktop */}
         <Link href="/" className="flex items-center relative group" onClick={handleLinkClick}>
           <div className={`${isMobile ? 'p-0' : 'p-1'} rounded-md transform-gpu transition-all duration-300 hover:shadow-md`}>
@@ -229,9 +229,9 @@ export default function Header() {
       {/* Enhanced mobile menu with smoother transitions - optimized for mobile */}
       <div 
         id="mobileMenu" 
-        className={`fixed left-0 right-0 top-[38px] bg-background/95 backdrop-blur-md py-3 px-3 md:hidden shadow-xl border-t border-border/10 transition-all duration-500 ${
+        className={`fixed left-0 right-0 top-[56px] bg-background/95 backdrop-blur-md py-3 px-3 md:hidden shadow-xl border-t border-border/10 transition-all duration-500 ${
           mobileMenuOpen 
-            ? 'opacity-100 translate-y-0 max-h-[calc(100vh-38px)] overflow-auto' 
+            ? 'opacity-100 translate-y-0 max-h-[calc(100vh-56px)] overflow-auto' 
             : 'opacity-0 -translate-y-4 pointer-events-none max-h-0 overflow-hidden'
         }`}
         style={{ transformOrigin: 'top center' }}
