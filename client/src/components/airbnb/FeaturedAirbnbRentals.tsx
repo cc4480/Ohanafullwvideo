@@ -50,7 +50,7 @@ export function FeaturedAirbnbRentals({
         error={error as Error}
         queryKey="/api/airbnb/featured"
         isEmpty={!featuredRentals || featuredRentals.length === 0}
-        emptyMessage="No featured rentals available at the moment."
+        emptyMessage="We're updating our vacation rental inventory. Please check back soon!"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {featuredRentals?.map((rental) => (

@@ -529,7 +529,7 @@ export default function AirbnbRentals() {
         error={error as Error}
         queryKey="/api/airbnb/search"
         isEmpty={!data?.rentals || data.rentals.length === 0}
-        emptyMessage="No rentals found with the selected filters."
+        emptyMessage="We're currently updating our vacation rental listings. Please check back soon for exciting new properties!"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {data?.rentals?.map((rental) => (
