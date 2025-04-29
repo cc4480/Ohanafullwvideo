@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,19 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
 
   // Check if a specific image has an error
   const hasImageError = (src: string) => imageError[src] === true;
+  
+  // Debug image loading
+  useEffect(() => {
+    console.log('AirbnbRentalCard images:', rental.images);
+    
+    // Check if images can be loaded
+    if (rental.images && rental.images.length > 0) {
+      const testImage = new Image();
+      testImage.onload = () => console.log(`Test image loaded successfully: ${rental.images[0]}`);
+      testImage.onerror = (e) => console.error(`Test image failed to load: ${rental.images[0]}`, e);
+      testImage.src = rental.images[0];
+    }
+  }, [rental.images]);
 
   // Format price with commas
   const formattedPrice = new Intl.NumberFormat('en-US', {
