@@ -6,6 +6,7 @@ import AboutRealtor from "@/components/home/AboutRealtor";
 import NeighborhoodInsights from "@/components/features/NeighborhoodInsights";
 import ContactSection from "@/components/features/ContactSection";
 import CallToAction from "@/components/home/CallToAction";
+import FeaturedAirbnbRentals from "@/components/airbnb/FeaturedAirbnbRentals";
 // Enhanced SEO components
 import SEOOrganizationSchema from "@/components/SEOOrganizationSchema";
 import LocalBusinessSchema from "@/components/LocalBusinessSchema";
@@ -204,6 +205,12 @@ export default function Home() {
         <Hero />
         <PropertySearch />
         <FeaturedProperties />
+        <FeaturedAirbnbRentals
+          title="Vacation Rentals in Laredo"
+          subtitle="Experience luxury and comfort in our hand-picked Airbnb vacation rentals"
+          limit={4}
+          showViewAllButton={true}
+        />
         <PropertyMap />
         <AboutRealtor />
         <NeighborhoodInsights />
