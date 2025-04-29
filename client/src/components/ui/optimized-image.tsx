@@ -197,15 +197,23 @@ export function OptimizedImage({
       
       {/* Main image, only load src when in viewport */}
       {(isInView || priority) && (
-        <img
-          src={normalizeImagePath(src)}
-          alt={alt}
-          loading={priority ? "eager" : "lazy"}
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-          style={imageStyle}
-          {...props}
-        />
+        <picture>
+          {/* WebP format support */}
+          <source 
+            srcSet={normalizeImagePath(src.replace(/\.(jpg|jpeg|png)$/i, '.webp'))} 
+            type="image/webp" 
+          />
+          {/* Fallback to original format */}
+          <img
+            src={normalizeImagePath(src)}
+            alt={alt}
+            loading={priority ? "eager" : "lazy"}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            style={imageStyle}
+            {...props}
+          />
+        </picture>
       )}
       
       {/* Error fallback */}
