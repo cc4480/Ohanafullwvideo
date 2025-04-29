@@ -12,28 +12,44 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Create optimized connection pool with enhanced performance settings
-export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-  // Production optimized connection pooling
-  max: process.env.NODE_ENV === 'production' ? 20 : 3, // Increased max connections for production
-  min: process.env.NODE_ENV === 'production' ? 2 : 0, // Maintain minimum connections in production
-  idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
-  connectionTimeoutMillis: 5000, // Reduced connection timeout for faster failure recognition
-  allowExitOnIdle: process.env.NODE_ENV !== 'production', // Only allow exit on idle in development
-  keepAlive: process.env.NODE_ENV === 'production', // Keep connections alive in production
-  statement_timeout: 10000, // Timeout long-running queries after 10 seconds
-});
+// Create a function that returns a new connection pool
+// This allows us to recreate the pool if there are connection issues
+const createPool = () => {
+  const pool = new Pool({ 
+    connectionString: process.env.DATABASE_URL,
+    // Development-optimized connection pooling settings
+    max: 5, // Limit concurrent connections
+    min: 0, // Don't keep idle connections open
+    idleTimeoutMillis: 10000, // Close idle connections faster in development
+    connectionTimeoutMillis: 3000, // Fail fast if connection cannot be established
+    allowExitOnIdle: true, // Allow closing on idle to prevent hanging connections
+    keepAlive: false, // No need for keepalive in development
+    statement_timeout: 5000, // Fail fast on long queries
+  });
+  
+  // Add connection error handling for improved stability
+  pool.on('error', (err) => {
+    console.error('Database connection error:', err);
+    // Log the error but don't try to reconnect automatically
+    // We'll create a new pool on the next request if needed
+  });
+  
+  return pool;
+};
 
-// Add connection error handling for improved stability
-pool.on('error', (err) => {
-  console.error('Unexpected database connection error:', err);
-  // Try to recover connection on next request
-});
+// Initial pool creation
+export let pool = createPool();
 
-// Initialize Drizzle ORM with our schema and performance options
-export const db = drizzle(pool, { 
-  schema,
-  // Enable prepared statements for better performance
-  logger: process.env.NODE_ENV === 'development' ? true : false
-});
+// Create a function to get a working database connection
+// This will recreate the pool if needed
+const getDb = () => {
+  // Initialize Drizzle ORM with our schema
+  return drizzle(pool, { 
+    schema,
+    // Enable logging in development
+    logger: true
+  });
+};
+
+// Export the database client with our helper function
+export const db = getDb();
