@@ -37,6 +37,7 @@ import APIFallback from "@/components/APIFallback";
 import AirbnbRentalCard from "@/components/airbnb/AirbnbRentalCard";
 import SafeHelmet from "@/components/SafeHelmet";
 import SEOBreadcrumbs from "@/components/SEOBreadcrumbs";
+import SimpleBreadcrumbs from "@/components/SimpleBreadcrumbs";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { AirbnbRental } from "@shared/schema";
 

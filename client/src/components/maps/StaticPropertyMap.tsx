@@ -49,7 +49,9 @@ export default function StaticPropertyMap({
 
   // Use a consistent map image based on property ID instead of random selection
   // This prevents the map from changing/blinking on re-renders
-  const mapImageSrc = property.id % 2 === 0 ?
+  // Handle case when property ID might be undefined
+  const propertyId = property?.id || 0;
+  const mapImageSrc = propertyId % 2 === 0 ?
     '/images/maps/laredo-map.png' : 
     '/images/maps/laredo-satellite.png';
 
