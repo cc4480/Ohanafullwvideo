@@ -9,6 +9,7 @@ interface APIFallbackProps {
   queryKey?: string | string[];
   emptyMessage?: string;
   isEmpty?: boolean;
+  children?: React.ReactNode;
 }
 
 export default function APIFallback({
@@ -17,7 +18,8 @@ export default function APIFallback({
   error = null,
   queryKey,
   emptyMessage = "No data available",
-  isEmpty = false
+  isEmpty = false,
+  children
 }: APIFallbackProps) {
   const handleRetry = () => {
     if (queryKey) {
@@ -59,5 +61,6 @@ export default function APIFallback({
     );
   }
 
-  return null;
+  // Return the children when there's no fallback condition
+  return <>{children}</>;
 }

@@ -41,7 +41,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
   } = useQuery<AirbnbRental>({
     queryKey: [`/api/airbnb/${id}`],
     queryFn: async ({ queryKey }) => {
-      const [path] = queryKey;
+      const path = `/api/airbnb/${id}`;
       const response = await fetch(path);
       if (!response.ok) {
         throw new Error("Failed to fetch rental details");
@@ -128,8 +128,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                   <OptimizedImage 
                     src={selectedImage || rental.images[0]} 
                     alt={rental.title}
-                    fill
-                    className="object-cover" 
+                    className="w-full h-full object-cover" 
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority
                   />
@@ -147,8 +146,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                       <OptimizedImage 
                         src={image} 
                         alt={`${rental.title} image ${index + 1}`}
-                        fill
-                        className="object-cover" 
+                        className="w-full h-full object-cover" 
                         sizes="(max-width: 768px) 25vw, 10vw"
                       />
                     </AspectRatio>

@@ -39,8 +39,7 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
                     <OptimizedImage
                       src={image}
                       alt={`${rental.title} - Image ${index + 1}`}
-                      fill
-                      className="object-cover rounded-t-lg"
+                      className="w-full h-full object-cover rounded-t-lg"
                       onError={() => setImageError(prev => ({ ...prev, [image]: true }))}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       priority={index === 0 && featured}
