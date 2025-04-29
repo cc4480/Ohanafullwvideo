@@ -876,53 +876,58 @@ export async function initializeSampleData() {
 
 // Function to add Airbnb rentals
 async function addAirbnbRentals() {
-  // Sample Airbnb rental based on user request
+  // Sample Airbnb rental based on user request with uploaded AVIF images
   const sampleRentals = [
     {
-      title: "Cozy Modern 2BR Apartment in Laredo",
+      title: "Luxurious 2BR Downtown Apartment - Near River Walk",
       address: "425 Market Street",
       city: "Laredo",
       state: "Texas",
       zipCode: "78040",
-      price: 120, // Price per night
-      description: "Enjoy this beautiful rental unit in the heart of Laredo. Perfect for both short and extended stays with all the comforts of home.",
+      price: 145, // Price per night
+      description: "Enjoy this beautiful rental unit in the heart of Laredo. Perfect for both short and extended stays with all the comforts of home. This newly renovated apartment features modern furnishings, high-end appliances, and a stunning view of downtown Laredo. Located just steps away from the scenic River Walk, you'll have easy access to shopping, dining, and entertainment. Whether you're visiting for business or pleasure, this luxury apartment offers the perfect combination of comfort, convenience, and style.",
       guests: 4,
       bedrooms: 2,
       beds: 2,
       bathrooms: 2,
       amenities: [
-        "Free WiFi", 
-        "Full kitchen", 
-        "Washer/dryer", 
-        "Air conditioning",
-        "TV with streaming services",
-        "Free parking",
-        "Pool access",
-        "Gym access"
+        "Free high-speed WiFi", 
+        "Modern full kitchen with granite countertops", 
+        "In-unit washer/dryer", 
+        "Central air conditioning",
+        "Smart TV with premium streaming services",
+        "Dedicated workspace with ergonomic chair",
+        "Free secured parking",
+        "Pool access with lounging area",
+        "24-hour fitness center",
+        "Contactless self check-in",
+        "Cleaning products provided",
+        "Coffee maker and complimentary coffee"
       ],
       highlights: [
         "Exceptional check-in experience",
-        "Peace and quiet",
-        "Great location",
-        "Free cancellation before 4:00 PM on Apr 30"
+        "Sparkling clean with enhanced sanitization",
+        "Great downtown location near River Walk",
+        "Professional hospitality with 24/7 support",
+        "Fast and reliable internet for remote work"
       ],
       images: [
-        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1584622781339-b9710130d393?w=800&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=800&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800&auto=format&fit=crop"
+        "/attached_assets/c2b0b3fe-cb9a-4fb3-8d2c-ae98d4d7d42e.avif",
+        "/attached_assets/334820f6-c947-4ccc-b235-95c82d2632c9.avif",
+        "/attached_assets/dd475122-ac40-4402-bb0c-d50f3c799c4d.avif",
+        "/attached_assets/bb715d2c-1bd0-4e76-ad13-3007b26c3eb7.avif",
+        "/attached_assets/c254a014-5cc8-4fab-b8ce-b54fedcf4a6e.avif",
+        "/attached_assets/c25b907e-f6e4-4211-9754-c30385cc6fe3.avif",
+        "/attached_assets/c40dd59e-0e3a-4ee3-8366-d46f065ac774.avif",
+        "/attached_assets/f6c0b7dd-c5cb-442d-9f79-a364cdd461c3.avif",
+        "/attached_assets/3348dbfd-67f6-4c8c-b771-0c70fed16cf3.avif"
       ],
-      rating: 4.9,
-      reviewCount: 125,
+      rating: 4.96,
+      reviewCount: 148,
       lat: 27.505823,
       lng: -99.502912,
       neighborhood: 2, // Downtown Laredo
-      cancellationPolicy: "Free cancellation before 4:00 PM on Apr 30. Get a full refund if you change your mind.",
+      cancellationPolicy: "Free cancellation before 4:00 PM on May 15. After that, cancel before check-in and get a 50% refund, minus the service fee.",
       propertyId: null // Not linked to a regular property
     }
   ];
