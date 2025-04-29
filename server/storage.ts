@@ -735,20 +735,29 @@ export class DatabaseStorage implements IStorage {
 }
 
 // Initialize sample data function
-
 export async function initializeSampleData() {
-  // Check if data already exists
-  const existingProperties = await db.select({ count: sql`count(*)` }).from(properties);
-  if (Number(existingProperties[0].count) > 0) {
-    // Check if we need to add Airbnb rentals
-    const existingRentals = await db.select({ count: sql`count(*)` }).from(airbnbRentals);
-    if (Number(existingRentals[0].count) === 0) {
-      console.log("Adding Airbnb rentals to existing data");
-      await addAirbnbRentals();
-      return;
+  try {
+    // Check if data already exists
+    const existingProperties = await db.select({ count: sql`count(*)` }).from(properties);
+    if (Number(existingProperties[0].count) > 0) {
+      try {
+        // Check if we need to add Airbnb rentals
+        // This will fail if table doesn't exist, but that's fine - we'll catch it
+        const existingRentals = await db.select({ count: sql`count(*)` }).from(airbnbRentals);
+        if (Number(existingRentals[0].count) === 0) {
+          console.log("Adding Airbnb rentals to existing data");
+          await addAirbnbRentals();
+          return;
+        }
+      } catch (error) {
+        console.log("Airbnb rentals table doesn't exist yet");
+        // Just continue
+      }
+      console.log("Data already exists, skipping initialization");
+      return; // Data already exists
     }
-    console.log("Data already exists, skipping initialization");
-    return; // Data already exists
+  } catch (error) {
+    console.error("Error checking existing data:", error);
   }
 
   // Sample properties

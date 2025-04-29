@@ -500,6 +500,191 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Airbnb rentals endpoints
+  // Get all Airbnb rentals
+  apiRouter.get("/airbnb", async (req, res) => {
+    try {
+      const rentals = await storage.getAirbnbRentals();
+      res.json(rentals);
+    } catch (error) {
+      console.error("Error fetching Airbnb rentals:", error);
+      res.status(500).json({ message: "Failed to fetch Airbnb rentals" });
+    }
+  });
+
+  // Get featured Airbnb rentals
+  apiRouter.get("/airbnb/featured", async (req, res) => {
+    try {
+      // Get the limit parameter if provided
+      let limit = 4;
+      if (req.query.limit) {
+        limit = parseInt(String(req.query.limit));
+        // Check if the parsed limit is a valid number
+        if (isNaN(limit) || limit <= 0) {
+          limit = 4; // Default to 4 if limit is invalid
+        }
+      }
+      
+      // Use database-optimized method for fetching featured Airbnb rentals
+      const featuredRentals = await storage.getFeaturedAirbnbRentals(limit);
+      
+      res.json(featuredRentals);
+    } catch (error) {
+      console.error("Featured Airbnb rentals error:", error);
+      res.status(500).json({ message: "Failed to fetch featured Airbnb rentals" });
+    }
+  });
+
+  // Search Airbnb rentals with filters
+  apiRouter.get("/airbnb/search", async (req, res) => {
+    try {
+      const { 
+        minPrice, 
+        maxPrice, 
+        minBeds, 
+        minBaths,
+        guests,
+        city, 
+        neighborhood,
+        sortBy,
+        order,
+        limit,
+        offset
+      } = req.query;
+      
+      // Prepare filter object with correct types
+      const filters: {
+        minPrice?: number;
+        maxPrice?: number;
+        minBeds?: number;
+        minBaths?: number;
+        guests?: number;
+        city?: string;
+        neighborhood?: number;
+        sortBy?: string;
+        order?: 'asc' | 'desc';
+        limit?: number;
+        offset?: number;
+      } = {};
+      
+      // Add only defined filters with proper type conversion
+      if (minPrice) {
+        const price = Number(minPrice);
+        if (!isNaN(price) && price >= 0) {
+          filters.minPrice = price;
+        }
+      }
+      
+      if (maxPrice) {
+        const price = Number(maxPrice);
+        if (!isNaN(price) && price >= 0) {
+          filters.maxPrice = price;
+        }
+      }
+      
+      if (minBeds) {
+        const beds = Number(minBeds);
+        if (!isNaN(beds) && beds >= 0) {
+          filters.minBeds = beds;
+        }
+      }
+      
+      if (minBaths) {
+        const baths = Number(minBaths);
+        if (!isNaN(baths) && baths >= 0) {
+          filters.minBaths = baths;
+        }
+      }
+      
+      if (guests) {
+        const guestCount = Number(guests);
+        if (!isNaN(guestCount) && guestCount >= 0) {
+          filters.guests = guestCount;
+        }
+      }
+      
+      if (city) filters.city = String(city);
+      
+      if (neighborhood) {
+        const neighborhoodId = Number(neighborhood);
+        if (!isNaN(neighborhoodId) && neighborhoodId > 0) {
+          filters.neighborhood = neighborhoodId;
+        }
+      }
+      
+      // Add sorting parameters
+      if (sortBy) {
+        const validSortFields = ['price', 'bedrooms', 'bathrooms', 'guests', 'rating'];
+        const field = String(sortBy);
+        if (validSortFields.includes(field)) {
+          filters.sortBy = field;
+        }
+      }
+      
+      if (order) {
+        const direction = String(order).toLowerCase();
+        if (direction === 'asc' || direction === 'desc') {
+          filters.order = direction;
+        }
+      }
+      
+      // Add pagination parameters
+      if (limit) {
+        const limitVal = Number(limit);
+        if (!isNaN(limitVal) && limitVal > 0 && limitVal <= 100) {
+          filters.limit = limitVal;
+        }
+      }
+      
+      if (offset) {
+        const offsetVal = Number(offset);
+        if (!isNaN(offsetVal) && offsetVal >= 0) {
+          filters.offset = offsetVal;
+        }
+      }
+      
+      // Log the search filters for debugging
+      console.log("Searching Airbnb rentals with filters:", JSON.stringify(filters, null, 2));
+      
+      // Use the database-optimized search method
+      const rentals = await storage.searchAirbnbRentals(filters);
+      
+      // Return structured response with metadata
+      res.json({
+        rentals,
+        meta: {
+          total: rentals.length,
+          limit: filters.limit || rentals.length,
+          offset: filters.offset || 0,
+          hasMore: false // We don't have pagination count for Airbnb rentals yet
+        }
+      });
+    } catch (error) {
+      console.error("Airbnb rental search error:", error);
+      res.status(500).json({ message: "Failed to search Airbnb rentals" });
+    }
+  });
+
+  // Get Airbnb rental by ID
+  apiRouter.get("/airbnb/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid Airbnb rental ID" });
+      }
+
+      const rental = await storage.getAirbnbRental(id);
+      if (!rental) {
+        return res.status(404).json({ message: "Airbnb rental not found" });
+      }
+
+      res.json(rental);
+    } catch (error) {
+      console.error("Error fetching Airbnb rental:", error);
+      res.status(500).json({ message: "Failed to fetch Airbnb rental" });
+    }
+  });
+
   // Health check endpoint for deployment monitoring
   apiRouter.get("/health", async (req, res) => {
     try {
