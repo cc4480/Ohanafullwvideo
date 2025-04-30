@@ -49,7 +49,7 @@ export function FeaturedAirbnbRentals({
 
         <div className={`w-full max-w-5xl mx-auto relative transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           {/* Video container with subtle animations and glow effect */}
-          <div className="relative rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(79,70,229,0.5)] h-[70vh] transform transition-transform duration-700 hover:scale-[1.01]">
+          <div className="relative rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(79,70,229,0.5)] h-[70vh] transform transition-transform duration-700 hover:scale-[1.01] bg-black">
             {/* Animated border - BRIGHTER */}
             <div className="absolute inset-0 z-0 bg-gradient-to-tr from-blue-600/50 via-indigo-500/40 to-purple-600/50 rounded-2xl animate-pulse-slow shadow-[0_0_40px_15px_rgba(79,70,229,0.4)] ring-2 ring-blue-400/70"></div>
             

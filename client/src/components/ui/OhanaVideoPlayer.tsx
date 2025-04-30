@@ -396,7 +396,13 @@ export function OhanaVideoPlayer({
         x-webkit-playsinline="true"
         controlsList="nodownload"
         disablePictureInPicture={false}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover" 
+        style={{
+          objectPosition: 'center',
+          objectFit: 'cover',
+          transform: 'scale(0.9)', /* Reduce zoom while maintaining coverage */
+          margin: 'auto'
+        }}
       >  
         {/* Add a fallback text for browsers that don't support video */}
         Your browser does not support the video tag.
