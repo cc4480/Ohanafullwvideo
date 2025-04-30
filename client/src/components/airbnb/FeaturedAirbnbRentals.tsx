@@ -15,16 +15,16 @@ export function FeaturedAirbnbRentals({
   
   // Check if video file exists
   useEffect(() => {
-    console.log("Checking if video exists at: /videos/property-showcase.mp4");
+    console.log("Checking if video exists at: /property-video.mp4");
     
-    fetch("/videos/property-showcase.mp4", { method: "HEAD" })
+    fetch("/property-video.mp4", { method: "HEAD" })
       .then(response => {
         if (response.ok) {
-          console.log("✅ Video exists at: /videos/property-showcase.mp4");
+          console.log("✅ Video exists at: /property-video.mp4");
           console.log(`Content-Type: ${response.headers.get("content-type")}`);
           console.log(`Content-Length: ${response.headers.get("content-length")}`);
         } else {
-          console.error(`❌ Video not found at: /videos/property-showcase.mp4, status: ${response.status}`);
+          console.error(`❌ Video not found at: /property-video.mp4, status: ${response.status}`);
         }
       })
       .catch(error => {
@@ -68,7 +68,7 @@ export function FeaturedAirbnbRentals({
                 setVideoError(true);
               }}
             >
-              <source src="/videos/property-showcase.mp4" type="video/mp4" />
+              <source src="/property-video.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
