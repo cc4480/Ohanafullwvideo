@@ -27,6 +27,7 @@ const Contact = lazy(() => import("@/pages/Contact"));
 const Favorites = lazy(() => import("@/pages/Favorites"));
 const AirbnbRentals = lazy(() => import("@/pages/AirbnbRentals"));
 const AirbnbRentalDetails = lazy(() => import("@/pages/AirbnbRentalDetails"));
+const VideoTest = lazy(() => import("@/pages/VideoTest"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 // Import our $10,000 Enterprise-Grade SEO Solution
@@ -439,6 +440,18 @@ function App() {
                             <ScrollToTop />
                             <ErrorBoundary>
                               <NotFound />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/video-test">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <VideoTest />
                             </ErrorBoundary>
                           </>
                         );
