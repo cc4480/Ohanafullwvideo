@@ -215,7 +215,7 @@ export function OhanaVideoPlayer({
         muted={isMuted}
         loop={loop}
         playsInline
-        className="w-full h-full object-cover"
+        className="w-full h-full object-contain"
       />
       
       {/* Custom play/pause button overlay */}
