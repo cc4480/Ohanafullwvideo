@@ -35,6 +35,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import APIFallback from "@/components/APIFallback";
 import AirbnbRentalCard from "@/components/airbnb/AirbnbRentalCard";
+import VideoSection from "@/components/airbnb/VideoSection";
 import SafeHelmet from "@/components/SafeHelmet";
 import SEOBreadcrumbs from "@/components/SEOBreadcrumbs";
 import SimpleBreadcrumbs from "@/components/SimpleBreadcrumbs";
@@ -158,6 +159,13 @@ export default function AirbnbRentals() {
         <h1 className="text-3xl font-bold mb-3">Vacation Rentals</h1>
         <p className="text-muted-foreground">Find the perfect place to stay in Laredo</p>
       </div>
+      
+      {/* Featured Video Section */}
+      <VideoSection 
+        videoSrc="/airbnb-feature-video.mp4"
+        title="Experience Laredo Like Never Before"
+        description="Take a virtual tour of our premium vacation rentals and discover the perfect getaway for your next visit to Laredo."
+      />
       
       {/* Filters section */}
       <div className="mb-8">
