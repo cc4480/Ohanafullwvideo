@@ -22,6 +22,11 @@ export function FeaturedAirbnbRentals({
     const handleCanPlay = () => {
       console.log('Featured video can play');
       setIsVideoLoaded(true);
+      
+      // Autoplay as soon as video is ready
+      video.play().catch(err => {
+        console.warn('Featured video autoplay prevented:', err);
+      });
     };
     
     const handlePlaying = () => {
@@ -38,6 +43,13 @@ export function FeaturedAirbnbRentals({
     video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('playing', handlePlaying);
     video.addEventListener('pause', handlePause);
+    
+    // Try to play automatically if video is already loaded
+    if (video.readyState >= 2) { // HAVE_CURRENT_DATA or better
+      video.play().catch(err => {
+        console.warn('Initial autoplay prevented for featured video:', err);
+      });
+    }
     
     // Cleanup
     return () => {
@@ -75,6 +87,7 @@ export function FeaturedAirbnbRentals({
           className="w-full h-full object-cover"
           src="/OHANAVIDEOMASTER.mp4"
           muted
+          autoPlay
           loop
           playsInline
           onClick={togglePlay}
@@ -87,7 +100,7 @@ export function FeaturedAirbnbRentals({
           </div>
         )}
         
-        {/* Play button overlay */}
+        {/* Play button overlay - only shown if autoplay fails */}
         {isVideoLoaded && !isPlaying && (
           <div 
             className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/30"

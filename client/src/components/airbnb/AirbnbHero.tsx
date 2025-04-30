@@ -13,6 +13,12 @@ export function AirbnbHero() {
     const handleCanPlay = () => {
       console.log('Video can now be played');
       setIsVideoLoaded(true);
+      
+      // Autoplay as soon as possible
+      video.play().catch(err => {
+        console.warn('Autoplay prevented:', err);
+        // Some browsers require user interaction - we'll show the play button
+      });
     };
     
     const handlePlaying = () => {
@@ -37,9 +43,9 @@ export function AirbnbHero() {
     video.addEventListener('error', handleError);
     
     // Try to play automatically
-    if (video.paused) {
+    if (video.readyState >= 2) { // HAVE_CURRENT_DATA or better
       video.play().catch(err => {
-        console.warn('Autoplay prevented:', err);
+        console.warn('Initial autoplay prevented:', err);
       });
     }
     
@@ -75,6 +81,7 @@ export function AirbnbHero() {
           className="absolute inset-0 w-full h-full object-cover"
           src="/OHANAVIDEOMASTER.mp4"
           muted
+          autoPlay
           loop
           playsInline
           controlsList="nodownload"
@@ -88,7 +95,7 @@ export function AirbnbHero() {
           </div>
         )}
         
-        {/* Play/Pause button overlay */}
+        {/* Play button overlay - only shown if video paused despite autoplay attempt */}
         {isVideoLoaded && !isPlaying && (
           <div 
             className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/20"
