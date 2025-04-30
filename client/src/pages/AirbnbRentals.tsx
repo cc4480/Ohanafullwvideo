@@ -35,6 +35,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import APIFallback from "@/components/APIFallback";
 import AirbnbRentalCard from "@/components/airbnb/AirbnbRentalCard";
+import AirbnbHero from "@/components/airbnb/AirbnbHero";
 import SafeHelmet from "@/components/SafeHelmet";
 import SEOBreadcrumbs from "@/components/SEOBreadcrumbs";
 import SimpleBreadcrumbs from "@/components/SimpleBreadcrumbs";
@@ -138,7 +139,7 @@ export default function AirbnbRentals() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div>
       <ScrollToTop />
       
       <SafeHelmet
@@ -147,17 +148,21 @@ export default function AirbnbRentals() {
         canonicalPath="/airbnb"
       />
       
-      <SimpleBreadcrumbs
-        items={[
-          { label: "Vacation Rentals", path: "/airbnb" }
-        ]}
-        includeHome={true}
-      />
+      {/* Video Hero Section */}
+      <AirbnbHero />
       
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-3">Vacation Rentals</h1>
-        <p className="text-muted-foreground">Find the perfect place to stay in Laredo</p>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <SimpleBreadcrumbs
+          items={[
+            { label: "Vacation Rentals", path: "/airbnb" }
+          ]}
+          includeHome={true}
+        />
+        
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-3">Vacation Rentals</h1>
+          <p className="text-muted-foreground">Find the perfect place to stay in Laredo</p>
+        </div>
       
       {/* Filters section */}
       <div className="mb-8">
@@ -538,6 +543,7 @@ export default function AirbnbRentals() {
           ))}
         </div>
       </APIFallback>
+      </div>
     </div>
   );
 }
