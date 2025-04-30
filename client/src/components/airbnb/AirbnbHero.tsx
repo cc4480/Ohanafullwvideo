@@ -7,19 +7,15 @@ export function AirbnbHero() {
 
   return (
     <section className="relative w-full">
-      {/* Video Background - Full screen with autoplay - SIMPLE VERSION */}
+      {/* Video Background - Full screen with autoplay */}
       <div className="w-full h-[80vh] overflow-hidden relative rounded-lg">
-        {/* Simplest possible video implementation */}
-        <video
-          src="/OHANAVIDEOMASTER.mp4"
-          autoPlay
-          muted
-          loop
-          controls
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          Your browser does not support the video tag.
-        </video>
+        {/* Using iframe to embed our custom video player */}
+        <iframe 
+          src="/plyr-video.html" 
+          className="absolute inset-0 w-full h-full border-0" 
+          title="Ohana Realty Video" 
+          allow="autoplay; fullscreen"
+        ></iframe>
         
         {/* Text overlay - Centered with dark gradient background */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 flex flex-col items-center justify-center text-white p-4 pointer-events-none">
