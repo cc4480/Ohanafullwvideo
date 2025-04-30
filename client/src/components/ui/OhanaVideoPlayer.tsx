@@ -4,7 +4,7 @@ interface OhanaVideoPlayerProps {
   src: string;
   poster?: string;
   autoPlay?: boolean;
-  muted?: boolean;
+  muted?: boolean; // Note: muted defaults to true for better autoplay success
   loop?: boolean;
   className?: string;
   onPlay?: () => void;
@@ -19,7 +19,7 @@ export function OhanaVideoPlayer({
   src,
   poster,
   autoPlay = true,
-  muted = true,
+  muted = true, // Always default to muted for better autoplay success
   loop = true,
   className = '',
   onPlay,
