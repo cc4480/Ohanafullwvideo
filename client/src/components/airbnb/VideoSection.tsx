@@ -21,6 +21,10 @@ export function VideoSection({ videoSrc, title, description }: VideoSectionProps
     const checkVideoExists = async () => {
       try {
         console.log('Checking video at path:', videoSrc);
+        // For debugging - log full URL
+        const fullUrl = window.location.origin + videoSrc;
+        console.log('Full video URL:', fullUrl);
+        
         const response = await fetch(videoSrc, { method: 'HEAD' });
         if (!response.ok) {
           setVideoError(true);
@@ -42,6 +46,20 @@ export function VideoSection({ videoSrc, title, description }: VideoSectionProps
       return;
     }
     
+    // For testing purposes, try to directly access the video
+    const testVideo = document.createElement('video');
+    testVideo.onloadeddata = () => {
+      console.log('Test video loaded successfully');
+      setVideoError(false);
+      setVideoLoaded(true);
+    };
+    testVideo.onerror = () => {
+      console.error('Test video failed to load');
+      setVideoError(true);
+    };
+    testVideo.src = videoSrc;
+    
+    // Also check with fetch
     checkVideoExists();
   }, [videoSrc]);
 
