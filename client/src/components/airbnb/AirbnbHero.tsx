@@ -47,10 +47,32 @@ export function AirbnbHero() {
           className="absolute m-4 inset-0 rounded-xl transition-all duration-500 opacity-90 z-0 ring-4 ring-blue-500/50"
         ></div>
         
-        {/* Background gradient - replacing video */}
-        <div className="absolute inset-0 m-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] flex items-center justify-center rounded-xl overflow-hidden bg-gradient-to-tr from-gray-900 via-indigo-900/30 to-blue-900/20">
+        {/* Professional background - replacing video */}
+        <div className="absolute inset-0 m-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] flex items-center justify-center rounded-xl overflow-hidden bg-gradient-to-b from-black via-gray-900 to-blue-900/20 p-6">
           <div className="w-full h-full relative rounded-xl overflow-hidden transform transition-transform duration-700 hover:scale-[1.01] flex items-center justify-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-white text-center px-8 drop-shadow-lg">Exceptional Airbnb<br />Experiences in Laredo</h1>
+            {/* Subtle glow effect */}
+            <div className="absolute w-[90%] h-[70%] bg-blue-600/5 blur-[70px] rounded-full animate-pulse-slow"></div>
+            
+            {/* Main content container */}
+            <div className="relative z-10 max-w-4xl p-8 md:p-10 rounded-xl">
+              {/* Decorative elements - simple and elegant */}
+              <div className="absolute top-0 left-0 w-20 h-1 bg-blue-600 rounded-full"></div>
+              <div className="absolute top-0 right-0 w-1 h-20 bg-blue-600 rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-1 h-20 bg-blue-600 rounded-full"></div>
+              <div className="absolute bottom-0 right-0 w-20 h-1 bg-blue-600 rounded-full"></div>
+              
+              {/* Clean, professional heading */}
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-center text-shadow-lg">
+                <span className="text-white">Experience <span className="text-blue-500">Laredo</span></span>
+                <br />
+                <span className="text-blue-400">Luxury Airbnb Rentals</span>
+              </h1>
+              
+              {/* Refined caption */}
+              <p className="mt-6 text-blue-100 text-center max-w-2xl mx-auto text-lg font-light tracking-wide">
+                Premium vacation rentals for discerning travelers
+              </p>
+            </div>
           </div>
         </div>
         
