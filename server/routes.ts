@@ -959,6 +959,28 @@ Crawl-delay: 1
     res.send(robotsTxt);
   });
 
+  // Direct video serving endpoint that bypasses Vite's handling
+  app.get('/api/video/property', (req, res) => {
+    const path = require('path');
+    const fs = require('fs');
+    const videoPath = path.join(process.cwd(), 'public', 'property-video.mp4');
+    
+    // Set the appropriate MIME type for mp4 videos
+    res.setHeader('Content-Type', 'video/mp4');
+    
+    // Create a read stream and pipe it to the response
+    const fileStream = fs.createReadStream(videoPath);
+    fileStream.pipe(res);
+    
+    // Handle file stream errors
+    fileStream.on('error', (err) => {
+      console.error('Error streaming video file:', err);
+      if (!res.headersSent) {
+        res.status(500).send('Error streaming video file');
+      }
+    });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

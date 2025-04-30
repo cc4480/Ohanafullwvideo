@@ -26,7 +26,7 @@ export function FeaturedAirbnbRentals({
           controls
           playsInline
         >
-          <source src="/property-video.mp4" type="video/mp4" />
+          <source src="/api/video/property" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>
