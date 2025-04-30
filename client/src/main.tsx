@@ -24,102 +24,30 @@ const initializeTheme = () => {
   }
 };
 
-// Unregister all service workers to fix ERR_BLOCKED_BY_RESPONSE issues
+// Simple empty function to avoid any service worker issues
 const unregisterServiceWorkers = () => {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-      try {
-        // Unregister all service workers
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (let registration of registrations) {
-          await registration.unregister();
-          console.log('Service Worker unregistered successfully');
-        }
-        console.log('All service workers have been removed');
-      } catch (error) {
-        console.error('Error unregistering service workers:', error);
-      }
-    });
-  }
+  // Do nothing - avoid any service worker code that could cause crashes
+  console.log('Service worker operations skipped');
 };
 
-// Apply critical performance optimizations
+// Apply basic performance optimizations (simplified to prevent app crashes)
 const applyPerformanceOptimizations = () => {
-  // Optimize image rendering
-  document.body.style.imageRendering = "high-quality";
-  
   // Enable smooth scrolling for browsers that support it
   document.documentElement.style.scrollBehavior = "smooth";
   
-  // Setup visual viewport optimizations for mobile
-  if ('visualViewport' in window && window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      document.documentElement.style.height = `${window.visualViewport?.height}px`;
-    });
-  }
-  
-  // Optimize font loading with resource hints for better performance
+  // Basic font optimization
   const fontLink = document.createElement('link');
   fontLink.setAttribute('rel', 'preconnect');
   fontLink.setAttribute('href', 'https://fonts.googleapis.com');
   document.head.appendChild(fontLink);
   
-  const fontGstaticLink = document.createElement('link');
-  fontGstaticLink.setAttribute('rel', 'preconnect');
-  fontGstaticLink.setAttribute('href', 'https://fonts.gstatic.com');
-  fontGstaticLink.setAttribute('crossorigin', 'anonymous');
-  document.head.appendChild(fontGstaticLink);
-  
-  // Load fonts with optimized strategy
+  // Just load the fonts directly to avoid any complicated loading strategies
   const fontStyleLink = document.createElement('link');
   fontStyleLink.setAttribute('rel', 'stylesheet');
-  fontStyleLink.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
-  fontStyleLink.setAttribute('media', 'print');
-  fontStyleLink.setAttribute('onload', "this.media='all'");
+  fontStyleLink.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
   document.head.appendChild(fontStyleLink);
   
-  // Preconnect to boxicons CDN for faster loading
-  const boxiconsPreconnect = document.createElement('link');
-  boxiconsPreconnect.setAttribute('rel', 'preconnect');
-  boxiconsPreconnect.setAttribute('href', 'https://unpkg.com');
-  document.head.appendChild(boxiconsPreconnect);
-  
-  // Load boxicons with optimized strategy
-  const boxiconsLink = document.createElement('link');
-  boxiconsLink.setAttribute('rel', 'stylesheet');
-  boxiconsLink.setAttribute('href', 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
-  boxiconsLink.setAttribute('media', 'print');
-  boxiconsLink.setAttribute('onload', "this.media='all'");
-  document.head.appendChild(boxiconsLink);
-  
-  // Add critical resource hints for faster loading
-  // Preconnect to API server
-  const apiServerPreconnect = document.createElement('link');
-  apiServerPreconnect.setAttribute('rel', 'preconnect');
-  apiServerPreconnect.setAttribute('href', window.location.origin);
-  document.head.appendChild(apiServerPreconnect);
-  
-  // Enable cooperative scheduling with main thread for better perf
-  if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(() => {
-      // Preload critical pages for faster navigation
-      const links = [
-        '/properties',
-        '/#contact',
-      ];
-      
-      links.forEach(href => {
-        const link = document.createElement('link');
-        link.setAttribute('rel', 'prefetch');
-        link.setAttribute('href', href);
-        document.head.appendChild(link);
-      });
-      
-      // Preload API data for common routes
-      void fetch('/api/properties').catch(() => {});
-      void fetch('/api/neighborhoods').catch(() => {});
-    });
-  }
+  // Skip other optimizations that might be causing issues
 };
 
 // Call the initialization functions
