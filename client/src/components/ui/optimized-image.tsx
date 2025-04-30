@@ -6,8 +6,23 @@ import { cn } from '@/lib/utils';
  * Handles paths that might be prefixed with /attached_assets/ or other patterns
  */
 function normalizeImagePath(src: string): string {
-  // CRITICAL BUGFIX: Leave all paths as they are - don't manipulate any paths
-  // The server handles paths with leading slashes correctly
+  // If it's an external URL (starts with http or https), return as is
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    return src;
+  }
+  
+  // Handle attached_assets paths with leading slash
+  if (src.startsWith('/attached_assets/')) {
+    // Remove leading slash to make it relative to root
+    return src.substring(1);
+  }
+  
+  // Handle attached_assets paths without leading slash
+  if (src.startsWith('attached_assets/')) {
+    return src;
+  }
+  
+  // Return the original path for other cases
   return src;
 }
 
@@ -149,11 +164,12 @@ export function OptimizedImage({
   const handleImageError = () => {
     setError(true);
     const normalizedSrc = normalizeImagePath(src);
-    console.error(`Failed to load image: ${src}`);
+    console.error(`Failed to load image: ${src} (normalized path: ${normalizedSrc})`);
     // Log more details to help with debugging
     console.log(`Image details:
       - Original src: ${src}
-      - Full path: ${window.location.origin}${src.startsWith('/') ? src : `/${src}`}
+      - Normalized src: ${normalizedSrc}
+      - Full path: ${window.location.origin}/${normalizedSrc}
     `);
   };
   

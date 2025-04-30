@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { StarIcon, BedDoubleIcon, BathIcon, UsersIcon, ChevronsRightIcon } from 
 import { type AirbnbRental } from "@shared/schema";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { Badge } from "@/components/ui/badge";
 
 interface AirbnbRentalCardProps {
@@ -13,6 +15,24 @@ interface AirbnbRentalCardProps {
 }
 
 export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardProps) {
+  const [imageError, setImageError] = useState<Record<string, boolean>>({});
+
+  // Check if a specific image has an error
+  const hasImageError = (src: string) => imageError[src] === true;
+  
+  // Debug image loading
+  useEffect(() => {
+    console.log('AirbnbRentalCard images:', rental.images);
+    
+    // Check if images can be loaded
+    if (rental.images && rental.images.length > 0) {
+      const testImage = new Image();
+      testImage.onload = () => console.log(`Test image loaded successfully: ${rental.images[0]}`);
+      testImage.onerror = (e) => console.error(`Test image failed to load: ${rental.images[0]}`, e);
+      testImage.src = rental.images[0];
+    }
+  }, [rental.images]);
+
   // Format price with commas
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -20,34 +40,31 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
     maximumFractionDigits: 0,
   }).format(rental.price);
 
-  // Property images
-  const fallbackImages = [
-    "/shiloh-primary.webp", 
-    "/shiloh-building1.jpg", 
-    "/shiloh-building2.jpg"
-  ];
-
   return (
     <Card className={`overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl ${featured ? 'lg:h-full' : ''}`}>
       <div className="relative">
         <Carousel className="w-full">
           <CarouselContent>
-            {fallbackImages.map((image, index) => (
+            {rental.images.map((image, index) => (
               <CarouselItem key={index}>
                 <AspectRatio ratio={4/3} className="bg-muted">
-                  <div className="w-full h-full bg-slate-200 rounded-t-lg relative overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center text-slate-500">
-                      <p>Property photo</p>
-                    </div>
-                    <img
+                  {!hasImageError(image) ? (
+                    <OptimizedImage
                       src={image}
                       alt={`${rental.title} - Image ${index + 1}`}
-                      className="w-full h-full object-cover rounded-t-lg relative z-10"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
+                      className="w-full h-full object-cover rounded-t-lg"
+                      onError={() => {
+                        console.log(`Error loading image at ${index}:`, image);
+                        setImageError(prev => ({ ...prev, [image]: true }));
                       }}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={index === 0 && featured}
                     />
-                  </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
+                      Image unavailable
+                    </div>
+                  )}
                 </AspectRatio>
               </CarouselItem>
             ))}

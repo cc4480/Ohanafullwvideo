@@ -9,7 +9,6 @@ import {
   UsersIcon, 
   SlidersHorizontalIcon,
   XIcon,
-  PlayIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +35,6 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import APIFallback from "@/components/APIFallback";
 import AirbnbRentalCard from "@/components/airbnb/AirbnbRentalCard";
-import VideoSection from "@/components/airbnb/VideoSection";
 import SafeHelmet from "@/components/SafeHelmet";
 import SEOBreadcrumbs from "@/components/SEOBreadcrumbs";
 import SimpleBreadcrumbs from "@/components/SimpleBreadcrumbs";
@@ -159,36 +157,6 @@ export default function AirbnbRentals() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-3">Vacation Rentals</h1>
         <p className="text-muted-foreground">Find the perfect place to stay in Laredo</p>
-      </div>
-      
-      {/* Featured Section with Visible Content */}
-      <div className="mb-10 border-2 border-primary/20 rounded-xl p-1">
-        <section className="w-full bg-slate-50 dark:bg-slate-900 py-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="mb-10 text-center">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Experience Laredo Like Never Before</h2>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  Take a virtual tour of our premium vacation rentals and discover the perfect getaway for your next visit to Laredo.
-                </p>
-              </div>
-              
-              {/* Placeholder while video functionality is fixed */}
-              <div className="relative rounded-xl overflow-hidden shadow-2xl bg-slate-200 dark:bg-slate-800">
-                <div className="aspect-video flex flex-col items-center justify-center p-6 text-center">
-                  <div className="mb-4 p-4 rounded-full bg-primary/10 text-primary">
-                    <PlayIcon className="h-10 w-10" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">Video Tour Coming Soon</h3>
-                  <p className="text-muted-foreground max-w-md">
-                    We're preparing a beautiful video tour of our premium vacation rentals. 
-                    Check back soon to see our properties in action!
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
       
       {/* Filters section */}

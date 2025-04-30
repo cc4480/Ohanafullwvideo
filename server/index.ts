@@ -4,19 +4,34 @@ import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import helmet from "helmet";
 import { db } from "./db";
-import fs from "fs";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Use more permissive Helmet configuration for both environments
-app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false,
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginOpenerPolicy: false
-}));
+// Use Helmet for production security headers
+if (process.env.NODE_ENV === 'production') {
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://fonts.googleapis.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https://*"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://unpkg.com"],
+        connectSrc: ["'self'", "https://api.ohanarealty.com"],
+        frameSrc: ["'self'", "https://*.stripe.com"],
+        objectSrc: ["'none'"]
+      }
+    },
+    crossOriginEmbedderPolicy: false // Allow embedding of cross-origin resources
+  }));
+} else {
+  // Less restrictive security for development
+  app.use(helmet({
+    contentSecurityPolicy: false
+  }));
+}
 
 // Health check endpoint (useful for deployment monitoring)
 app.get('/api/health', (req, res) => {
@@ -29,29 +44,12 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Enable CORS for development
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  
-  next();
-});
-
 // Security headers are now being set by Helmet above
 
 // Serve static files from the client/public directory
 app.use(express.static(path.join(process.cwd(), "client/public"), {
   // Add cache control headers for static assets in production
   setHeaders: (res, filePath) => {
-    // Add CORS headers for all static files
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    
     if (process.env.NODE_ENV === 'production') {
       // Cache images, fonts, and assets for 1 week (in seconds)
       if (filePath.match(/\.(jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
@@ -62,14 +60,6 @@ app.use(express.static(path.join(process.cwd(), "client/public"), {
         res.setHeader('Cache-Control', 'public, max-age=86400');
       }
     }
-  }
-}));
-
-// Serve files from public directory
-app.use(express.static(path.join(process.cwd(), "public"), {
-  setHeaders: (res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   }
 }));
 
