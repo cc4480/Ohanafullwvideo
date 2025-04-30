@@ -37,6 +37,10 @@ interface SimplePropertyStructuredDataProps {
  * Creates structured data JSON-LD for a real estate property listing
  * that follows Schema.org standards for optimal search engine visibility
  */
+export function generatePropertyStructuredData(props: SimplePropertyStructuredDataProps) {
+  return generateStructuredData(props);
+}
+
 export function generateStructuredData(props: SimplePropertyStructuredDataProps) {
   // Handle property-based data (original implementation)
   if (props.property) {

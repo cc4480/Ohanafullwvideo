@@ -14,7 +14,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 // Import our enterprise-grade SEO components
 import SafeHelmet from "../components/SafeHelmet";
 import SimpleBreadcrumbs from "../components/SimpleBreadcrumbs";
-import { generatePropertyStructuredData } from "../components/SimplePropertyStructuredData";
+import { generateStructuredData as generatePropertyStructuredData } from "../components/SimplePropertyStructuredData";
 import SEOLocationMap from "@/components/SEOLocationMap";
 import { getPropertyLatitude, getPropertyLongitude, getPropertyBedrooms, getPropertyBathrooms } from "@/types/property";
 import ScheduleViewingModal from "@/components/properties/ScheduleViewingModal";
