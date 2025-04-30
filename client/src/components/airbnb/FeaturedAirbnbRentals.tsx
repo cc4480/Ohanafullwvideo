@@ -50,23 +50,28 @@ export function FeaturedAirbnbRentals({
             </div>
           </div>
         ) : (
-          // Main video player
-          <VideoPlayer
-            src="/videos/property-showcase.mp4"
-            autoPlay={true}
-            muted={true}
-            loop={true}
-            controls={true}
-            className="w-full h-full object-cover"
-            onLoadedData={() => {
-              console.log("✅ Video loaded successfully");
-              setVideoLoaded(true);
-            }}
-            onError={() => {
-              console.error("❌ Video failed to load");
-              setVideoError(true);
-            }}
-          />
+          // Main video player with direct video element for better compatibility
+          <div className="w-full h-full">
+            <video 
+              className="w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              controls
+              playsInline
+              onLoadedData={() => {
+                console.log("✅ Video loaded successfully");
+                setVideoLoaded(true);
+              }}
+              onError={(e) => {
+                console.error("❌ Video failed to load", e);
+                setVideoError(true);
+              }}
+            >
+              <source src="/videos/property-showcase.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
         )}
         
         {/* Status indicator */}
