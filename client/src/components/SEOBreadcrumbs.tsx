@@ -7,12 +7,22 @@ interface Breadcrumb {
   /**
    * The label to display for the breadcrumb
    */
-  label: string;
+  label?: string;
+  
+  /**
+   * Alternative to label - The name to display for the breadcrumb
+   */
+  name?: string;
   
   /**
    * The URL path for the breadcrumb
    */
-  path: string;
+  path?: string;
+  
+  /**
+   * Alternative to path - The href for the breadcrumb
+   */
+  href?: string;
   
   /**
    * Optional icon component to display before the label
@@ -79,10 +89,21 @@ export default function SEOBreadcrumbs({
   homeIcon = null,
   separator = <ChevronRight className="h-4 w-4 mx-2 opacity-50" />
 }: SEOBreadcrumbsProps) {
+  // Helper to normalize breadcrumb items and ensure required properties
+  const normalizeItem = (item: Breadcrumb): { label: string; path: string; icon?: React.ReactNode } => {
+    return {
+      label: item.label || item.name || 'Link',
+      path: item.path || item.href || '/',
+      icon: item.icon
+    };
+  };
+  
   // Prepend home if requested
+  const homeItem = { label: homeText, path: '/', icon: homeIcon };
+  const normalizedItems = items.map(normalizeItem);
   const allItems = includeHome 
-    ? [{ label: homeText, path: '/', icon: homeIcon }, ...items]
-    : items;
+    ? [homeItem, ...normalizedItems]
+    : normalizedItems;
     
   // Generate structured data
   const structuredDataItems = allItems.map(item => ({
@@ -102,10 +123,13 @@ export default function SEOBreadcrumbs({
         <ol className="flex items-center flex-wrap text-sm">
           {allItems.map((item, index) => {
             const isLast = index === allItems.length - 1;
+            // Ensure path is always a string
+            const itemPath = item.path || item.href || '/';
+            const itemLabel = item.label || item.name || 'Link';
             
             return (
               <li 
-                key={item.path} 
+                key={`breadcrumb-${index}`} 
                 className={`breadcrumb-item ${isLast ? 'font-semibold' : ''}`}
                 itemProp="itemListElement" 
                 itemScope
@@ -119,17 +143,17 @@ export default function SEOBreadcrumbs({
                     aria-current="page"
                   >
                     {item.icon && <span className="mr-1">{item.icon}</span>}
-                    {item.label}
+                    {itemLabel}
                   </span>
                 ) : (
                   <>
                     <Link 
-                      href={item.path}
+                      href={itemPath}
                       className="text-primary hover:text-primary/80 flex items-center" 
                       itemProp="item"
                     >
                       {item.icon && <span className="mr-1">{item.icon}</span>}
-                      <span itemProp="name">{item.label}</span>
+                      <span itemProp="name">{itemLabel}</span>
                     </Link>
                     {/* Render the separator except for the last item */}
                     {!isLast && separator}
@@ -145,7 +169,14 @@ export default function SEOBreadcrumbs({
       </nav>
       
       {/* Include JSON-LD structured data */}
-      {includeStructuredData && <BreadcrumbStructuredData items={structuredDataItems} />}
+      {includeStructuredData && (
+        <BreadcrumbStructuredData 
+          items={structuredDataItems.map(item => ({
+            name: item.name || 'Link',
+            item: item.item
+          }))} 
+        />
+      )}
     </>
   );
 }
