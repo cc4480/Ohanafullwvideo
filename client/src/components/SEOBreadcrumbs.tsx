@@ -123,9 +123,6 @@ export default function SEOBreadcrumbs({
         <ol className="flex items-center flex-wrap text-sm">
           {allItems.map((item, index) => {
             const isLast = index === allItems.length - 1;
-            // Ensure path is always a string
-            const itemPath = item.path || item.href || '/';
-            const itemLabel = item.label || item.name || 'Link';
             
             return (
               <li 
@@ -143,17 +140,17 @@ export default function SEOBreadcrumbs({
                     aria-current="page"
                   >
                     {item.icon && <span className="mr-1">{item.icon}</span>}
-                    {itemLabel}
+                    {item.label}
                   </span>
                 ) : (
                   <>
                     <Link 
-                      href={itemPath}
+                      href={item.path}
                       className="text-primary hover:text-primary/80 flex items-center" 
                       itemProp="item"
                     >
                       {item.icon && <span className="mr-1">{item.icon}</span>}
-                      <span itemProp="name">{itemLabel}</span>
+                      <span itemProp="name">{item.label}</span>
                     </Link>
                     {/* Render the separator except for the last item */}
                     {!isLast && separator}
@@ -171,10 +168,7 @@ export default function SEOBreadcrumbs({
       {/* Include JSON-LD structured data */}
       {includeStructuredData && (
         <BreadcrumbStructuredData 
-          items={structuredDataItems.map(item => ({
-            name: item.name || 'Link',
-            item: item.item
-          }))} 
+          items={structuredDataItems} 
         />
       )}
     </>
