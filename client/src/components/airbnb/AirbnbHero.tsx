@@ -4,27 +4,28 @@ import OhanaVideoPlayer from '@/components/ui/OhanaVideoPlayer';
 export function AirbnbHero() {
   const animatedBorderRef = useRef<HTMLDivElement>(null);
   
-  // Create the animated border effect
+  // Create the animated border effect with BRIGHTER glow
   useEffect(() => {
     const borderElement = animatedBorderRef.current;
     if (!borderElement) return;
     
-    // Create a pulsing animation
+    // Create a more intense pulsing animation
     const pulseAnimation = () => {
-      let opacity = 0.3;
+      let opacity = 0.5; // Higher starting opacity
       let increasing = true;
       const interval = setInterval(() => {
         if (increasing) {
-          opacity += 0.01;
-          if (opacity >= 0.6) increasing = false;
+          opacity += 0.015; // Faster increase
+          if (opacity >= 0.9) increasing = false; // Higher max opacity
         } else {
-          opacity -= 0.01;
-          if (opacity <= 0.3) increasing = true;
+          opacity -= 0.015;
+          if (opacity <= 0.5) increasing = true;
         }
         if (borderElement) {
-          borderElement.style.boxShadow = `0 0 30px 5px rgba(59, 130, 246, ${opacity})`;
+          // Brighter, more intense glow with wider spread
+          borderElement.style.boxShadow = `0 0 40px 10px rgba(59, 130, 246, ${opacity}), 0 0 80px 20px rgba(79, 70, 229, ${opacity * 0.6})`;
         }
-      }, 50);
+      }, 40); // Slightly faster animation
       
       return () => clearInterval(interval);
     };
@@ -40,10 +41,10 @@ export function AirbnbHero() {
       <div className="absolute -bottom-20 -right-20 w-[25vw] h-[25vw] rounded-full bg-indigo-500/10 blur-3xl animate-pulse-slow animation-delay-2000"></div>
       
       <div className="w-full min-h-[90vh] overflow-hidden relative bg-gradient-to-b from-black via-black to-gray-900 z-10">
-        {/* Animated border */}
+        {/* Animated border - BRIGHTER */}
         <div 
           ref={animatedBorderRef}
-          className="absolute m-4 inset-0 rounded-xl transition-all duration-500 opacity-80 z-0"
+          className="absolute m-4 inset-0 rounded-xl transition-all duration-500 opacity-90 z-0 ring-4 ring-blue-500/50"
         ></div>
         
         {/* Video container with subtle animations */}

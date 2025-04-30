@@ -49,15 +49,15 @@ export function FeaturedAirbnbRentals({
 
         <div className={`w-full max-w-5xl mx-auto relative transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           {/* Video container with subtle animations and glow effect */}
-          <div className="relative rounded-2xl overflow-hidden shadow-[0_0_25px_rgba(59,130,246,0.3)] h-[70vh] transform transition-transform duration-700 hover:scale-[1.01]">
-            {/* Animated border */}
-            <div className="absolute inset-0 z-0 bg-gradient-to-tr from-blue-600/30 via-indigo-500/20 to-purple-600/30 rounded-2xl animate-pulse-slow"></div>
+          <div className="relative rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(79,70,229,0.5)] h-[70vh] transform transition-transform duration-700 hover:scale-[1.01]">
+            {/* Animated border - BRIGHTER */}
+            <div className="absolute inset-0 z-0 bg-gradient-to-tr from-blue-600/50 via-indigo-500/40 to-purple-600/50 rounded-2xl animate-pulse-slow shadow-[0_0_40px_15px_rgba(79,70,229,0.4)] ring-2 ring-blue-400/70"></div>
             
-            {/* Corners decoration */}
-            <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-blue-400/50 rounded-tl-2xl"></div>
-            <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-indigo-400/50 rounded-tr-2xl"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-blue-400/50 rounded-bl-2xl"></div>
-            <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-indigo-400/50 rounded-br-2xl"></div>
+            {/* Corners decoration - BRIGHTER */}
+            <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-blue-400 rounded-tl-2xl z-10"></div>
+            <div className="absolute top-0 right-0 w-20 h-20 border-t-4 border-r-4 border-indigo-400 rounded-tr-2xl z-10"></div>
+            <div className="absolute bottom-0 left-0 w-20 h-20 border-b-4 border-l-4 border-blue-400 rounded-bl-2xl z-10"></div>
+            <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-indigo-400 rounded-br-2xl z-10"></div>
             
             <OhanaVideoPlayer 
               src="/api/video/ohana" 
