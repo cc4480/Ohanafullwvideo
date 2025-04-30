@@ -237,7 +237,7 @@ export default function Hero() {
   return (
     <section 
       ref={sectionRef}
-      className="relative bg-neutral-900 h-screen flex items-center overflow-hidden transition-transform duration-500 ease-out -mt-16 sm:-mt-20"
+      className="relative bg-neutral-900 min-h-screen flex items-center overflow-hidden transition-transform duration-500 ease-out pt-16 sm:pt-20"
       style={{ 
         transformOrigin: 'center center',
         willChange: 'transform, scale'
@@ -299,7 +299,7 @@ export default function Hero() {
         </div>
         
         {/* Carousel indicators */}
-        <div className="absolute bottom-20 left-0 right-0 z-20 flex justify-center gap-2">
+        <div className="absolute bottom-28 sm:bottom-20 left-0 right-0 z-20 flex justify-center gap-2">
           {carouselImages.map((_, index) => (
             <button
               key={index}
@@ -338,8 +338,8 @@ export default function Hero() {
       {/* Removed background logo */}
       
       {/* Content - completely rebuilt for mobile */}
-      <div className="container mx-auto px-4 relative z-20 py-2 md:py-8" ref={contentRef}>
-        <div className="max-w-3xl mt-12 sm:mt-0">
+      <div className="container mx-auto px-4 relative z-20 py-6 md:py-8" ref={contentRef}>
+        <div className="max-w-3xl mt-8 sm:mt-0">
           <div className="mb-4 opacity-90">
             <span className="inline-block px-4 py-1 bg-secondary/90 text-white rounded-full text-sm tracking-wide font-semibold shadow-lg animate-slide-down backdrop-blur-sm">
               OHANA REALTY - ESTABLISHED IN LAREDO
@@ -393,17 +393,17 @@ export default function Hero() {
             style={{ animationDelay: "0.6s", willChange: 'transform, opacity' }}
           >
             {/* Grid layout for mobile, flex for desktop */}
-            <div className="grid grid-cols-3 sm:flex sm:flex-wrap sm:justify-start gap-2 sm:gap-3 md:gap-6">
+            <div className="grid grid-cols-3 sm:flex sm:flex-wrap sm:justify-start gap-3 sm:gap-4 md:gap-6">
               {/* Each stat box with fixed width and proper spacing */}
-              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[90px] sm:min-w-[100px] text-center">
+              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[85px] sm:min-w-[100px] text-center">
                 <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">27+</p>
                 <p className="text-white text-xs md:text-sm whitespace-nowrap">Years Exp.</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[90px] sm:min-w-[100px] text-center">
+              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[85px] sm:min-w-[100px] text-center">
                 <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">150+</p>
                 <p className="text-white text-xs md:text-sm whitespace-nowrap">Properties</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[90px] sm:min-w-[100px] text-center">
+              <div className="bg-white/10 backdrop-blur-sm p-2 md:p-3 rounded-lg transform-gpu hover:translate-y-[-2px] transition-transform duration-300 w-[85px] sm:min-w-[100px] text-center">
                 <p className="text-secondary font-bold text-lg sm:text-xl md:text-2xl">100%</p>
                 <p className="text-white text-xs md:text-sm whitespace-nowrap">Satisfaction</p>
               </div>
