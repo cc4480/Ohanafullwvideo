@@ -22,6 +22,13 @@ function normalizeImagePath(src: string): string {
     return src;
   }
   
+  // Handle paths with leading slash (like /shiloh-main.jpg)
+  // These are located in the public directory
+  if (src.startsWith('/') && !src.startsWith('/api/') && !src.startsWith('/images/')) {
+    // Remove the leading slash to access from the root public directory
+    return src.substring(1);
+  }
+  
   // Return the original path for other cases
   return src;
 }

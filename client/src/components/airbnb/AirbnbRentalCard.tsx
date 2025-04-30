@@ -26,9 +26,21 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
     
     // Check if images can be loaded
     if (rental.images && rental.images.length > 0) {
+      // Test first image loading
       const testImage = new Image();
       testImage.onload = () => console.log(`Test image loaded successfully: ${rental.images[0]}`);
-      testImage.onerror = (e) => console.error(`Test image failed to load: ${rental.images[0]}`, e);
+      testImage.onerror = (e) => {
+        console.error(`Test image failed to load: ${rental.images[0]}`, e);
+        // Log additional information to help with debugging
+        console.log(`Image path details:
+          - Original path: ${rental.images[0]}
+          - Relative path (no leading slash): ${rental.images[0].startsWith('/') ? rental.images[0].substring(1) : rental.images[0]}
+          - Full URL: ${window.location.origin}${rental.images[0].startsWith('/') ? rental.images[0] : `/${rental.images[0]}`}
+        `);
+      };
+      
+      // Set crossOrigin to anonymous to handle potential CORS issues
+      testImage.crossOrigin = "anonymous";
       testImage.src = rental.images[0];
     }
   }, [rental.images]);
@@ -55,10 +67,18 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
                       className="w-full h-full object-cover rounded-t-lg"
                       onError={() => {
                         console.log(`Error loading image at ${index}:`, image);
+                        // Try to help with debugging the specific image path issue
+                        const originalPath = image;
+                        const strippedPath = image.startsWith('/') ? image.substring(1) : image;
+                        console.log(`Image path details for failed load:
+                          - Original path: ${originalPath}
+                          - Path without leading slash: ${strippedPath}
+                        `);
                         setImageError(prev => ({ ...prev, [image]: true }));
                       }}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       priority={index === 0 && featured}
+                      backgroundColor="#f5f5f5"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
