@@ -9,6 +9,20 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Add explicit CORS headers for development
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
+
 // Use Helmet for production security headers
 if (process.env.NODE_ENV === 'production') {
   app.use(helmet({
@@ -19,7 +33,7 @@ if (process.env.NODE_ENV === 'production') {
         styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https://*"],
         fontSrc: ["'self'", "https://fonts.gstatic.com", "https://unpkg.com"],
-        connectSrc: ["'self'", "https://api.ohanarealty.com"],
+        connectSrc: ["'self'", "https://api.ohanarealty.com", "*"],
         frameSrc: ["'self'", "https://*.stripe.com"],
         objectSrc: ["'none'"]
       }
@@ -29,7 +43,10 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   // Less restrictive security for development
   app.use(helmet({
-    contentSecurityPolicy: false
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginEmbedderPolicy: false
   }));
 }
 

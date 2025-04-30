@@ -28,34 +28,29 @@ const initializeTheme = () => {
 const registerServiceWorker = () => {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
+      // First unregister any existing service workers to fix potential issues
       try {
-        // Register the service worker with scope
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let registration of registrations) {
+          await registration.unregister();
+          console.log('Service Worker unregistered successfully');
+        }
+        
+        // Then register the simplified service worker
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/',
+          updateViaCache: 'none' // Don't use cached version
         });
         
         console.log('Service Worker registered successfully with scope:', registration.scope);
         
-        // Check if there's a waiting service worker (update available)
-        if (registration.waiting) {
-          // Notify user about update if needed
-          console.log('New version available! Ready to update.');
+        // Force it to activate immediately
+        if (registration.active) {
+          registration.active.postMessage({ type: 'SKIP_WAITING' });
         }
         
-        // Handle updates - when a new service worker has installed and is waiting
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('New content is available, please refresh.');
-              }
-            });
-          }
-        });
       } catch (error) {
-        console.error('Service Worker registration failed:', error);
+        console.error('Service Worker operation failed:', error);
       }
     });
     
