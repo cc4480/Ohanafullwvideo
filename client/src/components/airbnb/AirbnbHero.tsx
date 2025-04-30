@@ -47,16 +47,10 @@ export function AirbnbHero() {
           className="absolute m-4 inset-0 rounded-xl transition-all duration-500 opacity-90 z-0 ring-4 ring-blue-500/50"
         ></div>
         
-        {/* Video container with subtle animations */}
-        <div className="absolute inset-0 m-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] flex items-center justify-center rounded-xl overflow-hidden">
-          <div className="w-full h-full relative rounded-xl overflow-hidden transform transition-transform duration-700 hover:scale-[1.01]">
-            <OhanaVideoPlayer
-              src="/api/video/ohana/highperf"
-              autoPlay={true}
-              muted={true}
-              loop={true}
-              className="w-full h-full object-contain bg-black/90 shadow-2xl"
-            />
+        {/* Background gradient - replacing video */}
+        <div className="absolute inset-0 m-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] flex items-center justify-center rounded-xl overflow-hidden bg-gradient-to-tr from-gray-900 via-indigo-900/30 to-blue-900/20">
+          <div className="w-full h-full relative rounded-xl overflow-hidden transform transition-transform duration-700 hover:scale-[1.01] flex items-center justify-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-white text-center px-8 drop-shadow-lg">Exceptional Airbnb<br />Experiences in Laredo</h1>
           </div>
         </div>
         
