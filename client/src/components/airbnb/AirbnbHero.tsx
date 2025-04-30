@@ -6,13 +6,18 @@ export function AirbnbHero() {
       <div className="w-full h-[80vh] overflow-hidden relative">
         <div className="absolute inset-0 w-full h-full">
           <video
-            src="/OHANAVIDEOMASTER.mp4"
             autoPlay
             muted
             loop
             playsInline
-            className="w-full h-full object-cover"
-          />
+            controls
+            width="100%"
+            height="100%"
+            style={{ objectFit: 'cover' }}
+          >
+            <source src="/OHANAVIDEOMASTER.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
     </section>
