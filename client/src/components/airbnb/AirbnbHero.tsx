@@ -59,21 +59,7 @@ export function AirbnbHero() {
           </div>
         </div>
         
-        {/* Floating particles effect */}
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(8)].map((_, i) => (
-            <div 
-              key={i}
-              className={`absolute w-2 h-2 rounded-full bg-blue-500/30 animate-float-slow`}
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${8 + Math.random() * 10}s`
-              }}
-            />
-          ))}
-        </div>
+        {/* Removed floating particles effect */}
         
         {/* Enhanced scroll indicator */}
         <div className="absolute bottom-8 left-0 right-0 flex justify-center z-20">

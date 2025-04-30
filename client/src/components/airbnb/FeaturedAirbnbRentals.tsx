@@ -69,21 +69,7 @@ export function FeaturedAirbnbRentals({
             />
           </div>
           
-          {/* Floating particles */}
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(6)].map((_, i) => (
-              <div 
-                key={i}
-                className={`absolute w-3 h-3 rounded-full bg-indigo-500/20 animate-float-slow`}
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 5}s`,
-                  animationDuration: `${8 + Math.random() * 10}s`
-                }}
-              />
-            ))}
-          </div>
+          {/* Removed floating particles */}
         </div>
         
         {/* CTA button */}
