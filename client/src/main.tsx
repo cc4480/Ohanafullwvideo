@@ -24,42 +24,20 @@ const initializeTheme = () => {
   }
 };
 
-// Register service worker for offline support and faster loading
-const registerServiceWorker = () => {
+// Unregister all service workers to fix ERR_BLOCKED_BY_RESPONSE issues
+const unregisterServiceWorkers = () => {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
-      // First unregister any existing service workers to fix potential issues
       try {
+        // Unregister all service workers
         const registrations = await navigator.serviceWorker.getRegistrations();
         for (let registration of registrations) {
           await registration.unregister();
           console.log('Service Worker unregistered successfully');
         }
-        
-        // Then register the simplified service worker
-        const registration = await navigator.serviceWorker.register('/sw.js', {
-          scope: '/',
-          updateViaCache: 'none' // Don't use cached version
-        });
-        
-        console.log('Service Worker registered successfully with scope:', registration.scope);
-        
-        // Force it to activate immediately
-        if (registration.active) {
-          registration.active.postMessage({ type: 'SKIP_WAITING' });
-        }
-        
+        console.log('All service workers have been removed');
       } catch (error) {
-        console.error('Service Worker operation failed:', error);
-      }
-    });
-    
-    // Handle service worker updates
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
+        console.error('Error unregistering service workers:', error);
       }
     });
   }
@@ -147,7 +125,7 @@ const applyPerformanceOptimizations = () => {
 // Call the initialization functions
 initializeTheme();
 applyPerformanceOptimizations();
-registerServiceWorker();
+unregisterServiceWorkers();
 
 // Create root with optimized rendering settings
 const root = createRoot(document.getElementById("root")!, {
