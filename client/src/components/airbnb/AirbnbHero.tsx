@@ -72,10 +72,7 @@ export function AirbnbHero() {
   return (
     <section className="relative w-full">
       {/* Video Background - Full screen with debug info */}
-      <div 
-        className="w-full h-[80vh] overflow-hidden relative rounded-lg cursor-pointer" 
-        onClick={togglePlayback}
-      >
+      <div className="w-full h-[80vh] overflow-hidden relative rounded-lg">
         {videoError ? (
           // Fallback to static image if video errors
           <div className="absolute inset-0 bg-cover bg-center flex items-center justify-center" style={{ backgroundImage: `url(${fallbackImageUrl})` }}>
@@ -90,6 +87,7 @@ export function AirbnbHero() {
             <video
               ref={videoRef}
               src="/videos/property-showcase.mp4"
+              autoPlay={true}
               muted={true}
               loop={true}
               playsInline
@@ -97,6 +95,14 @@ export function AirbnbHero() {
               onLoadedData={() => {
                 console.log("Video loaded in AirbnbHero");
                 setVideoLoaded(true);
+                setIsPlaying(true);
+                
+                // Make sure video plays automatically
+                if (videoRef.current) {
+                  videoRef.current.play().catch(err => {
+                    console.error("Error autoplaying video:", err);
+                  });
+                }
               }}
               onError={() => {
                 console.error("Video failed to load in AirbnbHero");
@@ -107,20 +113,7 @@ export function AirbnbHero() {
               Your browser does not support the video tag.
             </video>
             
-            {/* Play/Pause overlay - only show when not playing */}
-            {!isPlaying && videoLoaded && (
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                <button 
-                  onClick={togglePlayback}
-                  className="bg-white/80 text-primary hover:bg-white transition-colors rounded-full p-6 transform-gpu hover:scale-105 transition-transform duration-300"
-                  aria-label="Play video"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"></polygon>
-                  </svg>
-                </button>
-              </div>
-            )}
+            {/* No play/pause overlay needed for autoplay */}
           </div>
         )}
         
@@ -129,12 +122,7 @@ export function AirbnbHero() {
           {videoLoaded ? (isPlaying ? "Playing ▶" : "Paused ⏸") : videoError ? "Video Error ✗" : "Loading..."}
         </div>
         
-        {/* Instructions */}
-        {videoLoaded && !isPlaying && (
-          <div className="absolute bottom-4 left-0 right-0 text-center text-white bg-black/40 py-2">
-            Click anywhere to play/pause video
-          </div>
-        )}
+        {/* No instructions needed for autoplay */}
       </div>
     </section>
   );

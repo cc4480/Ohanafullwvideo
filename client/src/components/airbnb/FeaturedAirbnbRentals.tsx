@@ -1,8 +1,4 @@
-import React, { useState, useRef } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogClose } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { VideoPlayer } from "@/components/ui/video-player";
+import React, { useRef } from "react";
 
 interface FeaturedAirbnbRentalsProps {
   title?: string;
@@ -16,25 +12,8 @@ export function FeaturedAirbnbRentals({
   // Create a direct link to the video file for download
   const videoUrl = "/property-video.mp4";
   
-  // State to track if the video modal is open
-  const [videoModalOpen, setVideoModalOpen] = useState(false);
-  
   // Reference to the video element
   const videoRef = useRef<HTMLVideoElement>(null);
-  
-  // Function to play video in modal
-  const openVideoModal = () => {
-    setVideoModalOpen(true);
-  };
-  
-  // Function to handle modal close
-  const handleModalClose = () => {
-    setVideoModalOpen(false);
-    // Ensure video stops playing when modal is closed
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
-  };
 
   return (
     <section className="py-12 px-4 md:px-8 max-w-7xl mx-auto">
@@ -44,62 +23,29 @@ export function FeaturedAirbnbRentals({
       </div>
 
       <div className="w-full max-w-5xl mx-auto h-[60vh] overflow-hidden relative rounded-lg bg-gray-100">
-        {/* Use a static image as a thumbnail with video play button overlay */}
-        <div className="absolute inset-0">
-          <img 
-            src="/shiloh-primary.webp" 
-            alt="Property Video Thumbnail" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center">
-            <button 
-              onClick={openVideoModal}
-              className="bg-white text-primary hover:bg-white/90 transition-colors rounded-full p-6 mb-4"
-              aria-label="Play video"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"></polygon>
-              </svg>
-            </button>
-            <p className="text-white text-xl font-semibold">Watch Property Video</p>
-            <p className="text-white/80 text-sm mt-2">Click to play video</p>
-          </div>
-        </div>
+        {/* Directly show the video with autoplay */}
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          autoPlay={true}
+          muted={true}
+          loop={true}
+          playsInline
+          className="w-full h-full object-cover"
+          controls={false}
+          onLoadedData={() => {
+            console.log("Video loaded in FeaturedAirbnbRentals");
+          }}
+          onError={(e) => {
+            console.error("Error loading video:", e);
+          }}
+        >
+          <source src={videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
 
-      {/* Video Modal Dialog */}
-      <Dialog open={videoModalOpen} onOpenChange={handleModalClose}>
-        <DialogContent className="max-w-4xl h-[80vh] overflow-hidden p-0 bg-black">
-          <DialogTitle className="sr-only">Property Video</DialogTitle>
-          <DialogDescription className="sr-only">Watch property tour video</DialogDescription>
-          
-          <div className="relative w-full h-full">
-            <video 
-              ref={videoRef}
-              className="w-full h-full object-contain"
-              src={videoUrl}
-              autoPlay={true}
-              muted={false}
-              loop={false}
-              controls={true}
-              playsInline
-            >
-              <source src={videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            
-            <DialogClose asChild>
-              <Button 
-                className="absolute top-4 right-4 rounded-full bg-black/50 hover:bg-black/70 text-white" 
-                size="icon"
-                aria-label="Close video"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogClose>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* No modal needed since we're showing the video directly */}
 
       <div className="mt-6 text-center">
         <a 
