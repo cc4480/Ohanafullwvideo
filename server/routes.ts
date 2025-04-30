@@ -28,6 +28,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }));
   
+  // Serve images directory directly to match database paths
+  app.use('/images', express.static(path.join(process.cwd(), 'public/images'), {
+    maxAge: 31536000000, // Cache for 1 year in milliseconds
+    immutable: true,
+    setHeaders: (res) => {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }));
+
+  
   // Initialize database with sample data
   try {
     console.log("Initializing database with sample data...");
