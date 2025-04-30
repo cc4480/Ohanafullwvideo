@@ -310,6 +310,12 @@ export default function PropertyDetails({ id }: { id: number }) {
                     height={600}
                     onClick={() => Array.isArray(property.images) && openFullScreenViewer(property.images.indexOf(activeImage))}
                     style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
+                    onError={(e) => {
+                      // Fallback for failed images
+                      console.log('Image failed to load:', activeImage);
+                      (e.target as HTMLImageElement).src = "https://placehold.co/800x600/slate/white?text=Image+Not+Available";
+                      (e.target as HTMLImageElement).alt = "Image not available";
+                    }}
                   />
                   
                   {/* Fullscreen button overlay - Fixed button appearance and text */}
@@ -371,6 +377,11 @@ export default function PropertyDetails({ id }: { id: number }) {
                           className="w-full h-14 sm:h-20 object-cover transform-gpu"
                           style={{ backfaceVisibility: 'hidden' }}
                           aria-hidden="true"
+                          onError={(e) => {
+                            // Fallback for failed thumbnail images
+                            console.log('Thumbnail image failed to load:', image);
+                            (e.target as HTMLImageElement).src = "https://placehold.co/400x300/slate/white?text=No+Image";
+                          }}
                         />
                         
                         {/* Thumbnail overlay with fullscreen option */}
