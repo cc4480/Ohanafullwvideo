@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * Utility function to normalize image paths
- * Handles paths that might be prefixed with /attached_assets/ or other patterns
+ * Handles paths that might be prefixed with a leading slash or other patterns
  */
 function normalizeImagePath(src: string): string {
   // If it's an external URL (starts with http or https), return as is
@@ -20,6 +20,13 @@ function normalizeImagePath(src: string): string {
   // Handle attached_assets paths without leading slash
   if (src.startsWith('attached_assets/')) {
     return src;
+  }
+  
+  // Handle paths with leading slash (used in Airbnb rentals)
+  if (src.startsWith('/') && !src.startsWith('//')) {
+    // Remove leading slash for paths like "/shiloh-main.jpg"
+    console.log(`Normalizing path with leading slash: ${src} -> ${src.substring(1)}`);
+    return src.substring(1);
   }
   
   // Return the original path for other cases

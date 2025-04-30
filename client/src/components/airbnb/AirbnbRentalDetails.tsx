@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { 
   BedDoubleIcon, 
@@ -9,7 +9,8 @@ import {
   ChevronDownIcon, 
   ChevronUpIcon,
   CheckIcon,
-  CalendarIcon
+  CalendarIcon,
+  AlertCircleIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -31,6 +32,10 @@ interface AirbnbRentalDetailsProps {
 export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
   const [expandedDescription, setExpandedDescription] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<Record<string, boolean>>({});
+  
+  // Check if a specific image has an error
+  const hasImageError = (src: string) => imageError[src] === true;
   
   // Fetch rental details
   const {
@@ -49,6 +54,13 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
       return response.json();
     },
   });
+  
+  // Log image details for debugging
+  useEffect(() => {
+    if (rental?.images && rental.images.length > 0) {
+      console.log('AirbnbRentalDetails images:', rental.images);
+    }
+  }, [rental?.images]);
 
   // Format price with commas
   const formattedPrice = rental ? new Intl.NumberFormat('en-US', {
