@@ -139,7 +139,7 @@ export default function AirbnbRentals() {
   });
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <ScrollToTop />
       
       <SafeHelmet
@@ -151,7 +151,7 @@ export default function AirbnbRentals() {
       {/* Video Hero Section */}
       <AirbnbHero />
       
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 w-full">
         <SimpleBreadcrumbs
           items={[
             { label: "Vacation Rentals", path: "/airbnb" }
