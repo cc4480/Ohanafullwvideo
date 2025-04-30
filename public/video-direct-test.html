@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct Video Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .video-container {
+      position: relative;
+      width: 100%;
+      margin-bottom: 50px;
+    }
+    video {
+      width: 100%;
+      display: block;
+      border: 1px solid #ddd;
+    }
+    p {
+      margin-top: 10px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Direct Video Test Page</h1>
+  
+  <div class="video-container">
+    <h2>Test 1: Direct video tag with autoplay</h2>
+    <video autoplay muted loop controls>
+      <source src="/property-video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <p>Path: /property-video.mp4</p>
+  </div>
+  
+  <div class="video-container">
+    <h2>Test 2: Direct video tag with autoplay (second video)</h2>
+    <video autoplay muted loop controls>
+      <source src="/videos/property-showcase.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <p>Path: /videos/property-showcase.mp4</p>
+  </div>
+  
+  <div class="video-container">
+    <h2>Test 3: HTML5 Video with preload</h2>
+    <video controls preload="auto" muted loop>
+      <source src="/property-video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <button onclick="document.querySelector('#test3').play()">Play Video</button>
+    <p>Path: /property-video.mp4 with explicit play button</p>
+  </div>
+  
+  <script>
+    // Log any video errors
+    document.querySelectorAll('video').forEach((video, index) => {
+      video.addEventListener('error', (e) => {
+        console.error(`Video ${index+1} error:`, e);
+        console.error(`Video ${index+1} error code:`, video.error ? video.error.code : 'unknown');
+        console.error(`Video ${index+1} network state:`, video.networkState);
+      });
+      
+      video.addEventListener('loadeddata', () => {
+        console.log(`Video ${index+1} loaded successfully!`);
+      });
+    });
+  </script>
+</body>
+</html>
