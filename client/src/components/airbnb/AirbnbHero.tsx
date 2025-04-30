@@ -4,14 +4,14 @@ import OhanaVideoPlayer from '@/components/ui/OhanaVideoPlayer';
 export function AirbnbHero() {
   return (
     <section className="relative w-full">
-      <div className="w-full h-[95vh] overflow-hidden relative bg-black">
+      <div className="w-full h-[90vh] overflow-hidden relative bg-black">
         <div className="absolute inset-0 w-full h-full flex items-center justify-center">
           <OhanaVideoPlayer
             src="/api/video/ohana"
             autoPlay={true}
-            muted={true}
+            muted={false}
             loop={true}
-            className="w-full h-full"
+            className="w-full h-full object-contain"
           />
         </div>
         
