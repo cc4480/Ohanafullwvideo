@@ -61,8 +61,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               loading="lazy"
               onError={(e) => {
                 // Fallback for failed images
+                console.error('PropertyCard image failed to load:', property.images[0]);
                 (e.target as HTMLImageElement).src = "https://placehold.co/600x400/slate/white?text=Ohana+Realty";
                 (e.target as HTMLImageElement).alt = "Image not available";
+                (e.target as HTMLImageElement).onerror = null; // Prevent infinite error loop
               }}
               style={{
                 willChange: 'transform',

@@ -312,9 +312,10 @@ export default function PropertyDetails({ id }: { id: number }) {
                     style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
                     onError={(e) => {
                       // Fallback for failed images
-                      console.log('Image failed to load:', activeImage);
+                      console.error('Main image failed to load:', activeImage);
                       (e.target as HTMLImageElement).src = "https://placehold.co/800x600/slate/white?text=Image+Not+Available";
                       (e.target as HTMLImageElement).alt = "Image not available";
+                      (e.target as HTMLImageElement).onerror = null; // Prevent infinite error loop
                     }}
                   />
                   
@@ -379,8 +380,10 @@ export default function PropertyDetails({ id }: { id: number }) {
                           aria-hidden="true"
                           onError={(e) => {
                             // Fallback for failed thumbnail images
-                            console.log('Thumbnail image failed to load:', image);
+                            console.error('Thumbnail image failed to load:', image);
                             (e.target as HTMLImageElement).src = "https://placehold.co/400x300/slate/white?text=No+Image";
+                            (e.target as HTMLImageElement).style.border = '1px solid #999';
+                            (e.target as HTMLImageElement).onerror = null; // Prevent infinite error loop
                           }}
                         />
                         

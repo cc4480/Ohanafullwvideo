@@ -124,8 +124,11 @@ export default function FullScreenImageViewer({
                 }}
                 onError={(e) => {
                   // Handle image loading errors
+                  console.error('Fullscreen image failed to load:', images[currentIndex]);
                   (e.target as HTMLImageElement).src = 'https://placehold.co/800x600/slate/white?text=Image+Not+Available';
                   (e.target as HTMLImageElement).alt = 'Image failed to load';
+                  (e.target as HTMLImageElement).style.border = '1px solid #999';
+                  (e.target as HTMLImageElement).onerror = null; // Prevent infinite error loop
                 }}
               />
             )}
@@ -187,7 +190,10 @@ export default function FullScreenImageViewer({
                   loading="eager"
                   onError={(e) => {
                     // Handle thumbnail loading errors
+                    console.error('FullScreenImageViewer thumbnail failed to load:', image);
                     (e.target as HTMLImageElement).src = 'https://placehold.co/100x100/slate/white?text=Thumbnail';
+                    (e.target as HTMLImageElement).style.border = '1px solid #999';
+                    (e.target as HTMLImageElement).onerror = null; // Prevent infinite error loop
                   }}
                 />
               </div>
