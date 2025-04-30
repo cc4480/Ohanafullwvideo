@@ -12,7 +12,7 @@ export function FeaturedAirbnbRentals({
   limit
 }: FeaturedAirbnbRentalsProps) {
   // Create a direct link to the video file for download
-  const videoUrl = "/property-video.mp4";
+  const videoUrl = "/OHANAVIDEOMASTER.mp4";
   
   return (
     <section className="py-12 px-4 md:px-8 max-w-7xl mx-auto">
@@ -38,7 +38,7 @@ export function FeaturedAirbnbRentals({
       <div className="mt-6 text-center">
         <a 
           href={videoUrl} 
-          download="property-tour.mp4"
+          download="OHANAVIDEOMASTER.mp4"
           className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg shadow hover:bg-primary/90 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">

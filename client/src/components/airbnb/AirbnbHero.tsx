@@ -11,7 +11,7 @@ export function AirbnbHero() {
       <div className="w-full h-[80vh] overflow-hidden relative rounded-lg">
         {/* Simplest possible video implementation */}
         <video
-          src="/property-video.mp4"
+          src="/OHANAVIDEOMASTER.mp4"
           autoPlay
           muted
           loop
