@@ -65,7 +65,7 @@ export function FeaturedAirbnbRentals({
               autoPlay={true}
               muted={true}
               loop={true}
-              className="w-full h-full object-contain bg-black/90 z-10 relative"
+              className="w-full h-full bg-black/90 z-10 relative"
             />
           </div>
           
