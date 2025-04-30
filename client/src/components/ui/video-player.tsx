@@ -13,6 +13,8 @@ interface VideoPlayerProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
   controls?: boolean;
   fallbackText?: string;
   showCustomControls?: boolean;
+  onLoadedData?: () => void;
+  onError?: () => void;
 }
 
 export function VideoPlayer({
@@ -62,10 +64,24 @@ export function VideoPlayer({
     
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
-    const handleLoadedData = () => setIsLoaded(true);
+    const handleLoadedData = () => {
+      console.log("Video loaded successfully:", src);
+      setIsLoaded(true);
+      
+      // Call the onLoadedData callback if provided
+      if (props.onLoadedData) {
+        props.onLoadedData();
+      }
+    };
     const handleError = (e: Event) => {
       console.error("Video error:", e);
+      console.error("Video src:", src);
       setError(true);
+      
+      // Call the onError callback if provided
+      if (props.onError) {
+        props.onError();
+      }
     };
     
     video.addEventListener('play', handlePlay);
@@ -79,7 +95,7 @@ export function VideoPlayer({
       video.removeEventListener('loadeddata', handleLoadedData);
       video.removeEventListener('error', handleError);
     };
-  }, []);
+  }, [src, props.onLoadedData]);
 
   return (
     <div className={cn("relative group overflow-hidden rounded-lg", className)}>

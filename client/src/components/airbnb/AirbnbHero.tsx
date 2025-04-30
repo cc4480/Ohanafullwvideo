@@ -25,6 +25,7 @@ const checkVideoExists = (videoUrl: string) => {
 
 export function AirbnbHero() {
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
   
   // Check if device is likely mobile based on screen width
   const [isMobile, setIsMobile] = useState(false);
@@ -45,6 +46,9 @@ export function AirbnbHero() {
     
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Create a backup image URL (fallback)
+  const fallbackImageUrl = '/images/backgrounds/real-estate-bg.jpg';
   
   return (
     <section className="relative w-full">
@@ -52,15 +56,28 @@ export function AirbnbHero() {
       <div className="w-full h-[60vh] md:h-[80vh] overflow-hidden relative">
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-black/80 pointer-events-none"></div>
         
-        <VideoPlayer
-          src="/videos/property-showcase.mp4"
-          autoPlay={!isMobile}
-          muted={true}
-          loop={true}
-          controls={false}
-          className="w-full h-full object-cover"
-          onLoadedData={() => setVideoLoaded(true)}
-        />
+        {videoError ? (
+          // Fallback to static image if video errors
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${fallbackImageUrl})` }}></div>
+        ) : (
+          // Try to load video
+          <VideoPlayer
+            src="/videos/property-showcase.mp4"
+            autoPlay={!isMobile}
+            muted={true}
+            loop={true}
+            controls={false}
+            className="w-full h-full object-cover"
+            onLoadedData={() => {
+              console.log("Video loaded in AirbnbHero");
+              setVideoLoaded(true);
+            }}
+            onError={() => {
+              console.error("Video failed to load in AirbnbHero");
+              setVideoError(true);
+            }}
+          />
+        )}
         
         {/* Content overlay */}
         <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center p-4 md:p-8">
