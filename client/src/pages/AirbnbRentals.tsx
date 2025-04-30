@@ -2,6 +2,7 @@ import React from "react";
 import SafeHelmet from "@/components/SafeHelmet";
 import ScrollToTop from "@/components/ScrollToTop";
 import AirbnbHero from "@/components/airbnb/AirbnbHero";
+import FeaturedAirbnbRentals from "@/components/airbnb/FeaturedAirbnbRentals";
 
 export default function AirbnbRentals() {
   return (
@@ -14,16 +15,14 @@ export default function AirbnbRentals() {
         canonicalPath="/airbnb"
       />
       
-      {/* Just the hero section with video */}
+      {/* Hero section with the enhanced video player */}
       <AirbnbHero />
       
-      {/* Page content */}
+      {/* Featured rentals section (now showing actual rental listings) */}
+      <FeaturedAirbnbRentals />
+      
+      {/* Additional information section */}
       <div className="max-w-5xl mx-auto w-full px-4 py-8">
-        <h2 className="text-3xl font-bold mb-4 text-center">Luxury Vacation Rentals in Laredo</h2>
-        <p className="text-center text-gray-600 mb-8">
-          Experience the perfect blend of comfort and style in our handpicked vacation properties.
-        </p>
-        
         <div className="bg-slate-50 p-8 rounded-lg shadow-sm">
           <h3 className="text-xl font-semibold mb-4">About Our Rentals</h3>
           <p className="text-gray-700 mb-4">
@@ -32,7 +31,8 @@ export default function AirbnbRentals() {
           </p>
           <p className="text-gray-700">
             Whether you're visiting for business or pleasure, our rentals provide all the amenities and
-            comfort you need during your stay in Laredo.
+            comfort you need during your stay in Laredo. From high-end kitchens to premium entertainment 
+            systems, our properties are equipped with everything you need to enjoy your stay.
           </p>
         </div>
       </div>

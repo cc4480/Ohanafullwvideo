@@ -27,9 +27,29 @@ export function OhanaVideoPlayer({
   onError
 }: OhanaVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMuted, setIsMuted] = useState(muted);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [volume, setVolume] = useState(muted ? 0 : 0.7);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isControlsVisible, setIsControlsVisible] = useState(false);
+  
+  // Handle fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
   
   useEffect(() => {
     const video = videoRef.current;
@@ -37,6 +57,7 @@ export function OhanaVideoPlayer({
     
     const handleCanPlay = () => {
       setIsLoaded(true);
+      setDuration(video.duration);
       console.log('OhanaVideoPlayer: Video can play now');
     };
     
@@ -60,11 +81,27 @@ export function OhanaVideoPlayer({
       console.error('OhanaVideoPlayer error:', e);
     };
     
+    const handleTimeUpdate = () => {
+      setCurrentTime(video.currentTime);
+    };
+    
+    const handleVolumeChange = () => {
+      setIsMuted(video.muted);
+      setVolume(video.volume);
+    };
+    
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+    };
+    
     // Add event listeners
     video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('playing', handlePlaying);
     video.addEventListener('pause', handlePause);
     video.addEventListener('error', handleError);
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('volumechange', handleVolumeChange);
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
     
     // Try to play if autoPlay is true
     if (autoPlay) {
@@ -80,6 +117,7 @@ export function OhanaVideoPlayer({
             // Try again with muted if it wasn't already muted
             if (!video.muted) {
               video.muted = true;
+              setIsMuted(true);
               video.play().catch((err) => {
                 console.error('OhanaVideoPlayer: Even muted autoplay failed', err);
                 setError('Autoplay is not allowed by your browser. Please click play.');
@@ -95,8 +133,20 @@ export function OhanaVideoPlayer({
       video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('pause', handlePause);
       video.removeEventListener('error', handleError);
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('volumechange', handleVolumeChange);
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
   }, [autoPlay, onPlay, onPause, onError]);
+  
+  // Apply volume when isMuted changes
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    
+    video.muted = isMuted;
+    video.volume = isMuted ? 0 : volume;
+  }, [isMuted, volume]);
   
   const togglePlay = () => {
     const video = videoRef.current;
@@ -112,14 +162,57 @@ export function OhanaVideoPlayer({
     }
   };
   
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+  
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    setIsMuted(newVolume === 0);
+  };
+  
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const video = videoRef.current;
+    if (!video) return;
+    
+    const newTime = parseFloat(e.target.value);
+    video.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+  
+  const toggleFullscreen = () => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+  
+  const formatTime = (seconds: number) => {
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+  };
+  
   return (
-    <div className={`ohana-video-player relative ${className}`}>
+    <div 
+      ref={containerRef}
+      className={`ohana-video-player relative ${className}`}
+      onMouseEnter={() => setIsControlsVisible(true)}
+      onMouseLeave={() => setIsControlsVisible(false)}
+    >
       {/* The actual video element */}
       <video 
         ref={videoRef}
         src={src}
         poster={poster}
-        muted={muted}
+        muted={isMuted}
         loop={loop}
         playsInline
         className="w-full h-full object-cover"
@@ -157,7 +250,8 @@ export function OhanaVideoPlayer({
           </svg>
           <p className="text-center">{error}</p>
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setError(null);
               const video = videoRef.current;
               if (video) {
@@ -172,25 +266,109 @@ export function OhanaVideoPlayer({
         </div>
       )}
       
-      {/* Simple video controls */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4 flex justify-between items-center opacity-0 hover:opacity-100 transition-opacity">
-        <button 
-          onClick={togglePlay}
-          className="text-white focus:outline-none"
-        >
-          {isPlaying ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-            </svg>
-          )}
-        </button>
+      {/* Enhanced video controls */}
+      <div 
+        className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-3 flex flex-col transition-opacity duration-300 ${isControlsVisible || !isPlaying ? 'opacity-100' : 'opacity-0'}`}
+      >
+        {/* Progress bar */}
+        <div className="w-full mb-2">
+          <input
+            type="range"
+            min="0"
+            max={duration || 100}
+            value={currentTime}
+            onChange={handleSeek}
+            className="w-full h-1 bg-gray-400 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <div className="flex justify-between text-xs text-white mt-1">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
         
-        <div className="text-white text-xs">
-          {isLoaded ? 'Ohana Realty Video' : 'Preparing video...'}
+        {/* Controls row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {/* Play/Pause button */}
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                togglePlay();
+              }}
+              className="text-white focus:outline-none"
+            >
+              {isPlaying ? (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                </svg>
+              )}
+            </button>
+            
+            {/* Volume control */}
+            <div className="flex items-center space-x-1">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleMute();
+                }}
+                className="text-white focus:outline-none"
+              >
+                {isMuted ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.531V19.94a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.506-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.395C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" />
+                  </svg>
+                ) : volume <= 0.5 ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                  </svg>
+                )}
+              </button>
+              <div className="w-16 hidden sm:block">
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolumeChange}
+                  className="w-full h-1 bg-gray-400 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-white text-xs mr-3">
+            {isLoaded ? 'Ohana Realty Video' : 'Preparing video...'}
+          </div>
+          
+          {/* Fullscreen button */}
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFullscreen();
+            }}
+            className="text-white focus:outline-none"
+          >
+            {isFullscreen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M15 9H19.5M15 9V4.5M15 15v4.5M15 15H9M15 15h4.5M9 15H4.5" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m9 0v4.5m0-4.5h4.5m0 9v4.5m0-4.5h-4.5m-9 0H3.75m0 0v4.5" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
     </div>
