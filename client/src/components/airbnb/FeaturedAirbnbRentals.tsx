@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useState, useRef } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+import { VideoPlayer } from "@/components/ui/video-player";
 
 interface FeaturedAirbnbRentalsProps {
   title?: string;
@@ -9,12 +13,27 @@ export function FeaturedAirbnbRentals({
   title = "Featured Vacation Rentals",
   subtitle = "Experience luxury and comfort in our hand-picked vacation rentals",
 }: FeaturedAirbnbRentalsProps) {
-  // Create a direct link to the video file for download/viewing in new tab
+  // Create a direct link to the video file for download
   const videoUrl = "/property-video.mp4";
-
-  // Function to open video in new tab
-  const openVideoInNewTab = () => {
-    window.open(videoUrl, '_blank');
+  
+  // State to track if the video modal is open
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  
+  // Reference to the video element
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // Function to play video in modal
+  const openVideoModal = () => {
+    setVideoModalOpen(true);
+  };
+  
+  // Function to handle modal close
+  const handleModalClose = () => {
+    setVideoModalOpen(false);
+    // Ensure video stops playing when modal is closed
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
   };
 
   return (
@@ -34,7 +53,7 @@ export function FeaturedAirbnbRentals({
           />
           <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center">
             <button 
-              onClick={openVideoInNewTab}
+              onClick={openVideoModal}
               className="bg-white text-primary hover:bg-white/90 transition-colors rounded-full p-6 mb-4"
               aria-label="Play video"
             >
@@ -43,10 +62,44 @@ export function FeaturedAirbnbRentals({
               </svg>
             </button>
             <p className="text-white text-xl font-semibold">Watch Property Video</p>
-            <p className="text-white/80 text-sm mt-2">Click to open in a new window</p>
+            <p className="text-white/80 text-sm mt-2">Click to play video</p>
           </div>
         </div>
       </div>
+
+      {/* Video Modal Dialog */}
+      <Dialog open={videoModalOpen} onOpenChange={handleModalClose}>
+        <DialogContent className="max-w-4xl h-[80vh] overflow-hidden p-0 bg-black">
+          <DialogTitle className="sr-only">Property Video</DialogTitle>
+          <DialogDescription className="sr-only">Watch property tour video</DialogDescription>
+          
+          <div className="relative w-full h-full">
+            <video 
+              ref={videoRef}
+              className="w-full h-full object-contain"
+              src={videoUrl}
+              autoPlay={true}
+              muted={false}
+              loop={false}
+              controls={true}
+              playsInline
+            >
+              <source src={videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            
+            <DialogClose asChild>
+              <Button 
+                className="absolute top-4 right-4 rounded-full bg-black/50 hover:bg-black/70 text-white" 
+                size="icon"
+                aria-label="Close video"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="mt-6 text-center">
         <a 
