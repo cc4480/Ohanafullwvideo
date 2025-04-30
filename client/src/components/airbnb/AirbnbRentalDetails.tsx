@@ -137,13 +137,27 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <div className="md:col-span-2">
                 <AspectRatio ratio={16/9} className="overflow-hidden rounded-lg">
-                  <OptimizedImage 
-                    src={selectedImage || rental.images[0]} 
-                    alt={rental.title}
-                    className="w-full h-full object-cover" 
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority
-                  />
+                  {!hasImageError(selectedImage || rental.images[0]) ? (
+                    <OptimizedImage 
+                      src={selectedImage || rental.images[0]} 
+                      alt={rental.title}
+                      className="w-full h-full object-cover" 
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      priority
+                      onError={() => {
+                        const img = selectedImage || rental.images[0];
+                        console.log(`Error loading main image:`, img);
+                        setImageError(prev => ({ ...prev, [img]: true }));
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
+                      <div className="text-center">
+                        <AlertCircleIcon className="h-8 w-8 mx-auto mb-2" />
+                        <p>Image could not be loaded</p>
+                      </div>
+                    </div>
+                  )}
                 </AspectRatio>
               </div>
               
@@ -155,12 +169,22 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                     onClick={() => setSelectedImage(image)}
                   >
                     <AspectRatio ratio={1/1}>
-                      <OptimizedImage 
-                        src={image} 
-                        alt={`${rental.title} image ${index + 1}`}
-                        className="w-full h-full object-cover" 
-                        sizes="(max-width: 768px) 25vw, 10vw"
-                      />
+                      {!hasImageError(image) ? (
+                        <OptimizedImage 
+                          src={image} 
+                          alt={`${rental.title} image ${index + 1}`}
+                          className="w-full h-full object-cover" 
+                          sizes="(max-width: 768px) 25vw, 10vw"
+                          onError={() => {
+                            console.log(`Error loading thumbnail image at ${index}:`, image);
+                            setImageError(prev => ({ ...prev, [image]: true }));
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground text-xs">
+                          <AlertCircleIcon className="h-4 w-4" />
+                        </div>
+                      )}
                     </AspectRatio>
                   </div>
                 ))}
