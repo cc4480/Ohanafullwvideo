@@ -964,7 +964,7 @@ Crawl-delay: 1
     res.send(robotsTxt);
   });
 
-  // Helper function to serve video files with proper streaming support
+  // Optimized helper function to serve video files with improved streaming performance
   function serveVideoFile(req: express.Request, res: express.Response, videoFileName: string) {
     try {
       const videoPath = path.join(process.cwd(), 'public', videoFileName);
@@ -981,8 +981,9 @@ Crawl-delay: 1
       
       console.log(`Serving video file: ${videoFileName}, size: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
       
-      // Create a reasonable size limit (10MB chunks max) to prevent memory issues
-      const MAX_CHUNK_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+      // Increase chunk size for better performance on modern connections
+      // 20MB chunks provide better performance while still being memory-efficient
+      const MAX_CHUNK_SIZE = 20 * 1024 * 1024; // 20MB in bytes
       
       const range = req.headers.range;
       
@@ -1007,16 +1008,26 @@ Crawl-delay: 1
         
         console.log(`Video range request for ${videoFileName}: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`)
         
+        // Set performance-optimized headers
         res.writeHead(206, {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': chunksize,
           'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
+          'Cache-Control': 'public, max-age=604800', // Cache for 7 days for better performance
+          'Connection': 'keep-alive', // Keep connection alive for better HTTP/1.1 performance
+          'X-Content-Type-Options': 'nosniff',
         });
         
-        const fileStream = fs.createReadStream(videoPath, { start, end });
-        fileStream.pipe(res);
+        // Optimize read stream with higher highWaterMark for better throughput
+        const fileStream = fs.createReadStream(videoPath, { 
+          start, 
+          end,
+          highWaterMark: 1024 * 1024 // 1MB buffer size for better performance
+        });
+        
+        // Use more efficient piping
+        fileStream.pipe(res, { end: true });
         
         // Handle stream end
         fileStream.on('end', () => {
@@ -1039,23 +1050,32 @@ Crawl-delay: 1
           fileStream.destroy();
         });
       } 
-      // No range requested, serve just a preview portion to avoid memory issues
+      // No range requested, serve a slightly larger preview for better initial playback
       else {
-        // Serve only first 5MB of the video as a preview
-        const previewSize = Math.min(fileSize, 5 * 1024 * 1024);
+        // Serve 10MB preview instead of 5MB for better initial buffering
+        const previewSize = Math.min(fileSize, 10 * 1024 * 1024);
         
         console.log(`Serving preview video (first ${(previewSize / 1024 / 1024).toFixed(2)}MB of ${(fileSize / 1024 / 1024).toFixed(2)}MB file)`);
         
+        // Set performance-optimized headers
         res.writeHead(206, {
           'Content-Range': `bytes 0-${previewSize - 1}/${fileSize}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': previewSize,
           'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
+          'Cache-Control': 'public, max-age=604800', // Cache for 7 days
+          'Connection': 'keep-alive',
+          'X-Content-Type-Options': 'nosniff',
         });
         
-        const fileStream = fs.createReadStream(videoPath, { start: 0, end: previewSize - 1 });
-        fileStream.pipe(res);
+        // Optimize read stream with higher highWaterMark
+        const fileStream = fs.createReadStream(videoPath, { 
+          start: 0, 
+          end: previewSize - 1,
+          highWaterMark: 1024 * 1024 // 1MB buffer size
+        });
+        
+        fileStream.pipe(res, { end: true });
         
         // Handle stream end
         fileStream.on('end', () => {
@@ -1093,122 +1113,10 @@ Crawl-delay: 1
     serveVideoFile(req, res, 'OHANAVIDEOMASTER.mp4');
   });
   
-  // Legacy direct video serving implementation
+  // Legacy direct video serving implementation - Now improved with the same optimizations
   app.get('/api/video/property-legacy', (req, res) => {
-    try {
-      const videoPath = path.join(process.cwd(), 'public', 'property-video.mp4');
-      
-      // Check if file exists
-      if (!fs.existsSync(videoPath)) {
-        console.error(`Video file not found at: ${videoPath}`);
-        return res.status(404).send('Video file not found');
-      }
-      
-      // Get file stats
-      const stat = fs.statSync(videoPath);
-      const fileSize = stat.size;
-      
-      // Create a reasonable size limit (10MB chunks max) to prevent memory issues
-      const MAX_CHUNK_SIZE = 10 * 1024 * 1024; // 10MB in bytes
-      
-      const range = req.headers.range;
-      
-      // Handle range requests (for video seeking)
-      if (range) {
-        const parts = range.replace(/bytes=/, "").split("-");
-        const start = parseInt(parts[0], 10);
-        
-        // Calculate safe end position (don't exceed MAX_CHUNK_SIZE)
-        let end: number;
-        if (parts[1]) {
-          end = parseInt(parts[1], 10);
-        } else {
-          // If no end specified, limit to start + MAX_CHUNK_SIZE or file end
-          end = Math.min(start + MAX_CHUNK_SIZE, fileSize - 1);
-        }
-        
-        // Ensure end doesn't exceed file size
-        end = Math.min(end, fileSize - 1);
-        
-        const chunksize = (end - start) + 1;
-        
-        console.log(`Video range request: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`);
-        
-        res.writeHead(206, {
-          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': chunksize,
-          'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
-        });
-        
-        const fileStream = fs.createReadStream(videoPath, { start, end });
-        fileStream.pipe(res);
-        
-        // Handle stream end
-        fileStream.on('end', () => {
-          console.log(`Video stream completed for range: ${start}-${end}`);
-        });
-        
-        // Handle errors
-        fileStream.on('error', (error: Error) => {
-          console.error('Error streaming video file:', error);
-          if (!res.headersSent) {
-            res.status(500).send('Error streaming video file');
-          }
-          // Close the stream to prevent memory leaks
-          fileStream.destroy();
-        });
-        
-        // Handle client disconnect
-        req.on('close', () => {
-          console.log('Client disconnected, closing video stream');
-          fileStream.destroy();
-        });
-      } 
-      // No range requested, serve just a preview portion to avoid memory issues
-      else {
-        // Serve only first 5MB of the video as a preview
-        const previewSize = Math.min(fileSize, 5 * 1024 * 1024);
-        
-        console.log(`Serving preview video (first ${(previewSize / 1024 / 1024).toFixed(2)}MB of ${(fileSize / 1024 / 1024).toFixed(2)}MB file)`);
-        
-        res.writeHead(206, {
-          'Content-Range': `bytes 0-${previewSize - 1}/${fileSize}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': previewSize,
-          'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
-        });
-        
-        const fileStream = fs.createReadStream(videoPath, { start: 0, end: previewSize - 1 });
-        fileStream.pipe(res);
-        
-        // Handle stream end
-        fileStream.on('end', () => {
-          console.log('Preview video stream completed');
-        });
-        
-        // Handle errors
-        fileStream.on('error', (error: Error) => {
-          console.error('Error streaming video file:', error);
-          if (!res.headersSent) {
-            res.status(500).send('Error streaming video file');
-          }
-          // Close the stream to prevent memory leaks
-          fileStream.destroy();
-        });
-        
-        // Handle client disconnect
-        req.on('close', () => {
-          console.log('Client disconnected, closing video stream');
-          fileStream.destroy();
-        });
-      }
-    } catch (error) {
-      console.error('Error serving video:', error);
-      res.status(500).send('Server error while serving video');
-    }
+    // Use the same optimized function for all video endpoints
+    serveVideoFile(req, res, 'property-video.mp4');
   });
 
   const httpServer = createServer(app);

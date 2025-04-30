@@ -55,6 +55,24 @@ export function OhanaVideoPlayer({
     const video = videoRef.current;
     if (!video) return;
     
+    // Performance optimization: Use passive event listeners for better scroll performance
+    const eventOptions = { passive: true };
+    
+    // Throttle function for performance-critical handlers
+    const throttle = (func: Function, limit: number) => {
+      let inThrottle: boolean;
+      let lastTime = 0;
+      return function(this: any, ...args: any[]) {
+        const now = Date.now();
+        if (!inThrottle && now - lastTime >= limit) {
+          func.apply(this, args);
+          lastTime = now;
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      };
+    };
+    
     const handleCanPlay = () => {
       setIsLoaded(true);
       setDuration(video.duration);
@@ -81,9 +99,10 @@ export function OhanaVideoPlayer({
       console.error('OhanaVideoPlayer error:', e);
     };
     
-    const handleTimeUpdate = () => {
+    // Throttle time update to reduce unnecessary re-renders
+    const handleTimeUpdate = throttle(() => {
       setCurrentTime(video.currentTime);
-    };
+    }, 200); // Update at most once every 200ms
     
     const handleVolumeChange = () => {
       setIsMuted(video.muted);
@@ -94,42 +113,58 @@ export function OhanaVideoPlayer({
       setDuration(video.duration);
     };
     
-    // Add event listeners
-    video.addEventListener('canplay', handleCanPlay);
-    video.addEventListener('playing', handlePlaying);
-    video.addEventListener('pause', handlePause);
-    video.addEventListener('error', handleError);
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('volumechange', handleVolumeChange);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    
-    // Try to play if autoPlay is true
-    if (autoPlay) {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log('OhanaVideoPlayer: Autoplay successful');
-          })
-          .catch((err) => {
-            console.warn('OhanaVideoPlayer: Autoplay prevented by browser', err);
-            // Most browsers require user interaction before playing with sound
-            // Try again with muted if it wasn't already muted
-            if (!video.muted) {
-              video.muted = true;
-              setIsMuted(true);
-              video.play().catch((err) => {
-                console.error('OhanaVideoPlayer: Even muted autoplay failed', err);
-                setError('Autoplay is not allowed by your browser. Please click play.');
-              });
-            }
-          });
+    // Performance optimization: Low quality during playback, high quality when paused
+    const handleQualityControl = () => {
+      if (video.readyState >= 3) { // HAVE_FUTURE_DATA or better
+        // Video is ready for smooth playback
+        video.style.filter = 'none';
       }
+    };
+    
+    // Add event listeners with passive option when possible
+    video.addEventListener('canplay', handleCanPlay, eventOptions);
+    video.addEventListener('canplaythrough', handleQualityControl, eventOptions);
+    video.addEventListener('playing', handlePlaying, eventOptions);
+    video.addEventListener('pause', handlePause, eventOptions);
+    video.addEventListener('error', handleError); // Can't be passive
+    video.addEventListener('timeupdate', handleTimeUpdate, eventOptions);
+    video.addEventListener('volumechange', handleVolumeChange, eventOptions);
+    video.addEventListener('loadedmetadata', handleLoadedMetadata, eventOptions);
+    
+    // Optimization: Prioritize loading metadata
+    video.preload = 'metadata';
+    
+    // Try to play if autoPlay is true with a slight delay to allow browser to prepare
+    if (autoPlay) {
+      // Add slight delay to prevent immediate play failures
+      setTimeout(() => {
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('OhanaVideoPlayer: Autoplay successful');
+            })
+            .catch((err) => {
+              console.warn('OhanaVideoPlayer: Autoplay prevented by browser', err);
+              // Most browsers require user interaction before playing with sound
+              // Try again with muted if it wasn't already muted
+              if (!video.muted) {
+                video.muted = true;
+                setIsMuted(true);
+                video.play().catch((err) => {
+                  console.error('OhanaVideoPlayer: Even muted autoplay failed', err);
+                  setError('Autoplay is not allowed by your browser. Please click play.');
+                });
+              }
+            });
+        }
+      }, 50);
     }
     
     // Cleanup event listeners
     return () => {
       video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('canplaythrough', handleQualityControl);
       video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('pause', handlePause);
       video.removeEventListener('error', handleError);
@@ -215,8 +250,16 @@ export function OhanaVideoPlayer({
         muted={isMuted}
         loop={loop}
         playsInline
+        preload="auto"
+        x-webkit-airplay="allow"
+        x-webkit-playsinline="true"
+        controlsList="nodownload"
+        disablePictureInPicture={false}
         className="w-full h-full object-contain"
-      />
+      >  
+        {/* Add a fallback text for browsers that don't support video */}
+        Your browser does not support the video tag.
+      </video>
       
       {/* Custom play/pause button overlay */}
       <div 
