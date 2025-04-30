@@ -22,11 +22,21 @@ function normalizeImagePath(src: string): string {
     return src;
   }
   
-  // Handle paths with leading slash (like /shiloh-main.jpg)
+  // Special handling for specific file paths in public directory
+  if (src === '/shiloh-main.jpg' || 
+      src === '/shiloh-building1.jpg' || 
+      src === '/shiloh-building2.jpg' || 
+      src === '/shiloh-building3.jpg' || 
+      src === '/shiloh-building4.jpg' ||
+      src === '/airbnb-feature-video.mp4') {
+    return src; // Keep the leading slash as these are directly in public directory
+  }
+  
+  // Handle paths with leading slash
   // These are located in the public directory
   if (src.startsWith('/') && !src.startsWith('/api/') && !src.startsWith('/images/')) {
-    // Remove the leading slash to access from the root public directory
-    return src.substring(1);
+    // Keep the leading slash for public assets
+    return src;
   }
   
   // Return the original path for other cases

@@ -160,12 +160,14 @@ export default function AirbnbRentals() {
         <p className="text-muted-foreground">Find the perfect place to stay in Laredo</p>
       </div>
       
-      {/* Featured Video Section */}
-      <VideoSection 
-        videoSrc="/airbnb-feature-video.mp4"
-        title="Experience Laredo Like Never Before"
-        description="Take a virtual tour of our premium vacation rentals and discover the perfect getaway for your next visit to Laredo."
-      />
+      {/* Featured Video Section - High visibility placement */}
+      <div className="mb-10 border-2 border-primary/20 rounded-xl p-1">
+        <VideoSection 
+          videoSrc="/airbnb-feature-video.mp4"
+          title="Experience Laredo Like Never Before"
+          description="Take a virtual tour of our premium vacation rentals and discover the perfect getaway for your next visit to Laredo."
+        />
+      </div>
       
       {/* Filters section */}
       <div className="mb-8">

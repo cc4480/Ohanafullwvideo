@@ -20,16 +20,27 @@ export function VideoSection({ videoSrc, title, description }: VideoSectionProps
   useEffect(() => {
     const checkVideoExists = async () => {
       try {
+        console.log('Checking video at path:', videoSrc);
         const response = await fetch(videoSrc, { method: 'HEAD' });
         if (!response.ok) {
           setVideoError(true);
           console.log('Video file not found or not accessible:', videoSrc);
+        } else {
+          console.log('Video file found and accessible');
+          setVideoError(false);
         }
       } catch (error) {
         setVideoError(true);
         console.error('Error checking video existence:', error);
       }
     };
+    
+    // Simple file path verification
+    if (!videoSrc || videoSrc === '') {
+      setVideoError(true);
+      console.error('Invalid video path provided');
+      return;
+    }
     
     checkVideoExists();
   }, [videoSrc]);
