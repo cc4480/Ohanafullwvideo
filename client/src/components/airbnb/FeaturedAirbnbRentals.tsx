@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import OhanaVideoPlayer from "../ui/OhanaVideoPlayer";
 
 interface FeaturedAirbnbRentalsProps {
   title?: string;
@@ -45,31 +44,6 @@ export function FeaturedAirbnbRentals({
           <h2 className="text-4xl font-bold mb-4 text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-200">{title}</h2>
           <div className="h-1 w-24 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto mb-6 rounded-full"></div>
           <p className="text-gray-300 max-w-2xl mx-auto text-lg">{subtitle}</p>
-        </div>
-
-        <div className={`w-full max-w-5xl mx-auto relative transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-          {/* Video container with subtle animations and glow effect */}
-          <div className="relative rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(79,70,229,0.5)] h-[70vh] transform transition-transform duration-700 hover:scale-[1.01]">
-            {/* Animated border - BRIGHTER */}
-            <div className="absolute inset-0 z-0 bg-gradient-to-tr from-blue-600/50 via-indigo-500/40 to-purple-600/50 rounded-2xl animate-pulse-slow shadow-[0_0_40px_15px_rgba(79,70,229,0.4)] ring-2 ring-blue-400/70"></div>
-            
-            {/* Corners decoration - BRIGHTER */}
-            <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-blue-400 rounded-tl-2xl z-10"></div>
-            <div className="absolute top-0 right-0 w-20 h-20 border-t-4 border-r-4 border-indigo-400 rounded-tr-2xl z-10"></div>
-            <div className="absolute bottom-0 left-0 w-20 h-20 border-b-4 border-l-4 border-blue-400 rounded-bl-2xl z-10"></div>
-            <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-indigo-400 rounded-br-2xl z-10"></div>
-            
-            <OhanaVideoPlayer 
-              src="/api/video/property/highperf" 
-              poster="/shiloh-primary.jpg"
-              autoPlay={true}
-              muted={true}
-              loop={true}
-              className="w-full h-full object-contain bg-black/90 z-10 relative"
-            />
-          </div>
-          
-          {/* Removed floating particles */}
         </div>
         
         {/* CTA button */}
