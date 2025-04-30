@@ -433,6 +433,18 @@ function App() {
                         );
                       }}
                     </Route>
+                    <Route path="/video-test">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <VideoTest />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
                     <Route>
                       {() => {
                         return (
