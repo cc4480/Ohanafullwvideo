@@ -51,6 +51,10 @@ export function OhanaVideoPlayer({
     };
   }, []);
   
+  // Socket for real-time video performance monitoring
+  const socketRef = useRef<WebSocket | null>(null);
+  const [optimizedConfig, setOptimizedConfig] = useState<any>(null);
+  
   // Detect if user has high-performance device (16GB+ RAM)
   const isHighPerformanceDevice = () => {
     // Check if the browser reports more than 4 logical processors
@@ -71,16 +75,88 @@ export function OhanaVideoPlayer({
     return highPerfCount >= 2;
   };
   
+  // Connect to WebSocket for real-time video performance optimization
+  useEffect(() => {
+    if (!isHighPerformanceDevice()) return;
+    
+    // Create WebSocket connection for performance monitoring
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const socket = new WebSocket(wsUrl);
+    socketRef.current = socket;
+    
+    socket.onopen = () => {
+      console.log('WebSocket connected for video performance monitoring');
+      
+      // Start sending performance metrics
+      const metricsInterval = setInterval(() => {
+        if (socket.readyState === WebSocket.OPEN && videoRef.current) {
+          const metrics = {
+            bufferLevel: videoRef.current.buffered.length > 0 ? 
+              videoRef.current.buffered.end(videoRef.current.buffered.length - 1) - videoRef.current.currentTime : 0,
+            playbackRate: videoRef.current.playbackRate,
+            readyState: videoRef.current.readyState,
+            memoryUsage: (performance as any).memory?.usedJSHeapSize ? 
+              ((performance as any).memory.usedJSHeapSize / (performance as any).memory.jsHeapSizeLimit) * 100 : 50,
+            timestamp: Date.now()
+          };
+          
+          socket.send(JSON.stringify({
+            type: 'video_metrics',
+            metrics
+          }));
+        }
+      }, 5000); // Send metrics every 5 seconds
+      
+      return () => clearInterval(metricsInterval);
+    };
+    
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Received WebSocket message:', data);
+        
+        if (data.type === 'video_config') {
+          setOptimizedConfig(data.config);
+          console.log('Received optimized video configuration:', data.config);
+        } else if (data.type === 'video_config_update') {
+          setOptimizedConfig((prev: any) => ({ ...prev, ...data.config }));
+          console.log('Received dynamic configuration update:', data.config);
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+    
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+    
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+    
+    return () => {
+      socket.close();
+    };
+  }, []);
+  
   // Use high-performance endpoint if detected
   useEffect(() => {
     // Check if we should use the high-performance endpoint
     if (videoRef.current && src.includes('/api/video/ohana') && isHighPerformanceDevice()) {
       // Replace standard endpoint with high-performance version that sends entire video file
-      const highPerfSrc = '/api/video/ohana/highperf';
-      console.log('Using high-performance video endpoint for 16GB+ RAM systems');
+      let highPerfSrc = '/api/video/ohana/highperf';
+      
+      // If we received specific cached URLs from the WebSocket, use the best one
+      if (optimizedConfig?.cachedUrls?.length > 0) {
+        highPerfSrc = optimizedConfig.cachedUrls[0];
+      }
+      
+      console.log('Using high-performance video endpoint for 16GB+ RAM systems:', highPerfSrc);
       videoRef.current.src = highPerfSrc;
     }
-  }, [src]);
+  }, [src, optimizedConfig]);
 
   useEffect(() => {
     const video = videoRef.current;

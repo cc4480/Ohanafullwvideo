@@ -7,6 +7,7 @@ import { db } from "./db";
 import { sql } from "drizzle-orm";
 import path from "path";
 import fs from "fs";
+import WebSocket, { WebSocketServer } from "ws";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Explicitly serve videos directory to ensure video files are accessible
@@ -1198,6 +1199,59 @@ Crawl-delay: 1
     }
   });
 
+  // Create the HTTP server
   const httpServer = createServer(app);
+  
+  // Set up WebSocket server for enhanced video performance monitoring
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected for video performance monitoring');
+    
+    // Send initial performance configuration
+    ws.send(JSON.stringify({
+      type: 'video_config',
+      config: {
+        bufferSize: 4 * 1024 * 1024, // 4MB buffer size
+        chunkSize: 40 * 1024 * 1024, // 40MB chunks
+        highPerformanceMode: true,
+        cachedUrls: [
+          '/api/video/ohana/highperf',
+          '/static/OHANAVIDEOMASTER.mp4'
+        ]
+      }
+    }));
+    
+    // Handle video performance metrics from client
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        if (data.type === 'video_metrics') {
+          console.log('Video performance metrics received:', data.metrics);
+          
+          // Respond with optimized settings based on metrics
+          if (data.metrics.bufferLevel < 5 && data.metrics.memoryUsage < 70) {
+            // If buffer is low but memory usage is acceptable, increase buffer
+            ws.send(JSON.stringify({
+              type: 'video_config_update',
+              config: {
+                bufferSize: 8 * 1024 * 1024, // Increase to 8MB buffer
+                preferFullVideoDownload: true
+              }
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Error handling WebSocket message:', error);
+      }
+    });
+    
+    // Handle client disconnect
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+    });
+  });
+  
   return httpServer;
 }
