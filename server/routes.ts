@@ -5,6 +5,8 @@ import { insertMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
+import path from "path";
+import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database with sample data
@@ -961,24 +963,33 @@ Crawl-delay: 1
 
   // Direct video serving endpoint that bypasses Vite's handling
   app.get('/api/video/property', (req, res) => {
-    const path = require('path');
-    const fs = require('fs');
-    const videoPath = path.join(process.cwd(), 'public', 'property-video.mp4');
-    
-    // Set the appropriate MIME type for mp4 videos
-    res.setHeader('Content-Type', 'video/mp4');
-    
-    // Create a read stream and pipe it to the response
-    const fileStream = fs.createReadStream(videoPath);
-    fileStream.pipe(res);
-    
-    // Handle file stream errors
-    fileStream.on('error', (err) => {
-      console.error('Error streaming video file:', err);
-      if (!res.headersSent) {
-        res.status(500).send('Error streaming video file');
+    try {
+      const videoPath = path.join(process.cwd(), 'public', 'property-video.mp4');
+      
+      // Check if file exists
+      if (!fs.existsSync(videoPath)) {
+        console.error(`Video file not found at: ${videoPath}`);
+        return res.status(404).send('Video file not found');
       }
-    });
+      
+      // Set the appropriate MIME type for mp4 videos
+      res.setHeader('Content-Type', 'video/mp4');
+      
+      // Create a read stream and pipe it to the response
+      const fileStream = fs.createReadStream(videoPath);
+      fileStream.pipe(res);
+      
+      // Handle file stream errors
+      fileStream.on('error', (error: Error) => {
+        console.error('Error streaming video file:', error);
+        if (!res.headersSent) {
+          res.status(500).send('Error streaming video file');
+        }
+      });
+    } catch (error) {
+      console.error('Error serving video:', error);
+      res.status(500).send('Server error while serving video');
+    }
   });
 
   const httpServer = createServer(app);
