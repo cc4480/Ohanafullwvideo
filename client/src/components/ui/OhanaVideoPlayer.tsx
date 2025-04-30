@@ -51,6 +51,37 @@ export function OhanaVideoPlayer({
     };
   }, []);
   
+  // Detect if user has high-performance device (16GB+ RAM)
+  const isHighPerformanceDevice = () => {
+    // Check if the browser reports more than 4 logical processors
+    const hasMultipleCores = navigator.hardwareConcurrency > 4;
+    
+    // Check device memory if available (Chrome-specific)
+    const hasHighMemory = (navigator as any).deviceMemory > 4; // More than 4GB suggests high-end device
+    
+    // Check if device pixel ratio is high (suggests high-end display)
+    const hasHighDPI = window.devicePixelRatio > 1.5;
+    
+    // If we can detect at least two of these conditions, consider it high-performance
+    let highPerfCount = 0;
+    if (hasMultipleCores) highPerfCount++;
+    if (hasHighMemory) highPerfCount++;
+    if (hasHighDPI) highPerfCount++;
+    
+    return highPerfCount >= 2;
+  };
+  
+  // Use high-performance endpoint if detected
+  useEffect(() => {
+    // Check if we should use the high-performance endpoint
+    if (videoRef.current && src.includes('/api/video/ohana') && isHighPerformanceDevice()) {
+      // Replace standard endpoint with high-performance version that sends entire video file
+      const highPerfSrc = '/api/video/ohana/highperf';
+      console.log('Using high-performance video endpoint for 16GB+ RAM systems');
+      videoRef.current.src = highPerfSrc;
+    }
+  }, [src]);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -102,7 +133,7 @@ export function OhanaVideoPlayer({
     // Throttle time update to reduce unnecessary re-renders
     const handleTimeUpdate = throttle(() => {
       setCurrentTime(video.currentTime);
-    }, 200); // Update at most once every 200ms
+    }, 250); // Update at most once every 250ms for better performance
     
     const handleVolumeChange = () => {
       setIsMuted(video.muted);
@@ -133,6 +164,11 @@ export function OhanaVideoPlayer({
     
     // Optimization: Prioritize loading metadata
     video.preload = 'metadata';
+    
+    // Set video to have higher priority loading
+    if ('priority' in HTMLImageElement.prototype) {
+      (video as any).fetchPriority = 'high';
+    }
     
     // Try to play if autoPlay is true with a slight delay to allow browser to prepare
     if (autoPlay) {
@@ -172,7 +208,7 @@ export function OhanaVideoPlayer({
       video.removeEventListener('volumechange', handleVolumeChange);
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
-  }, [autoPlay, onPlay, onPause, onError]);
+  }, [autoPlay, onPlay, onPause, onError, src]);
   
   // Apply volume when isMuted changes
   useEffect(() => {

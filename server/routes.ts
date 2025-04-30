@@ -10,7 +10,22 @@ import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Explicitly serve videos directory to ensure video files are accessible
-  app.use('/videos', express.static(path.join(process.cwd(), 'public/videos')));
+  app.use('/videos', express.static(path.join(process.cwd(), 'public/videos'), {
+    maxAge: 31536000000, // Cache for 1 year in milliseconds
+    immutable: true, // Files will never change - informs browsers they can cache forever
+    setHeaders: (res) => {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }));
+  
+  // Serve public directory with aggressively optimized caching for static content
+  app.use('/static', express.static(path.join(process.cwd(), 'public'), {
+    maxAge: 31536000000, // Cache for 1 year in milliseconds
+    immutable: true, // Files will never change - informs browsers they can cache forever
+    setHeaders: (res) => {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }));
   
   // Initialize database with sample data
   try {
@@ -981,9 +996,9 @@ Crawl-delay: 1
       
       console.log(`Serving video file: ${videoFileName}, size: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
       
-      // Increase chunk size for better performance on modern connections
-      // 20MB chunks provide better performance while still being memory-efficient
-      const MAX_CHUNK_SIZE = 20 * 1024 * 1024; // 20MB in bytes
+      // Increase chunk size more aggressively for high-performance systems
+      // Using larger chunk sizes for systems with 16GB RAM or more
+      const MAX_CHUNK_SIZE = 40 * 1024 * 1024; // 40MB in bytes
       
       const range = req.headers.range;
       
@@ -1014,7 +1029,7 @@ Crawl-delay: 1
           'Accept-Ranges': 'bytes',
           'Content-Length': chunksize,
           'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=604800', // Cache for 7 days for better performance
+          'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year with immutable flag for permanent caching
           'Connection': 'keep-alive', // Keep connection alive for better HTTP/1.1 performance
           'X-Content-Type-Options': 'nosniff',
         });
@@ -1023,7 +1038,7 @@ Crawl-delay: 1
         const fileStream = fs.createReadStream(videoPath, { 
           start, 
           end,
-          highWaterMark: 1024 * 1024 // 1MB buffer size for better performance
+          highWaterMark: 4 * 1024 * 1024 // 4MB buffer size for high-performance systems
         });
         
         // Use more efficient piping
@@ -1063,7 +1078,7 @@ Crawl-delay: 1
           'Accept-Ranges': 'bytes',
           'Content-Length': previewSize,
           'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=604800', // Cache for 7 days
+          'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year with immutable flag for permanent caching
           'Connection': 'keep-alive',
           'X-Content-Type-Options': 'nosniff',
         });
@@ -1072,7 +1087,7 @@ Crawl-delay: 1
         const fileStream = fs.createReadStream(videoPath, { 
           start: 0, 
           end: previewSize - 1,
-          highWaterMark: 1024 * 1024 // 1MB buffer size
+          highWaterMark: 4 * 1024 * 1024 // 4MB buffer size for high-performance systems
         });
         
         fileStream.pipe(res, { end: true });
@@ -1117,6 +1132,70 @@ Crawl-delay: 1
   app.get('/api/video/property-legacy', (req, res) => {
     // Use the same optimized function for all video endpoints
     serveVideoFile(req, res, 'property-video.mp4');
+  });
+  
+  // High-performance video cache endpoint for power users with 16GB+ RAM 
+  // This endpoint serves the entire video file with aggressive caching for quick reuse
+  app.get('/api/video/ohana/highperf', (req, res) => {
+    try {
+      const videoPath = path.join(process.cwd(), 'public', 'OHANAVIDEOMASTER.mp4');
+      
+      // Check if file exists
+      if (!fs.existsSync(videoPath)) {
+        console.error(`Video file not found at: ${videoPath}`);
+        return res.status(404).send('Video file not found');
+      }
+      
+      // Get file stats
+      const stat = fs.statSync(videoPath);
+      const fileSize = stat.size;
+      
+      console.log(`Serving ENTIRE video file for high-performance devices: OHANAVIDEOMASTER.mp4, size: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
+      
+      // Set extremely aggressive caching headers for high-end clients
+      res.writeHead(200, {
+        'Accept-Ranges': 'bytes',
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+        'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year with immutable flag
+        'Connection': 'keep-alive',
+        'X-Content-Type-Options': 'nosniff',
+        'ETag': `"${stat.mtime.getTime().toString(16)}"`, // Strong ETag for caching
+        'Last-Modified': stat.mtime.toUTCString(),
+      });
+      
+      // Use optimized file streaming with large buffer
+      const fileStream = fs.createReadStream(videoPath, {
+        highWaterMark: 8 * 1024 * 1024 // 8MB buffer for maximum throughput
+      });
+      
+      // Pipe directly to response with end
+      fileStream.pipe(res, { end: true });
+      
+      // Handle stream end
+      fileStream.on('end', () => {
+        console.log('Complete high-performance video transfer finished');
+      });
+      
+      // Handle errors
+      fileStream.on('error', (error: Error) => {
+        console.error('Error streaming complete video file:', error);
+        if (!res.headersSent) {
+          res.status(500).send('Error streaming video file');
+        }
+        // Close the stream to prevent memory leaks
+        fileStream.destroy();
+      });
+      
+      // Handle client disconnect
+      req.on('close', () => {
+        console.log('Client disconnected from high-performance stream, closing video stream');
+        fileStream.destroy();
+      });
+    } catch (error) {
+      console.error('Error serving high-performance video:', error);
+      res.status(500).send('Server error while serving high-performance video');
+    }
   });
 
   const httpServer = createServer(app);

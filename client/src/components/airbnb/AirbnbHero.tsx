@@ -51,7 +51,7 @@ export function AirbnbHero() {
         <div className="absolute inset-0 m-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] flex items-center justify-center rounded-xl overflow-hidden">
           <div className="w-full h-full relative rounded-xl overflow-hidden transform transition-transform duration-700 hover:scale-[1.01]">
             <OhanaVideoPlayer
-              src="/api/video/ohana"
+              src="/api/video/ohana/highperf"
               autoPlay={true}
               muted={false}
               loop={true}
