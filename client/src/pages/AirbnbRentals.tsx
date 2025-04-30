@@ -2,6 +2,7 @@ import React from "react";
 import SafeHelmet from "@/components/SafeHelmet";
 import ScrollToTop from "@/components/ScrollToTop";
 import AirbnbHero from "@/components/airbnb/AirbnbHero";
+import FeaturedAirbnbRentals from "@/components/airbnb/FeaturedAirbnbRentals";
 
 export default function AirbnbRentals() {
   return (
@@ -14,8 +15,11 @@ export default function AirbnbRentals() {
         canonicalPath="/airbnb"
       />
       
-      {/* Hero section with the ONLY video player */}
+      {/* Hero section with the enhanced video player */}
       <AirbnbHero />
+      
+      {/* Featured rentals section (now showing actual rental listings) */}
+      <FeaturedAirbnbRentals />
       
       {/* Additional information section */}
       <div className="max-w-5xl mx-auto w-full px-4 py-8">

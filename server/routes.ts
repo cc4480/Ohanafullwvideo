@@ -1134,69 +1134,6 @@ Crawl-delay: 1
     // Use the same optimized function for all video endpoints
     serveVideoFile(req, res, 'property-video.mp4');
   });
-
-  // High-performance video endpoint for property video
-  app.get('/api/video/property/highperf', (req, res) => {
-    try {
-      const videoPath = path.join(process.cwd(), 'public', 'property-video.mp4');
-      
-      // Check if file exists
-      if (!fs.existsSync(videoPath)) {
-        console.error(`Video file not found at: ${videoPath}`);
-        return res.status(404).send('Video file not found');
-      }
-      
-      // Get file stats
-      const stat = fs.statSync(videoPath);
-      const fileSize = stat.size;
-      
-      console.log(`Serving ENTIRE property video file for high-performance devices: property-video.mp4, size: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
-      
-      // Set extremely aggressive caching headers for high-end clients
-      res.writeHead(200, {
-        'Accept-Ranges': 'bytes',
-        'Content-Length': fileSize,
-        'Content-Type': 'video/mp4',
-        'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year with immutable flag
-        'Connection': 'keep-alive',
-        'X-Content-Type-Options': 'nosniff',
-        'ETag': `"${stat.mtime.getTime().toString(16)}"`, // Strong ETag for caching
-        'Last-Modified': stat.mtime.toUTCString(),
-      });
-      
-      // Use optimized file streaming with large buffer
-      const fileStream = fs.createReadStream(videoPath, {
-        highWaterMark: 8 * 1024 * 1024 // 8MB buffer for maximum throughput
-      });
-      
-      // Pipe directly to response with end
-      fileStream.pipe(res, { end: true });
-      
-      // Handle stream end
-      fileStream.on('end', () => {
-        console.log('Complete high-performance property video transfer finished');
-      });
-      
-      // Handle errors
-      fileStream.on('error', (error: Error) => {
-        console.error('Error streaming complete property video file:', error);
-        if (!res.headersSent) {
-          res.status(500).send('Error streaming video file');
-        }
-        // Close the stream to prevent memory leaks
-        fileStream.destroy();
-      });
-      
-      // Handle client disconnect
-      req.on('close', () => {
-        console.log('Client disconnected from high-performance property stream, closing video stream');
-        fileStream.destroy();
-      });
-    } catch (error) {
-      console.error('Error serving high-performance property video:', error);
-      res.status(500).send('Server error while serving high-performance property video');
-    }
-  });
   
   // High-performance video cache endpoint for power users with 16GB+ RAM 
   // This endpoint serves the entire video file with aggressive caching for quick reuse
@@ -1280,9 +1217,7 @@ Crawl-delay: 1
         highPerformanceMode: true,
         cachedUrls: [
           '/api/video/ohana/highperf',
-          '/api/video/property/highperf',
-          '/static/OHANAVIDEOMASTER.mp4',
-          '/static/property-video.mp4'
+          '/static/OHANAVIDEOMASTER.mp4'
         ]
       }
     }));
