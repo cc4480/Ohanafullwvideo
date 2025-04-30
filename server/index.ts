@@ -46,31 +46,16 @@ app.get('/api/health', (req, res) => {
 
 // Security headers are now being set by Helmet above
 
-// Serve static files from both the root /public directory and client/public directory
-// Root public directory comes first to take precedence
-app.use(express.static(path.join(process.cwd(), "public"), {
+// Serve static files from the client/public directory
+app.use(express.static(path.join(process.cwd(), "client/public"), {
   // Add cache control headers for static assets in production
   setHeaders: (res, filePath) => {
     if (process.env.NODE_ENV === 'production') {
       // Cache images, fonts, and assets for 1 week (in seconds)
-      if (filePath.match(/\.(jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot|mp4|webm)$/)) {
+      if (filePath.match(/\.(jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
         res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
       } 
       // Cache CSS and JS for 1 day (in seconds)
-      else if (filePath.match(/\.(css|js)$/)) {
-        res.setHeader('Cache-Control', 'public, max-age=86400');
-      }
-    }
-  }
-}));
-
-// Then serve from client/public as fallback
-app.use(express.static(path.join(process.cwd(), "client/public"), {
-  setHeaders: (res, filePath) => {
-    if (process.env.NODE_ENV === 'production') {
-      if (filePath.match(/\.(jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot|mp4|webm)$/)) {
-        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
-      } 
       else if (filePath.match(/\.(css|js)$/)) {
         res.setHeader('Cache-Control', 'public, max-age=86400');
       }
