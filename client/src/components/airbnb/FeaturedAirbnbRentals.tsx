@@ -24,25 +24,38 @@ export function FeaturedAirbnbRentals({
 
       <div className="w-full max-w-5xl mx-auto h-[60vh] overflow-hidden relative rounded-lg bg-gray-100">
         {/* Directly show the video with autoplay */}
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          autoPlay={true}
-          muted={true}
-          loop={true}
-          playsInline
-          className="w-full h-full object-cover"
-          controls={false}
-          onLoadedData={() => {
-            console.log("Video loaded in FeaturedAirbnbRentals");
-          }}
-          onError={(e) => {
-            console.error("Error loading video:", e);
-          }}
-        >
-          <source src={videoUrl} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <div className="relative w-full h-full">
+          <video
+            ref={videoRef}
+            autoPlay={true}
+            muted={true}
+            loop={true}
+            playsInline
+            className="w-full h-full object-cover"
+            controls={true}
+            onLoadedData={() => {
+              console.log("Video loaded in FeaturedAirbnbRentals");
+            }}
+            onCanPlay={() => {
+              console.log("Video can play now in FeaturedAirbnbRentals");
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLVideoElement;
+              const error = target.error;
+              console.error("Video failed to load in FeaturedAirbnbRentals", error ? error.message : "Unknown error");
+              console.error("Video error code:", error ? error.code : "None");
+              console.error("Video URL:", videoUrl);
+            }}
+          >
+            <source src={videoUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          
+          {/* Debug info */}
+          <div className="absolute bottom-4 left-4 z-30 bg-black/60 text-white px-3 py-1 rounded-md text-sm">
+            Video Status: Debug Mode
+          </div>
+        </div>
       </div>
 
       {/* No modal needed since we're showing the video directly */}
