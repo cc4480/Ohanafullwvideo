@@ -9,6 +9,9 @@ import path from "path";
 import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Explicitly serve videos directory to ensure video files are accessible
+  app.use('/videos', express.static(path.join(process.cwd(), 'public/videos')));
+  
   // Initialize database with sample data
   try {
     console.log("Initializing database with sample data...");
