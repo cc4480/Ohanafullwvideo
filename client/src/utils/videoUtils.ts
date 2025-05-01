@@ -27,7 +27,7 @@ export function supportsMP4(): boolean {
 }
 
 /**
- * Gets the optimal video source based on browser capabilities and device performance
+ * Gets the optimal video source based on browser capabilities, device performance, and memory
  * @param videoPath Base path of the video
  * @param isHighPerformance Whether the device is high-performance
  * @returns Array of video sources in priority order
@@ -35,16 +35,41 @@ export function supportsMP4(): boolean {
 export function getOptimalVideoSources(videoPath: string, isHighPerformance: boolean): VideoSource[] {
   const sources: VideoSource[] = [];
   
+  // Check for high-RAM systems (16GB+)
+  const memoryGB = typeof navigator !== 'undefined' ? (navigator as any).deviceMemory || 4 : 4;
+  const hasSuperHighMemory = memoryGB >= 16;
+  const hasHighMemory = memoryGB >= 8;
+  
+  // Detect if this is a truly high-performance device (either flagged as high performance or has 16GB+ RAM)
+  const isUltraPerformance = isHighPerformance || hasSuperHighMemory;
+  
+  // Log device capabilities for debugging
+  console.log('Video optimization:', {
+    deviceMemory: memoryGB + 'GB',
+    isHighPerformance: isHighPerformance,
+    hasHighMemory: hasHighMemory,
+    hasSuperHighMemory: hasSuperHighMemory,
+    selectedEndpoint: isUltraPerformance ? 'highperf' : (hasHighMemory ? 'standard' : 'mobile')
+  });
+  
   // Modern browsers support WebM which is much more efficient
   if (supportsWebM()) {
     // Add WebM sources in different qualities
-    if (isHighPerformance) {
+    if (isUltraPerformance) {
       sources.push({
         src: `${videoPath}/highperf`,
         type: 'video/webm',
         quality: 'high'
       });
+    } else if (hasHighMemory) {
+      // For 8GB+ systems that aren't detected as high performance, use standard quality
+      sources.push({
+        src: videoPath,
+        type: 'video/webm',
+        quality: 'medium'
+      });
     } else {
+      // For lower memory systems, use mobile optimization
       sources.push({
         src: `${videoPath}/mobile`,
         type: 'video/webm',
@@ -55,11 +80,17 @@ export function getOptimalVideoSources(videoPath: string, isHighPerformance: boo
   
   // Add MP4 sources as fallback
   if (supportsMP4()) {
-    if (isHighPerformance) {
+    if (isUltraPerformance) {
       sources.push({
         src: `${videoPath}/highperf`,
         type: 'video/mp4',
         quality: 'high'
+      });
+    } else if (hasHighMemory) {
+      sources.push({
+        src: videoPath,
+        type: 'video/mp4',
+        quality: 'medium'
       });
     } else {
       sources.push({

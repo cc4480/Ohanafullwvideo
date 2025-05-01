@@ -150,7 +150,11 @@ export function OhanaVideoPlayer({
         else if (!shouldUseMobile && videoRef.current.src.includes('/mobile')) {
           console.log('Switching to standard/high-performance endpoint due to device resize');
           // Choose between standard and high-performance based on capabilities
-          videoRef.current.src = devicePerformance === 'high' ? 
+          // For 16GB+ RAM, always use high-performance endpoint
+          const memoryGB = typeof navigator !== 'undefined' ? (navigator as any).deviceMemory || 4 : 4;
+          const hasSuperHighMemory = memoryGB >= 16;
+          
+          videoRef.current.src = (devicePerformance === 'high' || hasSuperHighMemory) ? 
             '/api/video/ohana/highperf' : '/api/video/ohana';
           videoRef.current.load();
           
@@ -257,13 +261,24 @@ export function OhanaVideoPlayer({
     const devicePerformance = getDevicePerformance();
     const settings = getVideoDisplaySettings();
     
+    // Check for high-RAM systems (16GB+)
+    const memoryGB = typeof navigator !== 'undefined' ? (navigator as any).deviceMemory || 4 : 4;
+    const hasSuperHighMemory = memoryGB >= 16;
+    
     if (videoRef.current && src.includes('/api/video/ohana')) {
-      // Use the optimal endpoint based on device capabilities
-      console.log(`Using adaptive video quality for ${deviceType} device with ${devicePerformance} performance`);
-      console.log(`Selected video endpoint: ${settings.videoEndpoint}`);
+      // For 16GB+ RAM systems, always use high-performance endpoint
+      let endpoint = settings.videoEndpoint;
+      if (hasSuperHighMemory && !endpoint.includes('/highperf')) {
+        endpoint = '/api/video/ohana/highperf';
+        console.log(`Using adaptive video quality for ${deviceType} device with ultra-high memory (${memoryGB}GB RAM)`);
+      } else {
+        console.log(`Using adaptive video quality for ${deviceType} device with ${devicePerformance} performance`);
+      }
+      
+      console.log(`Selected video endpoint: ${endpoint}`);
       
       // Set src based on device capabilities
-      videoRef.current.src = settings.videoEndpoint;
+      videoRef.current.src = endpoint;
       videoRef.current.load();
     }
   }, [src]);
