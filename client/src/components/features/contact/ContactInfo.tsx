@@ -23,7 +23,7 @@ export default function ContactInfo({ isDarkMode }: ContactInfoProps) {
           </div>
           <div>
             <h3 className={`font-medium ${isDarkMode ? 'text-white' : 'text-neutral-800'} mb-1`}>Office Address</h3>
-            <p className={isDarkMode ? 'text-slate-300' : 'text-neutral-600'}>505 Shiloh Dr, Apt 201<br />Laredo, TX 78045</p>
+            <p className={isDarkMode ? 'text-slate-300' : 'text-neutral-600'}>505 Shiloh Dr. #201<br />Laredo, TX 78045</p>
           </div>
         </div>
         
