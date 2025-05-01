@@ -264,7 +264,7 @@ export class DatabaseStorage implements IStorage {
         }
         
         // Filter by zipCode
-        if (filters.zipCode && property.zip_code !== filters.zipCode) {
+        if (filters.zipCode && property.zipCode !== filters.zipCode) {
           includeProperty = false;
         }
         

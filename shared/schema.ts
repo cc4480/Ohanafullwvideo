@@ -9,10 +9,10 @@ export const users = pgTable('users', {
   username: text('username').notNull().unique(),
   password: text('password').notNull(),
   email: text('email').notNull().unique(),
-  fullName: text('full_name'),
+  fullName: text('fullName'),
   role: text('role').default('user').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  lastLogin: timestamp('last_login'),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  lastLogin: timestamp('lastLogin'),
 });
 
 // User schema for validation
@@ -27,17 +27,17 @@ export const neighborhoods = pgTable('neighborhoods', {
   description: text('description').notNull(),
   city: text('city').notNull(),
   state: text('state').notNull(),
-  zipCode: text('zip_code').notNull(),
+  zipCode: text('zipCode').notNull(),
   image: text('image'),
   lat: decimal('lat', { precision: 9, scale: 6 }),
   lng: decimal('lng', { precision: 9, scale: 6 }),
   amenities: jsonb('amenities'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
   // Enhanced SEO fields
-  seoMetaTitle: text('seo_meta_title'),
-  seoMetaDescription: text('seo_meta_description'),
-  seoKeywords: text('seo_keywords'),
+  seoMetaTitle: text('seoMetaTitle'),
+  seoMetaDescription: text('seoMetaDescription'),
+  seoKeywords: text('seoKeywords'),
   // Enhanced Laredo-specific neighborhood data
   history: text('history'),                        // Neighborhood history and background
   schools: jsonb('schools').$type<string[]>(),     // Local schools in the neighborhood
@@ -45,12 +45,12 @@ export const neighborhoods = pgTable('neighborhoods', {
   dining: jsonb('dining').$type<string[]>(),       // Local restaurants and dining options
   recreation: jsonb('recreation').$type<string[]>(),  // Parks, sports facilities, etc.
   transportation: jsonb('transportation').$type<string[]>(), // Public transit, highways, etc.
-  medianHomePrice: integer('median_home_price'),   // Median home price in the neighborhood
-  crimeRate: real('crime_rate'),                  // Crime statistics (lower is better)
-  schoolRating: real('school_rating'),            // Average school rating (1-10)
-  walkScore: integer('walk_score'),               // Walkability score (0-100)
-  yearEstablished: integer('year_established'),    // When the neighborhood was established
-  localLandmarks: jsonb('local_landmarks').$type<string[]>(),  // Notable landmarks in the area
+  medianHomePrice: integer('medianHomePrice'),   // Median home price in the neighborhood
+  crimeRate: real('crimeRate'),                  // Crime statistics (lower is better)
+  schoolRating: real('schoolRating'),            // Average school rating (1-10)
+  walkScore: integer('walkScore'),               // Walkability score (0-100)
+  yearEstablished: integer('yearEstablished'),    // When the neighborhood was established
+  localLandmarks: jsonb('localLandmarks').$type<string[]>(),  // Notable landmarks in the area
 });
 
 // Neighborhood validation schema
@@ -65,26 +65,26 @@ export const properties = pgTable('properties', {
   address: text('address').notNull(),
   city: text('city').notNull(),
   state: text('state').notNull(),
-  zipCode: text('zip_code').notNull(),
+  zipCode: text('zipCode').notNull(),
   price: integer('price').notNull(),
   bedrooms: integer('bedrooms').notNull(),
   bathrooms: decimal('bathrooms', { precision: 3, scale: 1 }).notNull(),
-  squareFeet: integer('square_feet').notNull(),
+  squareFeet: integer('squareFeet').notNull(),
   description: text('description').notNull(),
   features: jsonb('features'),
   images: jsonb('images').$type<string[]>(),
   status: text('status').default('active').notNull(), // active, pending, sold
-  yearBuilt: integer('year_built'),
-  parkingSpaces: integer('parking_spaces'),
+  yearBuilt: integer('yearBuilt'),
+  parkingSpaces: integer('parkingSpaces'),
   lat: decimal('lat', { precision: 9, scale: 6 }),
   lng: decimal('lng', { precision: 9, scale: 6 }),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-  neighborhoodId: integer('neighborhood_id').references(() => neighborhoods.id),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+  neighborhoodId: integer('neighborhoodId').references(() => neighborhoods.id),
   featured: boolean('featured').default(false).notNull(),
-  seoMetaTitle: text('seo_meta_title'),
-  seoMetaDescription: text('seo_meta_description'),
-  seoKeywords: text('seo_keywords'),
+  seoMetaTitle: text('seoMetaTitle'),
+  seoMetaDescription: text('seoMetaDescription'),
+  seoKeywords: text('seoKeywords'),
 });
 
 // Property validation schema
@@ -100,24 +100,24 @@ export const airbnbRentals = pgTable('airbnb_rentals', {
   address: text('address').notNull(),
   city: text('city').notNull(),
   state: text('state').notNull(),
-  zipCode: text('zip_code').notNull(),
+  zipCode: text('zipCode').notNull(),
   price: integer('price').notNull(), // per night
   bedrooms: integer('bedrooms').notNull(),
   bathrooms: decimal('bathrooms', { precision: 3, scale: 1 }).notNull(),
-  maxGuests: integer('max_guests').notNull(),
-  squareFeet: integer('square_feet'),
+  maxGuests: integer('maxGuests').notNull(),
+  squareFeet: integer('squareFeet'),
   description: text('description').notNull(),
   amenities: jsonb('amenities').$type<string[]>(),
   images: jsonb('images').$type<string[]>(),
   lat: decimal('lat', { precision: 9, scale: 6 }),
   lng: decimal('lng', { precision: 9, scale: 6 }),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-  neighborhoodId: integer('neighborhood_id').references(() => neighborhoods.id),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+  neighborhoodId: integer('neighborhoodId').references(() => neighborhoods.id),
   featured: boolean('featured').default(false).notNull(),
-  seoMetaTitle: text('seo_meta_title'),
-  seoMetaDescription: text('seo_meta_description'),
-  seoKeywords: text('seo_keywords'),
+  seoMetaTitle: text('seoMetaTitle'),
+  seoMetaDescription: text('seoMetaDescription'),
+  seoKeywords: text('seoKeywords'),
 });
 
 // Airbnb rental validation schema
@@ -132,9 +132,9 @@ export const messages = pgTable('messages', {
   email: text('email').notNull(),
   phone: text('phone'),
   message: text('message').notNull(),
-  propertyId: integer('property_id').references(() => properties.id),
-  airbnbRentalId: integer('airbnb_rental_id').references(() => airbnbRentals.id),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  propertyId: integer('propertyId').references(() => properties.id),
+  airbnbRentalId: integer('airbnbRentalId').references(() => airbnbRentals.id),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
   read: boolean('read').default(false).notNull(),
 });
 
@@ -146,10 +146,10 @@ export type Message = typeof messages.$inferSelect;
 // Favorites table - tracks user's favorited properties
 export const favorites = pgTable('favorites', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
-  propertyId: integer('property_id').references(() => properties.id),
-  airbnbRentalId: integer('airbnb_rental_id').references(() => airbnbRentals.id),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  userId: integer('userId').notNull().references(() => users.id),
+  propertyId: integer('propertyId').references(() => properties.id),
+  airbnbRentalId: integer('airbnbRentalId').references(() => airbnbRentals.id),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
 });
 
 // Favorite validation schema
@@ -162,11 +162,11 @@ export const seoKeywords = pgTable('seo_keywords', {
   id: serial('id').primaryKey(),
   keyword: text('keyword').notNull().unique(),
   category: text('category').notNull(), // primary, long-tail, neighborhood, competitor
-  searchVolume: integer('search_volume').default(0),
-  difficultyScore: integer('difficulty_score').default(50),
+  searchVolume: integer('searchVolume').default(0),
+  difficultyScore: integer('difficultyScore').default(50),
   priority: integer('priority').default(0).notNull(), // 0-10, higher = more important
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 });
 
 // SEO keyword schema
@@ -177,15 +177,15 @@ export type SeoKeyword = typeof seoKeywords.$inferSelect;
 // SEO ranking history table for tracking position changes over time
 export const seoRankings = pgTable('seo_rankings', {
   id: serial('id').primaryKey(),
-  keywordId: integer('keyword_id').notNull().references(() => seoKeywords.id),
+  keywordId: integer('keywordId').notNull().references(() => seoKeywords.id),
   position: integer('position').notNull(),
   date: timestamp('date').defaultNow().notNull(),
   url: text('url').notNull(), // URL that's ranking
   // Competitor positions
-  coldwellPosition: integer('coldwell_position'),
-  remaxPosition: integer('remax_position'),
-  zillowPosition: integer('zillow_position'),
-  truliaPosition: integer('trulia_position'),
+  coldwellPosition: integer('coldwellPosition'),
+  remaxPosition: integer('remaxPosition'),
+  zillowPosition: integer('zillowPosition'),
+  truliaPosition: integer('truliaPosition'),
 });
 
 // SEO ranking schema
