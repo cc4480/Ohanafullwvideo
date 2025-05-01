@@ -5,9 +5,14 @@
  * for better SEO visibility. It also generates per-property URLs.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { Pool } = require('@neondatabase/serverless');
+import fs from 'fs';
+import path from 'path';
+import { Pool } from '@neondatabase/serverless';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const SITE_URL = 'https://ohanarealty.com';
 
@@ -117,8 +122,8 @@ async function generateSitemap() {
   }
 }
 
-// Run the sitemap generator if this script is executed directly
-if (require.main === module) {
+// Run the sitemap generator if this is the main module
+if (import.meta.url.endsWith(process.argv[1])) {
   generateSitemap()
     .then(success => {
       if (success) {
@@ -135,4 +140,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { generateSitemap };
+export { generateSitemap };

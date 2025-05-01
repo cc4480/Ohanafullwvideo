@@ -10,7 +10,7 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 # Run the sitemap generator
-NODE_ENV=production node scripts/generate-sitemap.js
+NODE_ENV=production node --input-type=module scripts/generate-sitemap.js
 
 # Check if sitemap generation was successful
 if [ $? -eq 0 ]; then
