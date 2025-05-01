@@ -14,6 +14,9 @@ import { useLocation } from 'wouter';
 export default function EnhancedNeighborhoodDemo() {
   const [_, navigate] = useLocation();
   
+  console.log('EnhancedNeighborhoodDemo rendering');
+  console.log('North Laredo data:', northLaredoData);
+  
   return (
     <div className="container mx-auto py-8 px-4">
       {/* Enhanced SEO metadata */}
