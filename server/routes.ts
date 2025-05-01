@@ -842,7 +842,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   <footer>
     <p>© ${new Date().getFullYear()} Ohana Realty. All rights reserved.</p>
-    <p>123 Main Street, Laredo, TX 78040 | (956) 123-4567 | info@ohanarealty.com</p>
+    <p>123 Main Street, Laredo, TX 78040 | (956) 324-6714 | info@ohanarealty.com</p>
   </footer>
 </body>
 </html>`;

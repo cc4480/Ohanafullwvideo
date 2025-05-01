@@ -4,11 +4,15 @@ import OhanaVideoPlayer from "../ui/OhanaVideoPlayer";
 interface FeaturedAirbnbRentalsProps {
   title?: string;
   subtitle?: string;
+  limit?: number;
+  showViewAllButton?: boolean;
 }
 
 export function FeaturedAirbnbRentals({
   title = "Experience Laredo Luxury Living",
-  subtitle = "Take a virtual tour of our exclusive properties"
+  subtitle = "Take a virtual tour of our exclusive properties",
+  limit = 4,
+  showViewAllButton = false
 }: FeaturedAirbnbRentalsProps) {
   const [isVisible, setIsVisible] = useState(false);
   
@@ -72,17 +76,31 @@ export function FeaturedAirbnbRentals({
           {/* Removed floating particles */}
         </div>
         
-        {/* CTA button */}
+        {/* CTA buttons */}
         <div className={`mt-10 text-center transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <a 
-            href="/contact" 
-            className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium transition-all duration-300 hover:from-blue-500 hover:to-indigo-500 hover:shadow-lg hover:shadow-blue-500/20 transform hover:-translate-y-1"
-          >
-            Contact Us About This Property
-            <svg className="ml-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a 
+              href="/contact" 
+              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium transition-all duration-300 hover:from-blue-500 hover:to-indigo-500 hover:shadow-lg hover:shadow-blue-500/20 transform hover:-translate-y-1"
+            >
+              Contact Us About This Property
+              <svg className="ml-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+            
+            {showViewAllButton && (
+              <a 
+                href="/airbnb" 
+                className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 text-white font-medium transition-all duration-300 hover:bg-white/20 hover:shadow-lg transform hover:-translate-y-1 border border-blue-400/30"
+              >
+                View All Rentals
+                <svg className="ml-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </section>

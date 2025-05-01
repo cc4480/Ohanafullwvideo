@@ -87,12 +87,6 @@ export default function Footer() {
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3 group-hover:bg-secondary/20 transition-colors duration-300">
                   <i className='bx bx-phone text-secondary'></i>
                 </div>
-                <a href="tel:+19567123000" className="hover:text-white text-white/90 transition-colors duration-300">956-712-3000</a>
-              </li>
-              <li className="flex items-center group">
-                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3 group-hover:bg-secondary/20 transition-colors duration-300">
-                  <i className='bx bx-mobile text-secondary'></i>
-                </div>
                 <a href="tel:+19563246714" className="hover:text-white text-white/90 transition-colors duration-300">956-324-6714</a>
               </li>
               <li className="flex items-start group">
