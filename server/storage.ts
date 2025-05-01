@@ -112,10 +112,11 @@ export class DatabaseStorage implements IStorage {
 
   async getProperties(): Promise<Property[]> {
     try {
-      // Fixed query to match database column names correctly
-      const result = await db.select().from(properties);
-      console.log("Properties fetched successfully:", result.length);
-      return result;
+      // Using raw SQL to avoid column name issues
+      const result = await db.execute(sql`SELECT * FROM properties`);
+      const propertiesList = result.rows as Property[];
+      console.log("Properties fetched successfully:", propertiesList.length);
+      return propertiesList;
     } catch (error) {
       console.error("Error fetching properties:", error);
       // Return empty array instead of throwing error
@@ -221,14 +222,9 @@ export class DatabaseStorage implements IStorage {
     offset?: number;
   }): Promise<Property[]> {
     try {
-      // Build a query that combines all filters without complex query building
-      // that was causing TypeScript errors
-      
-      // Create separate queries for each filter condition
-      // and then combine results in memory to avoid TypeScript errors
-      
-      // First get all properties
-      const allProperties = await db.select().from(properties);
+      // First get all properties using raw SQL to avoid column name issues
+      const result = await db.execute(sql`SELECT * FROM properties`);
+      const allProperties = result.rows as Property[];
       
       // Then filter in memory
       let filteredProperties = allProperties.filter(property => {
@@ -259,7 +255,7 @@ export class DatabaseStorage implements IStorage {
         }
         
         // Filter by city
-        if (filters.city && property.city.toLowerCase().indexOf(filters.city.toLowerCase()) === -1) {
+        if (filters.city && property.city && property.city.toLowerCase().indexOf(filters.city.toLowerCase()) === -1) {
           includeProperty = false;
         }
         
@@ -448,27 +444,27 @@ export class DatabaseStorage implements IStorage {
   // Add a property to user's favorites
   async addFavorite(insertFavorite: InsertFavorite): Promise<Favorite> {
     try {
+      // Use raw SQL with correct column names - using camelCase as in the DB schema
       // Check if this favorite already exists
-      const existing = await db
-        .select()
-        .from(favorites)
-        .where(and(
-          eq(favorites.userId, insertFavorite.userId),
-          insertFavorite.propertyId ? eq(favorites.propertyId, insertFavorite.propertyId) : sql`TRUE`
-        ));
+      const existing = await db.execute(
+        sql`SELECT * FROM favorites 
+            WHERE "userId" = ${insertFavorite.userId} 
+            AND "propertyId" = ${insertFavorite.propertyId}`
+      );
       
       // If it already exists, return it
-      if (existing.length > 0) {
-        return existing[0];
+      if (existing.rows.length > 0) {
+        return existing.rows[0] as Favorite;
       }
       
       // Otherwise, create a new favorite
-      const [favorite] = await db
-        .insert(favorites)
-        .values(insertFavorite)
-        .returning();
+      const result = await db.execute(
+        sql`INSERT INTO favorites ("userId", "propertyId") 
+            VALUES (${insertFavorite.userId}, ${insertFavorite.propertyId}) 
+            RETURNING *`
+      );
       
-      return favorite;
+      return result.rows[0] as Favorite;
     } catch (error) {
       console.error("Error adding favorite:", error);
       throw error;
@@ -478,12 +474,10 @@ export class DatabaseStorage implements IStorage {
   // Remove a property from user's favorites
   async removeFavorite(userId: number, propertyId: number): Promise<boolean> {
     try {
-      await db
-        .delete(favorites)
-        .where(and(
-          eq(favorites.userId, userId),
-          eq(favorites.propertyId, propertyId)
-        ));
+      // Use raw SQL with correct column names - using camelCase as in DB schema
+      await db.execute(
+        sql`DELETE FROM favorites WHERE "userId" = ${userId} AND "propertyId" = ${propertyId}`
+      );
       
       return true;
     } catch (error) {
@@ -497,11 +491,11 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`Getting favorites for user ID: ${userId}`);
       
-      // Using raw SQL for better control over snake_case column names
+      // Using raw SQL for better control over column names - using camelCase as in the DB schema
       const result = await db.execute(
         sql`SELECT p.* FROM properties p
-            JOIN favorites f ON p.id = f.property_id
-            WHERE f.user_id = ${userId}`
+            JOIN favorites f ON p.id = f."propertyId"
+            WHERE f."userId" = ${userId}`
       );
       
       // Convert the raw result to typed array
@@ -518,9 +512,9 @@ export class DatabaseStorage implements IStorage {
   // Check if a property is in user's favorites
   async isFavorite(userId: number, propertyId: number): Promise<boolean> {
     try {
-      // Use raw SQL with correct column names
+      // Use raw SQL with correct column names - using camelCase as in the DB schema
       const result = await db.execute(
-        sql`SELECT * FROM favorites WHERE user_id = ${userId} AND property_id = ${propertyId} LIMIT 1`
+        sql`SELECT * FROM favorites WHERE "userId" = ${userId} AND "propertyId" = ${propertyId} LIMIT 1`
       );
       
       // Check if we got any results
