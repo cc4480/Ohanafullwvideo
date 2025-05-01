@@ -342,20 +342,22 @@ export class DatabaseStorage implements IStorage {
       // We need to extract all the fields from insertProperty
       const {
         type, address, city, state, zipCode, price, bedrooms, bathrooms, squareFeet,
-        description, images, amenities, features, neighborhood, neighborhoodId, mlsNumber,
-        daysOnMarket, virtualTourUrl, videoUrl, featured
+        description, images, features, neighborhoodId, status, yearBuilt, 
+        parkingSpaces, lat, lng, seoMetaTitle, seoMetaDescription, seoKeywords, featured
       } = insertProperty;
       
       // Insert with raw SQL
       const result = await db.execute(sql`
         INSERT INTO properties (
           "type", address, city, state, "zipCode", price, bedrooms, bathrooms, "squareFeet",
-          description, images, amenities, features, neighborhood, "neighborhoodId", "mlsNumber",
-          "daysOnMarket", "virtualTourUrl", "videoUrl", featured, "createdAt", "updatedAt"
+          description, images, features, "neighborhoodId", status, "yearBuilt", 
+          "parkingSpaces", lat, lng, "seoMetaTitle", "seoMetaDescription", "seoKeywords", 
+          featured, "createdAt", "updatedAt"
         ) VALUES (
           ${type}, ${address}, ${city}, ${state}, ${zipCode}, ${price}, ${bedrooms}, ${bathrooms}, ${squareFeet},
-          ${description}, ${images}, ${amenities}, ${features}, ${neighborhood}, ${neighborhoodId}, ${mlsNumber},
-          ${daysOnMarket}, ${virtualTourUrl}, ${videoUrl}, ${featured}, NOW(), NOW()
+          ${description}, ${images || null}, ${features || null}, ${neighborhoodId || null}, ${status || 'active'}, ${yearBuilt || null}, 
+          ${parkingSpaces || null}, ${lat || null}, ${lng || null}, ${seoMetaTitle || null}, ${seoMetaDescription || null}, ${seoKeywords || null}, 
+          ${featured || false}, NOW(), NOW()
         ) RETURNING *
       `);
       
@@ -444,24 +446,24 @@ export class DatabaseStorage implements IStorage {
     try {
       // Extract fields from insertNeighborhood
       const {
-        name, city, state, zipCode, description, image, lat, lng, introduction, history,
-        schools, parks, shopping, restaurants, safetyRating, walkabilityScore, 
-        medianHomePrice, medianRent, populationDensity, localBusiness, events, attractions,
-        publicTransport, demographics, faqs, localLandmarks
+        name, city, state, zipCode, description, image, lat, lng, history,
+        schools, shopping, dining, recreation, transportation, medianHomePrice, 
+        crimeRate, schoolRating, walkScore, yearEstablished, localLandmarks,
+        amenities, seoMetaTitle, seoMetaDescription, seoKeywords
       } = insertNeighborhood;
       
       // Insert using raw SQL
       const result = await db.execute(sql`
         INSERT INTO neighborhoods (
-          name, city, state, "zipCode", description, image, lat, lng, introduction, history,
-          schools, parks, shopping, restaurants, "safetyRating", "walkabilityScore", 
-          "medianHomePrice", "medianRent", "populationDensity", "localBusiness", events, attractions,
-          "publicTransport", demographics, faqs, "localLandmarks", "createdAt", "updatedAt"
+          name, city, state, "zipCode", description, image, lat, lng, history,
+          schools, shopping, dining, recreation, transportation, "medianHomePrice", 
+          "crimeRate", "schoolRating", "walkScore", "yearEstablished", "localLandmarks",
+          amenities, "seoMetaTitle", "seoMetaDescription", "seoKeywords", "createdAt", "updatedAt"
         ) VALUES (
-          ${name}, ${city}, ${state}, ${zipCode}, ${description}, ${image}, ${lat}, ${lng}, ${introduction}, ${history},
-          ${schools}, ${parks}, ${shopping}, ${restaurants}, ${safetyRating}, ${walkabilityScore}, 
-          ${medianHomePrice}, ${medianRent}, ${populationDensity}, ${localBusiness}, ${events}, ${attractions},
-          ${publicTransport}, ${demographics}, ${faqs}, ${localLandmarks}, NOW(), NOW()
+          ${name}, ${city}, ${state}, ${zipCode}, ${description}, ${image || null}, ${lat || null}, ${lng || null}, ${history || null},
+          ${schools || null}, ${shopping || null}, ${dining || null}, ${recreation || null}, ${transportation || null}, ${medianHomePrice || null}, 
+          ${crimeRate || null}, ${schoolRating || null}, ${walkScore || null}, ${yearEstablished || null}, ${localLandmarks || null},
+          ${amenities || null}, ${seoMetaTitle || null}, ${seoMetaDescription || null}, ${seoKeywords || null}, NOW(), NOW()
         ) RETURNING *
       `);
       
@@ -766,7 +768,7 @@ export class DatabaseStorage implements IStorage {
       const {
         type, address, city, state, zipCode, price, bedrooms, bathrooms,
         description, title, maxGuests, neighborhoodId, images, amenities,
-        calendar, reviews, featured
+        squareFeet, lat, lng, seoMetaTitle, seoMetaDescription, seoKeywords, featured
       } = insertRental;
       
       // Insert using raw SQL
@@ -774,11 +776,13 @@ export class DatabaseStorage implements IStorage {
         INSERT INTO airbnb_rentals (
           type, address, city, state, "zipCode", price, bedrooms, bathrooms,
           description, title, "maxGuests", "neighborhoodId", images, amenities,
-          calendar, reviews, featured, "createdAt", "updatedAt"
+          "squareFeet", lat, lng, "seoMetaTitle", "seoMetaDescription", "seoKeywords",
+          featured, "createdAt", "updatedAt"
         ) VALUES (
           ${type}, ${address}, ${city}, ${state}, ${zipCode}, ${price}, ${bedrooms}, ${bathrooms},
-          ${description}, ${title}, ${maxGuests}, ${neighborhoodId}, ${images}, ${amenities},
-          ${calendar}, ${reviews}, ${featured}, NOW(), NOW()
+          ${description}, ${title}, ${maxGuests}, ${neighborhoodId || null}, ${images || null}, ${amenities || null},
+          ${squareFeet || null}, ${lat || null}, ${lng || null}, ${seoMetaTitle || null}, ${seoMetaDescription || null}, ${seoKeywords || null},
+          ${featured || false}, NOW(), NOW()
         ) RETURNING *
       `);
       
