@@ -497,36 +497,18 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`Getting favorites for user ID: ${userId}`);
       
-      // First get all favorites for the user (use fully qualified column name to avoid errors)
-      const userFavorites = await db
-        .select()
-        .from(favorites)
-        .where(eq(favorites.userId, userId));
+      // Using raw SQL for better control over snake_case column names
+      const result = await db.execute(
+        sql`SELECT p.* FROM properties p
+            JOIN favorites f ON p.id = f.property_id
+            WHERE f.user_id = ${userId}`
+      );
       
-      console.log(`Found ${userFavorites.length} favorites for user ID: ${userId}`);
+      // Convert the raw result to typed array
+      const properties = result.rows as Property[];
+      console.log(`Found ${properties.length} favorite properties for user ID: ${userId}`);
       
-      // If the user has no favorites, return empty array
-      if (userFavorites.length === 0) {
-        return [];
-      }
-      
-      // Get all property IDs
-      const propertyIds = userFavorites
-        .map(fav => fav.propertyId)
-        .filter(id => id !== null) as number[];
-      
-      // If no property IDs, return empty array
-      if (propertyIds.length === 0) {
-        return [];
-      }
-      
-      // Get all properties by IDs
-      const favoriteProperties = await db
-        .select()
-        .from(properties)
-        .where(sql`${properties.id} IN (${propertyIds.join(',')})`);
-      
-      return favoriteProperties;
+      return properties;
     } catch (error) {
       console.error("Error getting user favorites:", error);
       return [];
@@ -535,15 +517,18 @@ export class DatabaseStorage implements IStorage {
   
   // Check if a property is in user's favorites
   async isFavorite(userId: number, propertyId: number): Promise<boolean> {
-    const [favorite] = await db
-      .select()
-      .from(favorites)
-      .where(and(
-        eq(favorites.userId, userId),
-        eq(favorites.propertyId, propertyId)
-      ));
-    
-    return !!favorite;
+    try {
+      // Use raw SQL with correct column names
+      const result = await db.execute(
+        sql`SELECT * FROM favorites WHERE user_id = ${userId} AND property_id = ${propertyId} LIMIT 1`
+      );
+      
+      // Check if we got any results
+      return result.rows.length > 0;
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+      return false;
+    }
   }
   
   // Get all Airbnb rentals
