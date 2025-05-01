@@ -81,33 +81,87 @@ export function OhanaVideoPlayer({
     });
   }, []);
   
-  // Update device settings on window resize
+  // Throttle function for performance-critical handlers
+  const throttle = (func: Function, limit: number) => {
+    let inThrottle: boolean;
+    let lastTime = 0;
+    return function(this: any, ...args: any[]) {
+      const now = Date.now();
+      if (!inThrottle && now - lastTime >= limit) {
+        func.apply(this, args);
+        lastTime = now;
+        inThrottle = true;
+        setTimeout(() => inThrottle = false, limit);
+      }
+    };
+  };
+  
+  // Update device settings on window resize with throttling
   useEffect(() => {
-    const handleResize = () => {
+    // Track last resize timestamp to prevent excessive changes
+    let lastResizeTimestamp = 0;
+    const resizeThrottleMs = 1000; // Only process resize once per second
+    
+    // Track the original source and time so we can resume playback
+    let originalSrc = '';
+    let originalTime = 0;
+    let wasPlaying = false;
+    
+    const handleResize = throttle(() => {
+      // Update device settings
       setDeviceSettings(getVideoDisplaySettings());
       
-      // Re-evaluate the video source on resize (e.g., device orientation change)
+      // Re-evaluate the video source on significant resize (e.g., device orientation change)
       if (videoRef.current && videoRef.current.src.includes('/api/video/ohana')) {
+        const now = Date.now();
+        
+        // Only process resize if sufficient time has passed since last resize
+        if (now - lastResizeTimestamp < resizeThrottleMs) return;
+        lastResizeTimestamp = now;
+        
         const settings = getVideoDisplaySettings();
         const deviceType = getDeviceType();
         const devicePerformance = getDevicePerformance();
         
-        // Don't change source during active playback to avoid interruption
-        if (!videoRef.current.paused) return;
-        
         console.log(`Device resize detected: ${deviceType} with ${devicePerformance} performance`);
         
-        // Update video source to match new device orientation/size
-        if (devicePerformance === 'low' || 
-            (devicePerformance === 'medium' && (deviceType === 'mobile' || deviceType === 'tablet'))) {
-          if (!videoRef.current.src.includes('/mobile')) {
-            console.log('Switching to mobile-optimized endpoint due to device resize');
-            videoRef.current.src = '/api/video/ohana/mobile';
-            videoRef.current.load();
-          }
+        // Remember playback state
+        wasPlaying = !videoRef.current.paused;
+        originalTime = videoRef.current.currentTime;
+        originalSrc = videoRef.current.src;
+        
+        // Only change source if the endpoint type needs to change
+        const shouldUseMobile = devicePerformance === 'low' || 
+            (devicePerformance === 'medium' && (deviceType === 'mobile' || deviceType === 'tablet'));
+        
+        if (shouldUseMobile && !videoRef.current.src.includes('/mobile')) {
+          console.log('Switching to mobile-optimized endpoint due to device resize');
+          videoRef.current.src = '/api/video/ohana/mobile';
+          videoRef.current.load();
+          
+          // After loading, restore playback position
+          videoRef.current.addEventListener('loadedmetadata', function onceLoaded() {
+            videoRef.current!.currentTime = originalTime;
+            if (wasPlaying) videoRef.current!.play().catch(e => console.error('Error resuming playback', e));
+            videoRef.current!.removeEventListener('loadedmetadata', onceLoaded);
+          });
+        } 
+        else if (!shouldUseMobile && videoRef.current.src.includes('/mobile')) {
+          console.log('Switching to standard/high-performance endpoint due to device resize');
+          // Choose between standard and high-performance based on capabilities
+          videoRef.current.src = devicePerformance === 'high' ? 
+            '/api/video/ohana/highperf' : '/api/video/ohana';
+          videoRef.current.load();
+          
+          // After loading, restore playback position
+          videoRef.current.addEventListener('loadedmetadata', function onceLoaded() {
+            videoRef.current!.currentTime = originalTime;
+            if (wasPlaying) videoRef.current!.play().catch(e => console.error('Error resuming playback', e));
+            videoRef.current!.removeEventListener('loadedmetadata', onceLoaded);
+          });
         }
       }
-    };
+    }, 250); // Throttle resize events to max once per 250ms
     
     window.addEventListener('resize', handleResize);
     
@@ -118,11 +172,7 @@ export function OhanaVideoPlayer({
   
   // Connect to WebSocket for real-time video performance optimization
   useEffect(() => {
-    // Disable WebSocket for now to avoid connection errors
-    // This fixes the unhandled promise rejections
-    return;
-    
-    /* Original WebSocket implementation - temporarily disabled
+    // Only enable WebSocket for high-performance devices
     if (!isHighPerformanceDevice()) return;
     
     // Create WebSocket connection for performance monitoring
@@ -197,7 +247,6 @@ export function OhanaVideoPlayer({
     } catch (err) {
       console.error('Error setting up WebSocket connection:', err);
     }
-    */
   }, []);
   
   // Use adaptive quality based on device capabilities
@@ -224,21 +273,6 @@ export function OhanaVideoPlayer({
     
     // Performance optimization: Use passive event listeners for better scroll performance
     const eventOptions = { passive: true };
-    
-    // Throttle function for performance-critical handlers
-    const throttle = (func: Function, limit: number) => {
-      let inThrottle: boolean;
-      let lastTime = 0;
-      return function(this: any, ...args: any[]) {
-        const now = Date.now();
-        if (!inThrottle && now - lastTime >= limit) {
-          func.apply(this, args);
-          lastTime = now;
-          inThrottle = true;
-          setTimeout(() => inThrottle = false, limit);
-        }
-      };
-    };
     
     const handleCanPlay = () => {
       setIsLoaded(true);
