@@ -80,7 +80,7 @@ export default function About() {
         addressLocality="Laredo"
         addressRegion="TX"
         postalCode="78041"
-        telephone="+19567123000"
+        telephone="+19563246714"
         email="valentin_cuellar@hotmail.com"
         priceRange="$$$"
         latitude={27.5629}

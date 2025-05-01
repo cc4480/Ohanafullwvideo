@@ -64,7 +64,7 @@ function App() {
     name: "Ohana Realty",
     logo: LOGO_URL,
     address: "123 Main St, Laredo, TX 78040",
-    phone: "+1 (956) 123-4567",
+    phone: "+1 (956) 324-6714",
     email: "info@ohanarealty.com",
     sameAs: [
       "https://facebook.com/ohanarealty",
@@ -246,7 +246,7 @@ function App() {
           },
           {
             question: "How can I schedule a property viewing?",
-            answer: "You can schedule a viewing directly through our website by visiting the property listing page and clicking the 'Schedule Viewing' button, or by contacting us at (956) 123-4567."
+            answer: "You can schedule a viewing directly through our website by visiting the property listing page and clicking the 'Schedule Viewing' button, or by contacting us at (956) 324-6714."
           },
           {
             question: "Do you handle commercial properties?",

@@ -611,15 +611,15 @@ export default function PropertyDetails({ id }: { id: number }) {
                 
                 <div className="space-y-3 sm:space-y-4">
                   <a 
-                    href="tel:+19567123000" 
-                    aria-label="Call Ohana Realty office at (956) 712-3000"
+                    href="tel:+19563246714" 
+                    aria-label="Call Ohana Realty at (956) 324-6714"
                   >
                     <Button 
                       className="w-full h-9 sm:h-10 transform-gpu active:scale-95 transition-transform" 
                       size="sm"
                     >
                       <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" aria-hidden="true" />
-                      Call (956) 712-3000
+                      Call (956) 324-6714
                     </Button>
                   </a>
                   <a 
