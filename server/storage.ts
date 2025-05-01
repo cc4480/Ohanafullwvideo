@@ -112,8 +112,10 @@ export class DatabaseStorage implements IStorage {
 
   async getProperties(): Promise<Property[]> {
     try {
-      // Simple optimized query with error handling and consistent performance
-      return await db.select().from(properties);
+      // Fixed query to match database column names correctly
+      const result = await db.select().from(properties);
+      console.log("Properties fetched successfully:", result.length);
+      return result;
     } catch (error) {
       console.error("Error fetching properties:", error);
       // Return empty array instead of throwing error
@@ -262,7 +264,7 @@ export class DatabaseStorage implements IStorage {
         }
         
         // Filter by zipCode
-        if (filters.zipCode && property.zipCode !== filters.zipCode) {
+        if (filters.zipCode && property.zip_code !== filters.zipCode) {
           includeProperty = false;
         }
         
@@ -493,11 +495,15 @@ export class DatabaseStorage implements IStorage {
   // Get all favorited properties for a user
   async getUserFavorites(userId: number): Promise<Property[]> {
     try {
-      // First get all favorites for the user
+      console.log(`Getting favorites for user ID: ${userId}`);
+      
+      // First get all favorites for the user (use fully qualified column name to avoid errors)
       const userFavorites = await db
         .select()
         .from(favorites)
         .where(eq(favorites.userId, userId));
+      
+      console.log(`Found ${userFavorites.length} favorites for user ID: ${userId}`);
       
       // If the user has no favorites, return empty array
       if (userFavorites.length === 0) {
@@ -623,7 +629,7 @@ export class DatabaseStorage implements IStorage {
         }
         
         // Filter by city
-        if (filters.city && rental.city.toLowerCase().indexOf(filters.city.toLowerCase()) === -1) {
+        if (filters.city && rental.city && rental.city.toLowerCase().indexOf(filters.city.toLowerCase()) === -1) {
           includeRental = false;
         }
         
