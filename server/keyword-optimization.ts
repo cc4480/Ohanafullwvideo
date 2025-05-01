@@ -5,51 +5,140 @@
  * Developed with advanced local search domination techniques
  */
 
-// Primary real estate keywords for Laredo, TX
+// Massive keyword list for maximum search visibility
 export const PRIMARY_KEYWORDS = [
-  'homes for sale in laredo',
-  'houses for sale in laredo',
-  'houses for rent in laredo',
-  'condos for rent in laredo',
-  'laredo real estate',
-  'laredo real estate agents',
-  'laredo property search',
-  'buy house in laredo',
-  'laredo homes',
-  'laredo houses',
-  'real estate listings laredo',
+  // Essential house keywords (highest priority)
+  'house', 'houses', 'homes', 'home', 'house laredo', 'houses laredo', 'homes laredo', 'home laredo',
+  'houses for sale', 'house for sale', 'homes for sale', 'house for sale laredo', 'houses for sale laredo',
+  'houses for rent', 'house for rent', 'homes for rent', 'house for rent laredo', 'houses for rent laredo',
+  'buy house', 'buy house laredo', 'buy home laredo', 'buy house in laredo', 'buy home in laredo',
+  'sell house', 'sell house laredo', 'sell home laredo', 'sell house in laredo',
+  'laredo house', 'laredo houses', 'laredo home', 'laredo homes', 'find house laredo',
+  'best houses laredo', 'cheap houses laredo', 'affordable houses laredo', 'luxury houses laredo',
+  'houses near me', 'house near me', 'homes near me', 'houses in my area', 'houses in laredo tx',
+  
+  // Location-specific combos (medium priority)
+  'homes for sale in laredo', 'houses for sale in laredo', 'houses for sale in laredo tx',
+  'houses for rent in laredo', 'condos for rent in laredo', 'apartments for rent laredo',
+  'laredo real estate', 'laredo texas real estate', 'laredo tx real estate', 'laredo realty',
+  'laredo real estate agents', 'laredo realtors', 'top real estate agents laredo',
+  'laredo property search', 'laredo property listings', 'laredo house listings',
+  'laredo house finder', 'find house in laredo', 'search houses laredo',
+  'real estate listings laredo', 'mls listings laredo', 'zillow laredo', 'realtor.com laredo',
+  'north laredo houses', 'south laredo houses', 'downtown laredo houses', 'central laredo houses',
+  'east laredo houses', 'west laredo houses', 'best neighborhoods laredo',
+  
+  // Price-specific combos (medium priority)
+  'houses under 200k laredo', 'houses under 300k laredo', 'houses under 400k laredo',
+  'affordable houses laredo', 'cheap houses laredo', 'budget houses laredo',
+  'luxury houses laredo', 'expensive houses laredo', 'high-end houses laredo',
+  'house prices laredo', 'home values laredo', 'house cost laredo',
+  
+  // Feature-specific combos (medium priority)
+  '3 bedroom house laredo', '4 bedroom house laredo', '5 bedroom house laredo',
+  'house with pool laredo', 'house with garage laredo', 'house with yard laredo',
+  'new construction house laredo', 'newly built house laredo', 'new house laredo',
+  'single family home laredo', 'townhouse laredo', 'condo laredo',
+  'modern house laredo', 'ranch house laredo', 'colonial house laredo',
 ];
 
 // Long-tail keywords with higher conversion potential
 export const LONG_TAIL_KEYWORDS = [
-  'affordable homes in laredo texas',
-  'luxury homes for sale laredo',
-  'new construction homes laredo tx',
-  'waterfront properties laredo',
-  'gated community homes laredo',
-  'laredo houses with pool',
-  'laredo houses with large yard',
-  'best neighborhoods to live in laredo',
-  'laredo homes near schools',
-  'laredo homes under 200k',
-  'townhomes for sale in laredo',
-  'investment properties laredo',
-  'airbnb rentals laredo',
+  // Essential house variations for maximum visibility
+  'house for sale laredo TX', 'laredo texas house for sale', 'laredo tx homes', 'house in laredo',
+  'houses in laredo', 'laredo houses for sale by owner', 'laredo tx real estate for sale',
+  'laredo house finder', 'houses in laredo texas', 'sale house laredo', 'sell my house laredo',
+  'find me a house in laredo', 'i want to buy a house in laredo', 'where to buy house in laredo',
+  'house hunt laredo', 'move to laredo house', 'relocate to laredo house',
+  
+  // Price-based variations
+  'affordable homes in laredo texas', 'cheap house laredo', 'inexpensive houses laredo',
+  'low cost homes laredo', 'budget friendly houses laredo', 'reasonably priced homes laredo',
+  'laredo houses under 100k', 'laredo houses under 150k', 'laredo homes under 200k',
+  'laredo houses under 250k', 'laredo houses under 300k', 'laredo homes under 350k',
+  'luxury homes for sale laredo', 'expensive houses laredo', 'high end homes laredo',
+  'premium houses laredo', 'upscale homes laredo', 'executive homes laredo',
+  
+  // Feature-based variations
+  'new construction homes laredo tx', 'newly built houses laredo', 'modern homes laredo',
+  'waterfront properties laredo', 'river view homes laredo', 'lake view houses laredo',
+  'gated community homes laredo', 'secured neighborhood houses laredo', 'gated homes laredo',
+  'laredo houses with pool', 'swimming pool homes laredo', 'houses with pools laredo tx',
+  'laredo houses with large yard', 'big backyard homes laredo', 'large lot houses laredo',
+  'laredo homes with garage', 'covered parking homes laredo', '2 car garage homes laredo',
+  'laredo homes with basement', 'houses with patio laredo', 'laredo homes with office space',
+  
+  // Location and neighborhood variations
+  'best neighborhoods to live in laredo', 'top laredo communities', 'nicest parts of laredo',
+  'laredo homes near schools', 'houses near hospitals laredo', 'homes near shopping laredo',
+  'downtown laredo houses', 'north laredo homes', 'south laredo houses',
+  'east laredo homes', 'west laredo houses', 'central laredo homes',
+  'alexander estates laredo', 'del mar hills laredo', 'plantation laredo houses',
+  
+  // Type-specific variations
+  'townhomes for sale in laredo', 'condos for sale laredo', 'duplexes for sale laredo',
+  'mobile homes laredo', 'prefab houses laredo', 'manufactured homes laredo',
+  'single family homes laredo', 'multi family homes laredo', 'ranch style homes laredo',
+  'investment properties laredo', 'rental properties laredo', 'income properties laredo',
+  'airbnb rentals laredo', 'vacation homes laredo', 'second homes laredo',
 ];
 
-// Neighborhood-specific keywords
+// Neighborhood-specific keywords - massive list for local area domination
 export const NEIGHBORHOOD_KEYWORDS = [
-  'del mar hills laredo homes',
-  'alexander estates laredo houses',
-  'la bota ranch homes',
-  'lakeside laredo real estate',
-  'casa bella laredo homes for sale',
-  'north central laredo homes',
-  'san isidro northeast laredo houses',
-  'cielito lindo laredo real estate',
-  'plantation homes laredo',
-  'united heights laredo homes',
-  'fremont homes for sale laredo',
+  // Del Mar area variations
+  'del mar hills laredo homes', 'del mar hills houses', 'del mar hills real estate',
+  'del mar hills property', 'houses in del mar hills', 'homes for sale del mar hills',
+  'del mar hills laredo neighborhood', 'del mar hills luxury homes', 'del mar hills best homes',
+  
+  // Alexander area variations
+  'alexander estates laredo houses', 'alexander estates homes', 'alexander estates real estate',
+  'alexander estates properties', 'houses in alexander estates', 'homes for sale alexander estates',
+  'alexander estates laredo neighborhood', 'alexander estates luxury homes', 'alexander estates best homes',
+  
+  // La Bota area variations
+  'la bota ranch homes', 'la bota ranch houses', 'la bota ranch real estate',
+  'la bota ranch property', 'houses in la bota ranch', 'homes for sale la bota ranch',
+  'la bota ranch laredo neighborhood', 'la bota ranch luxury homes', 'la bota ranch best homes',
+  
+  // Lakeside area variations
+  'lakeside laredo real estate', 'lakeside houses', 'lakeside homes',
+  'lakeside laredo property', 'houses in lakeside', 'homes for sale lakeside laredo',
+  'lakeside laredo neighborhood', 'lakeside luxury homes', 'lakeside best homes',
+  
+  // Casa Bella area variations
+  'casa bella laredo homes for sale', 'casa bella houses', 'casa bella real estate',
+  'casa bella property', 'houses in casa bella', 'homes for sale casa bella',
+  'casa bella laredo neighborhood', 'casa bella luxury homes', 'casa bella best homes',
+  
+  // North Central area variations
+  'north central laredo homes', 'north central laredo houses', 'north central laredo real estate',
+  'north central laredo property', 'houses in north central laredo', 'homes for sale north central laredo',
+  'north central neighborhood', 'north central luxury homes', 'north central best homes',
+  
+  // San Isidro area variations
+  'san isidro northeast laredo houses', 'san isidro homes', 'san isidro real estate',
+  'san isidro property', 'houses in san isidro', 'homes for sale san isidro',
+  'san isidro laredo neighborhood', 'san isidro luxury homes', 'san isidro best homes',
+  
+  // Cielito Lindo area variations
+  'cielito lindo laredo real estate', 'cielito lindo houses', 'cielito lindo homes',
+  'cielito lindo property', 'houses in cielito lindo', 'homes for sale cielito lindo',
+  'cielito lindo laredo neighborhood', 'cielito lindo luxury homes', 'cielito lindo best homes',
+  
+  // Plantation area variations
+  'plantation homes laredo', 'plantation laredo houses', 'plantation laredo real estate',
+  'plantation laredo property', 'houses in plantation laredo', 'homes for sale plantation',
+  'plantation laredo neighborhood', 'plantation luxury homes', 'plantation best homes',
+  
+  // United Heights area variations
+  'united heights laredo homes', 'united heights houses', 'united heights real estate',
+  'united heights property', 'houses in united heights', 'homes for sale united heights',
+  'united heights laredo neighborhood', 'united heights luxury homes', 'united heights best homes',
+  
+  // Fremont area variations
+  'fremont homes for sale laredo', 'fremont laredo houses', 'fremont real estate',
+  'fremont property', 'houses in fremont laredo', 'homes for sale fremont',
+  'fremont laredo neighborhood', 'fremont luxury homes', 'fremont best homes',
 ];
 
 // Competitor-focused keywords
