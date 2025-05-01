@@ -39,6 +39,7 @@ export function OhanaVideoPlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isControlsVisible, setIsControlsVisible] = useState(false);
+  const [objectFit, setObjectFit] = useState<'contain' | 'cover' | 'fill'>('contain');
   
   // Handle fullscreen changes
   useEffect(() => {
@@ -678,18 +679,18 @@ export function OhanaVideoPlayer({
         x-webkit-playsinline="true"
         controlsList="nodownload"
         disablePictureInPicture={false}
-        className="w-full h-full object-contain" 
+        className="w-full h-full" 
         style={{
           objectPosition: 'center',
-          objectFit: deviceSettings.objectFit, /* Responsive object-fit based on device */
+          objectFit: 'contain', /* This ensures all content is visible */
           margin: 'auto',
           willChange: 'transform',
           WebkitBackfaceVisibility: 'hidden',
           backfaceVisibility: 'hidden',
           width: '100%',
           height: '100%',
-          maxHeight: deviceSettings.maxHeight,
-          maxWidth: deviceSettings.maxWidth,
+          maxHeight: '100vh',
+          maxWidth: '100%',
           background: deviceSettings.background /* Black background to fill any empty space */
         }}
       >  
