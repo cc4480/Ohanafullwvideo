@@ -3,99 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="You are currently offline. Please reconnect to continue using Ohana Realty.">
   <title>Offline - Ohana Realty</title>
   <style>
-    * {
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    html, body {
-      height: 100%;
-      width: 100%;
-      background-color: #f5f5f5;
-      color: #333;
-    }
-    
-    .container {
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100%;
-      padding: 0 20px;
+      height: 100vh;
       text-align: center;
     }
-    
-    .logo {
-      max-width: 150px;
-      margin-bottom: 2rem;
-    }
-    
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: #1c5c48; /* Ohana brand color */
-    }
-    
-    p {
-      font-size: 1.1rem;
-      line-height: 1.5;
-      margin-bottom: 2rem;
+    .offline-container {
       max-width: 500px;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
     }
-    
+    h1 {
+      color: #3a5c93;
+      margin-bottom: 1rem;
+    }
+    .logo {
+      margin-bottom: 2rem;
+      max-width: 200px;
+    }
+    .message {
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    .contact {
+      background-color: #f0f4f9;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
     .retry-button {
-      padding: 12px 24px;
-      background-color: #1c5c48;
+      background-color: #3a5c93;
       color: white;
       border: none;
-      border-radius: 4px;
-      font-size: 1rem;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: bold;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-    
     .retry-button:hover {
-      background-color: #134536;
-    }
-    
-    .footer {
-      margin-top: 3rem;
-      font-size: 0.9rem;
-      color: #666;
-    }
-    
-    .wifi-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      color: #999;
+      background-color: #2d4a77;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="wifi-icon">📶</div>
-    <h1>You're Offline</h1>
-    <p>We can't load the Ohana Realty website right now because you're not connected to the internet. Please check your connection and try again.</p>
-    <button class="retry-button" onclick="window.location.reload()">Try Again</button>
-    <p class="footer">Ohana Realty - 505 Shiloh Dr. #201, Laredo, TX 78045 - 956-324-6714</p>
+  <div class="offline-container">
+    <svg class="logo" width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 5 L15 25 L30 45 L45 25 Z" fill="#3a5c93"/>
+      <path d="M60 15 H70 Q75 15 75 20 V30 Q75 35 70 35 H60 V15 Z" fill="#3a5c93"/>
+      <text x="80" y="30" font-family="Arial" font-size="20" font-weight="bold" fill="#3a5c93">OHANA</text>
+    </svg>
+    
+    <h1>You're currently offline</h1>
+    
+    <div class="message">
+      <p>It looks like you've lost your internet connection. Please check your network and try again.</p>
+      <p>Some previously visited content may still be available, but new content requires an internet connection.</p>
+    </div>
+    
+    <button class="retry-button" onclick="window.location.reload()">
+      Try Again
+    </button>
+    
+    <div class="contact">
+      <p>Need immediate assistance? Call us at 956-324-6714</p>
+      <p>505 Shiloh Dr. #201, Laredo, TX 78045</p>
+    </div>
   </div>
   
   <script>
-    // Check if we're back online
-    window.addEventListener('online', () => {
-      window.location.reload();
-    });
-    
-    // Listen for the beforeinstallprompt event
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // For offline pages, we might want to prompt installation
-      console.log('App can be installed, we are offline now.');
-    });
+    // Check network status periodically
+    setInterval(() => {
+      if (navigator.onLine) {
+        window.location.reload();
+      }
+    }, 5000); // Check every 5 seconds
   </script>
 </body>
 </html>
