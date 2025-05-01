@@ -2,6 +2,7 @@ import { Express, Request, Response, NextFunction } from 'express';
 import { PRIMARY_KEYWORDS, LONG_TAIL_KEYWORDS, NEIGHBORHOOD_KEYWORDS, COMPETITOR_KEYWORDS, generateSEOMetaTags, generateStructuredData } from './keyword-optimization';
 import { db } from './db';
 import { seoKeywords, seoRankings } from '@shared/schema';
+import { eq } from 'drizzle-orm';
 
 /**
  * Enhanced SEO Functions
@@ -32,7 +33,7 @@ export function configureSEO(app: Express) {
       // Get rankings with keyword data included
       const rankings = await db.select()
         .from(seoRankings)
-        .innerJoin(seoKeywords, seoRankings.keywordId, seoKeywords.id);
+        .innerJoin(seoKeywords, eq(seoRankings.keywordId, seoKeywords.id));
         
       // Format the response with nested objects
       const formattedRankings = rankings.map(row => ({
@@ -102,8 +103,8 @@ export function configureSEO(app: Express) {
       // Get the most recent ranking for each keyword
       const rankings = await db.select()
         .from(seoRankings)
-        .innerJoin(seoKeywords, seoRankings.keywordId, seoKeywords.id)
-        .orderBy(seoRankings.date, 'desc');
+        .innerJoin(seoKeywords, eq(seoRankings.keywordId, seoKeywords.id))
+        .orderBy(seoRankings.date);
         
       // Compute insights based on the rankings
       const insights = {
