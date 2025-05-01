@@ -421,26 +421,29 @@ export function OhanaVideoPlayer({
     video.volume = isMuted ? 0 : volume;
   }, [isMuted, volume]);
   
-  // YouTube-like adaptive bitrate control: monitor playback and adjust quality when needed
+  // Enhanced YouTube-like adaptive bitrate control: now much more aggressive with quality switching
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     
-    // This tracks playback performance metrics like YouTube does
+    // These track playback performance metrics like YouTube does
     let rebufferingEvents = 0;
     let lastBufferCheck = Date.now();
     let playbackStartTime = 0;
     let isBuffering = false;
     let loadAttempts = 0;
-    const rebufferingThreshold = 3; // Switch to lower quality after this many buffer events
+    let consecutiveGoodPlayback = 0;
+    
+    // MUCH more aggressive threshold - switch quality after just 1-2 buffer events
+    const rebufferingThreshold = 1; // Was 3, now 1 for much faster response
     
     // YouTube-like metric for monitoring playback smoothness
     const checkBuffering = () => {
       if (!video) return;
       
       const now = Date.now();
-      // Don't check too frequently
-      if (now - lastBufferCheck < 2000) return;
+      // Check more frequently (500ms vs 2000ms)
+      if (now - lastBufferCheck < 500) return;
       lastBufferCheck = now;
       
       // Calculate how much video is buffered ahead of current playback
@@ -450,32 +453,83 @@ export function OhanaVideoPlayer({
         bufferedAhead = currentBufferEnd - video.currentTime;
       }
       
-      // YouTube switches to lower quality when buffer gets low
-      if (bufferedAhead < 2 && video.readyState < 4 && !video.paused) {
+      // Much more sensitive buffering detection
+      if (bufferedAhead < 1 && video.readyState < 4 && !video.paused) { // Was < 2, now < 1
         // We're about to buffer
         if (!isBuffering) {
-          console.log('OhanaVideoPlayer: Buffering detected, may need to switch quality');
+          console.log('OhanaVideoPlayer: Buffering detected, switching quality immediately');
           rebufferingEvents++;
           isBuffering = true;
+          consecutiveGoodPlayback = 0; // Reset good playback counter
           
-          // After multiple rebuffering events, try switching to mobile-optimized version
-          if (rebufferingEvents >= rebufferingThreshold && !video.src.includes('/mobile')) {
-            console.log('OhanaVideoPlayer: Multiple rebuffering events, switching to mobile-optimized version');
+          // Switch quality IMMEDIATELY after a single buffer event
+          if (rebufferingEvents >= rebufferingThreshold) {
+            // CRITICAL CHANGE: Try mobile version immediately regardless of current endpoint
+            // This is key to fixing choppy playback
+            console.log('OhanaVideoPlayer: Switching to mobile-optimized version immediately');
+            
+            // Save current playback position
+            const currentTime = video.currentTime;
+            
+            // Switch to mobile-optimized version
             video.src = '/api/video/ohana/mobile';
             video.load();
-            video.currentTime = Math.max(0, video.currentTime - 2); // Go back slightly for seamless transition
+            
+            // After loading, jump to slightly before where we left off
+            // The "slightly before" helps create a seamless transition
+            video.addEventListener('loadedmetadata', function onceLoaded() {
+              video.currentTime = Math.max(0, currentTime - 0.5); // Go back just half a second
+              video.removeEventListener('loadedmetadata', onceLoaded);
+            });
+            
             loadAttempts++;
             video.play().catch(err => console.log('Error after quality switch:', err));
           }
         }
-      } else if (bufferedAhead > 5) {
+      } else if (bufferedAhead > 3) { // Was > 5, now > 3 for faster recovery detection
         // We have good buffer now
         isBuffering = false;
+        consecutiveGoodPlayback++;
+        
+        // This tracks when we have consistently good playback, like YouTube does
+        // After 10 consecutive good checks (5 seconds of smooth playback),
+        // we could consider switching back to higher quality
+        if (consecutiveGoodPlayback > 10 && video.src.includes('/mobile')) {
+          console.log('OhanaVideoPlayer: Consistently good playback, could switch to higher quality');
+          // NOTE: Commented out for now to prioritize smooth playback, uncomment to enable
+          // adaptive quality increases (but might cause more buffering)
+          /*
+          // Only attempt this once
+          if (loadAttempts <= 1) { 
+            console.log('OhanaVideoPlayer: Trying higher quality version');
+            
+            // Save current playback position
+            const currentTime = video.currentTime;
+            
+            // Try standard quality
+            video.src = '/api/video/ohana'; 
+            video.load();
+            
+            video.addEventListener('loadedmetadata', function onceLoaded() {
+              video.currentTime = Math.max(0, currentTime - 0.5);
+              video.removeEventListener('loadedmetadata', onceLoaded);
+            });
+            
+            loadAttempts++;
+            video.play().catch(err => console.log('Error after quality increase:', err));
+            
+            // Reset counters
+            consecutiveGoodPlayback = 0;
+            rebufferingEvents = 0;
+          }
+          */
+        }
       }
     };
     
-    // Track playback smoothness metrics like YouTube
-    const intervalId = setInterval(checkBuffering, 2000);
+    // Track playback smoothness metrics much more frequently
+    // 500ms vs 2000ms - 4x more frequent checks
+    const intervalId = setInterval(checkBuffering, 500);
     
     // YouTube monitors when playback actually starts
     const handlePlaying = () => {
@@ -485,11 +539,56 @@ export function OhanaVideoPlayer({
       }
     };
     
+    // Check for stalled playback - critical for addressing 3-second play-stop issue
+    const handleStalled = () => {
+      console.log('OhanaVideoPlayer: Playback stalled');
+      isBuffering = true;
+      rebufferingEvents++;
+      
+      // Immediately switch to mobile version when stalled
+      if (!video.src.includes('/mobile')) {
+        console.log('OhanaVideoPlayer: Stalled - immediately switching to mobile version');
+        video.src = '/api/video/ohana/mobile';
+        video.load();
+        video.play().catch(err => console.log('Error after stalled quality switch:', err));
+      }
+    };
+    
+    // Monitor waiting events (browser waiting for more data)
+    const handleWaiting = () => {
+      console.log('OhanaVideoPlayer: Waiting for data');
+      isBuffering = true;
+      rebufferingEvents++;
+      
+      // After any waiting, immediately downgrade quality
+      if (!video.src.includes('/mobile')) {
+        console.log('OhanaVideoPlayer: Waiting for data - switching to mobile version');
+        
+        // Save current playback position
+        const currentTime = video.currentTime;
+        
+        // Switch to mobile version
+        video.src = '/api/video/ohana/mobile';
+        video.load();
+        
+        video.addEventListener('loadedmetadata', function onceLoaded() {
+          video.currentTime = Math.max(0, currentTime - 0.5);
+          video.removeEventListener('loadedmetadata', onceLoaded);
+        });
+        
+        video.play().catch(err => console.log('Error after waiting quality switch:', err));
+      }
+    };
+    
     video.addEventListener('playing', handlePlaying);
+    video.addEventListener('stalled', handleStalled);
+    video.addEventListener('waiting', handleWaiting);
     
     return () => {
       clearInterval(intervalId);
       video.removeEventListener('playing', handlePlaying);
+      video.removeEventListener('stalled', handleStalled);
+      video.removeEventListener('waiting', handleWaiting);
     };
   }, []);
   

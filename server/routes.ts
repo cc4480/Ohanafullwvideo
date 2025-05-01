@@ -914,36 +914,90 @@ Crawl-delay: 1
       // YouTube-like adaptive streaming parameters based on endpoint type
       let chunkSize: number;
       let bufferSize: number;
-      let previewSize: number;
+      let initialChunkSize: number; // Special initial chunk for immediate playback start
       let logPrefix: string;
       
-      // Configure settings based on endpoint type
+      // Configure settings based on endpoint type with DRASTICALLY smaller chunks
       if (endpointType === 'mobile') {
-        // Mobile-optimized settings (small chunks, small buffers, quick start)
-        chunkSize = 1 * 1024 * 1024;     // 1MB chunks
-        bufferSize = 512 * 1024;         // 512KB buffer
-        previewSize = 1 * 1024 * 1024;   // 1MB preview
+        // Mobile-optimized settings (tiny chunks, tiny buffers, extremely quick start)
+        chunkSize = 256 * 1024;          // 256KB chunks - drastically smaller
+        bufferSize = 128 * 1024;         // 128KB buffer - even smaller
+        initialChunkSize = 512 * 1024;   // 512KB initial chunk - just enough to start playing
         logPrefix = '📱 Mobile';
-        console.log(`${logPrefix}: Serving optimized video for mobile devices: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`); 
+        console.log(`${logPrefix}: Serving super-optimized video for mobile: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`); 
       } 
       else if (endpointType === 'highperf') {
-        // High-performance settings (large chunks, large buffers, prepare for binge watching)
-        chunkSize = 40 * 1024 * 1024;    // 40MB chunks
-        bufferSize = 8 * 1024 * 1024;    // 8MB buffer
-        previewSize = fileSize;          // Send whole file for high-performance devices
+        // High-performance settings with much smaller chunks
+        chunkSize = 2 * 1024 * 1024;     // 2MB chunks - radically reduced from 40MB
+        bufferSize = 512 * 1024;         // 512KB buffer - much smaller buffer
+        initialChunkSize = 1 * 1024 * 1024; // 1MB initial chunk - gets playback going immediately
         logPrefix = '🖥️ HighPerf';
-        console.log(`${logPrefix}: Serving entire video file for high-performance devices: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
+        console.log(`${logPrefix}: Serving chunk-optimized video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
       } 
       else {
         // Standard settings (balanced for most devices)
-        chunkSize = 5 * 1024 * 1024;     // 5MB chunks
-        bufferSize = 2 * 1024 * 1024;    // 2MB buffer
-        previewSize = 4 * 1024 * 1024;   // 4MB preview
+        chunkSize = 1 * 1024 * 1024;     // 1MB chunks - reduced from 5MB
+        bufferSize = 256 * 1024;         // 256KB buffer - reduced
+        initialChunkSize = 768 * 1024;   // 768KB preview - smaller initial chunk for faster start
         logPrefix = '📺 Standard';
-        console.log(`${logPrefix}: Serving standard video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
+        console.log(`${logPrefix}: Serving optimized standard video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
       }
       
       const range = req.headers.range;
+      
+      // CRITICAL FIX: If no range is specified, send a perfect initial chunk
+      // This is key to fixing the 3-second play-stop issue
+      if (!range) {
+        // Send a special initial chunk for immediate playback
+        const headers = {
+          'Content-Length': initialChunkSize,
+          'Accept-Ranges': 'bytes',
+          'Content-Type': 'video/mp4',
+          'Cache-Control': 'public, max-age=86400', // 24 hour cache
+          'Connection': 'keep-alive',
+          'X-Content-Type-Options': 'nosniff'
+        };
+        
+        console.log(`${logPrefix}: Sending perfect initial chunk: ${(initialChunkSize / 1024).toFixed(2)}KB`);
+        
+        // Create a special stream with a smaller buffer
+        const fileStream = fs.createReadStream(videoPath, { 
+          start: 0,
+          end: initialChunkSize - 1,
+          highWaterMark: bufferSize
+        });
+        
+        res.writeHead(200, headers);
+        
+        // Log when chunk is completely sent
+        let bytesSent = 0;
+        fileStream.on('data', (chunk) => {
+          bytesSent += chunk.length;
+        });
+        
+        fileStream.on('end', () => {
+          console.log(`${logPrefix}: Initial chunk complete: ${bytesSent} bytes sent`);
+        });
+        
+        // Pipe the file stream to the response
+        fileStream.pipe(res);
+        
+        // Handle errors and disconnects
+        fileStream.on('error', (error: Error) => {
+          console.error(`${logPrefix}: Error streaming initial chunk:`, error);
+          if (!res.headersSent) {
+            res.status(500).send('Error streaming video');
+          }
+          fileStream.close();
+        });
+        
+        req.on('close', () => {
+          console.log(`${logPrefix}: Client disconnected during initial chunk`);
+          fileStream.close();
+        });
+        
+        return; // End function execution after sending initial chunk
+      }
       
       // YouTube-like handling of range requests for video seeking
       if (range) {
@@ -1015,7 +1069,7 @@ Crawl-delay: 1
       else {
         // For high-performance, we might send the entire video
         // For mobile, we send just enough to start playing quickly
-        const initialSize = Math.min(previewSize, fileSize);
+        const initialSize = Math.min(initialChunkSize, fileSize);
         
         // Log initial load with appropriate prefix
         if (endpointType === 'mobile') {
