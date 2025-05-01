@@ -34,9 +34,23 @@ export const neighborhoods = pgTable('neighborhoods', {
   amenities: jsonb('amenities'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  // Enhanced SEO fields
   seoMetaTitle: text('seo_meta_title'),
   seoMetaDescription: text('seo_meta_description'),
   seoKeywords: text('seo_keywords'),
+  // Enhanced Laredo-specific neighborhood data
+  history: text('history'),                        // Neighborhood history and background
+  schools: jsonb('schools').$type<string[]>(),     // Local schools in the neighborhood
+  shopping: jsonb('shopping').$type<string[]>(),   // Shopping centers and retail options
+  dining: jsonb('dining').$type<string[]>(),       // Local restaurants and dining options
+  recreation: jsonb('recreation').$type<string[]>(),  // Parks, sports facilities, etc.
+  transportation: jsonb('transportation').$type<string[]>(), // Public transit, highways, etc.
+  medianHomePrice: integer('median_home_price'),   // Median home price in the neighborhood
+  crimeRate: real('crime_rate'),                  // Crime statistics (lower is better)
+  schoolRating: real('school_rating'),            // Average school rating (1-10)
+  walkScore: integer('walk_score'),               // Walkability score (0-100)
+  yearEstablished: integer('year_established'),    // When the neighborhood was established
+  localLandmarks: jsonb('local_landmarks').$type<string[]>(),  // Notable landmarks in the area
 });
 
 // Neighborhood validation schema
