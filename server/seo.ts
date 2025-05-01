@@ -1,282 +1,253 @@
-import express from 'express';
-import { Express } from 'express';
-import { storage } from './storage';
+import { Express, Response, Request, NextFunction } from 'express';
+import { generateSEOMetaTags, generateStructuredData } from './keyword-optimization';
+import { db } from './db';
+import { seoKeywords, seoRankings } from '../shared/schema';
+import { eq, desc, sql } from 'drizzle-orm';
 
 /**
  * Enhanced SEO Functions
  * Provides advanced SEO capabilities for improved search engine visibility
  */
 export function configureSEO(app: Express) {
-  // Generate dynamic schema.org structured data for properties
-  app.get('/api/schema/:type/:id', async (req, res) => {
+  // Register SEO middleware
+  app.use(seoMiddleware);
+  
+  // API endpoints for SEO dashboard
+  app.get('/api/seo/keywords', async (_req: Request, res: Response) => {
     try {
-      const { type, id } = req.params;
-      let structuredData;
-      
-      // Generate different structured data based on content type
-      if (type === 'property' && id) {
-        const property = await storage.getProperty(parseInt(id));
-        if (!property) {
-          return res.status(404).json({ error: 'Property not found' });
-        }
-        
-        // Create RealEstateListing structured data
-        structuredData = {
-          "@context": "https://schema.org",
-          "@type": "RealEstateListing",
-          "name": `${property.address}, ${property.city}, ${property.state} ${property.zipCode}`,
-          "description": property.description,
-          "datePosted": new Date().toISOString(),
-          "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": `${req.protocol}://${req.get('host')}/properties/${property.id}`
-          },
-          "image": property.images && property.images.length > 0 ? property.images : [],
-          "offers": {
-            "@type": "Offer",
-            "price": property.price,
-            "priceCurrency": "USD",
-            "availability": "https://schema.org/InStock"
-          },
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": property.address,
-            "addressLocality": property.city,
-            "addressRegion": property.state,
-            "postalCode": property.zipCode,
-            "addressCountry": "US"
-          },
-          "numberOfRooms": property.bedrooms || 0,
-          "numberOfBathroomsTotal": property.bathrooms || 0,
-          "floorSize": {
-            "@type": "QuantitativeValue",
-            "value": property.squareFeet || 0,
-            "unitCode": "FTK"
-          },
-          "geo": property.lat && property.lng ? {
-            "@type": "GeoCoordinates",
-            "latitude": property.lat,
-            "longitude": property.lng
-          } : undefined
-        };
-      } else if (type === 'neighborhood' && id) {
-        const neighborhood = await storage.getNeighborhood(parseInt(id));
-        if (!neighborhood) {
-          return res.status(404).json({ error: 'Neighborhood not found' });
-        }
-        
-        // Create Place structured data for neighborhood
-        structuredData = {
-          "@context": "https://schema.org",
-          "@type": "Place",
-          "name": neighborhood.name,
-          "description": neighborhood.description,
-          "image": neighborhood.image,
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": 27.506, // Default Laredo coords if not available
-            "longitude": -99.507
-          }
-        };
-      } else if (type === 'company') {
-        // Generate organization data
-        structuredData = {
-          "@context": "https://schema.org",
-          "@type": "RealEstateAgent",
-          "name": "Ohana Realty",
-          "url": `${req.protocol}://${req.get('host')}`,
-          "logo": `${req.protocol}://${req.get('host')}/logo.png`,
-          "description": "Ohana Realty offers premium real estate services in Laredo, TX with a focus on residential and commercial properties.",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "1300 Matamoros St",
-            "addressLocality": "Laredo",
-            "addressRegion": "TX",
-            "postalCode": "78040",
-            "addressCountry": "US"
-          },
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": 27.506,
-            "longitude": -99.507
-          },
-          "telephone": "+19561234567",
-          "sameAs": [
-            "https://www.facebook.com/ohanarealty",
-            "https://www.instagram.com/ohanarealty"
-          ],
-          "openingHoursSpecification": [
-            {
-              "@type": "OpeningHoursSpecification",
-              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-              "opens": "09:00",
-              "closes": "18:00"
-            },
-            {
-              "@type": "OpeningHoursSpecification",
-              "dayOfWeek": ["Saturday"],
-              "opens": "10:00",
-              "closes": "15:00"
-            }
-          ]
-        };
-      }
-      
-      if (!structuredData) {
-        return res.status(400).json({ error: 'Invalid schema type or ID' });
-      }
-      
-      res.setHeader('Content-Type', 'application/ld+json');
-      res.send(JSON.stringify(structuredData));
+      const keywords = await db.select().from(seoKeywords).orderBy(desc(seoKeywords.priority));
+      res.json(keywords);
     } catch (error) {
-      console.error('Error generating structured data:', error);
-      res.status(500).json({ error: 'Failed to generate structured data' });
+      console.error('Error fetching SEO keywords:', error);
+      res.status(500).json({ message: 'Failed to fetch SEO keywords' });
     }
   });
   
-  // Enhanced sitemap generator route
-  app.get('/sitemap.xml', async (req, res) => {
+  app.get('/api/seo/rankings', async (_req: Request, res: Response) => {
     try {
-      // Get all properties and neighborhoods
-      const properties = await storage.getProperties();
-      const neighborhoods = await storage.getNeighborhoods();
-      const airbnbRentals = await storage.getAirbnbRentals();
+      // Get latest ranking for each keyword with keyword data included
+      const rankings = await db.select({
+        ranking: seoRankings,
+        keyword: seoKeywords
+      })
+      .from(seoRankings)
+      .innerJoin(seoKeywords, eq(seoRankings.keywordId, seoKeywords.id))
+      .orderBy(desc(seoRankings.date));
       
-      // Base URL of the website
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-      
-      // Generate XML sitemap
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n';
-      xml += '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"\n';
-      xml += '        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n';
-      
-      // Add static pages with today's date
-      const today = new Date().toISOString().split('T')[0];
-      const staticPages = ['', 'properties', 'about', 'contact', 'neighborhoods', 'airbnb'];
-      
-      for (const page of staticPages) {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/${page}</loc>\n`;
-        xml += `    <lastmod>${today}</lastmod>\n`;
-        xml += '    <changefreq>weekly</changefreq>\n';
-        xml += '    <priority>1.0</priority>\n';
-        xml += '  </url>\n';
-      }
-      
-      // Add property detail pages
-      for (const property of properties) {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/properties/${property.id}</loc>\n`;
-        xml += `    <lastmod>${today}</lastmod>\n`;
-        xml += '    <changefreq>daily</changefreq>\n';
-        xml += '    <priority>0.8</priority>\n';
-        
-        // Add image tags if property has images
-        if (property.images && property.images.length > 0) {
-          for (const imageUrl of property.images) {
-            xml += '    <image:image>\n';
-            xml += `      <image:loc>${imageUrl}</image:loc>\n`;
-            xml += `      <image:title>${property.address}</image:title>\n`;
-            xml += `      <image:caption>Property at ${property.address}, ${property.city}, ${property.state}</image:caption>\n`;
-            xml += '    </image:image>\n';
-          }
+      // Group by keyword and return only the latest ranking for each
+      const latestRankings = rankings.reduce((acc, curr) => {
+        if (!acc[curr.keyword.id] || new Date(acc[curr.keyword.id].ranking.date) < new Date(curr.ranking.date)) {
+          acc[curr.keyword.id] = curr;
         }
-        
-        xml += '  </url>\n';
-      }
+        return acc;
+      }, {} as Record<number, typeof rankings[0]>);
       
-      // Add neighborhood detail pages
-      for (const neighborhood of neighborhoods) {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/neighborhoods/${neighborhood.id}</loc>\n`;
-        xml += `    <lastmod>${today}</lastmod>\n`;
-        xml += '    <changefreq>weekly</changefreq>\n';
-        xml += '    <priority>0.7</priority>\n';
-        
-        // Add image tag for neighborhood image
-        if (neighborhood.image) {
-          xml += '    <image:image>\n';
-          xml += `      <image:loc>${neighborhood.image}</image:loc>\n`;
-          xml += `      <image:title>${neighborhood.name}</image:title>\n`;
-          xml += `      <image:caption>${neighborhood.name} - ${neighborhood.description.substring(0, 100)}...</image:caption>\n`;
-          xml += '    </image:image>\n';
-        }
-        
-        xml += '  </url>\n';
-      }
-      
-      // Add Airbnb rental pages
-      for (const rental of airbnbRentals) {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/airbnb/${rental.id}</loc>\n`;
-        xml += `    <lastmod>${today}</lastmod>\n`;
-        xml += '    <changefreq>daily</changefreq>\n';
-        xml += '    <priority>0.8</priority>\n';
-        
-        // Add image tags if rental has images
-        if (rental.images && rental.images.length > 0) {
-          for (const imageUrl of rental.images) {
-            xml += '    <image:image>\n';
-            xml += `      <image:loc>${imageUrl}</image:loc>\n`;
-            xml += `      <image:title>${rental.title}</image:title>\n`;
-            xml += `      <image:caption>${rental.title} - ${rental.description.substring(0, 100)}...</image:caption>\n`;
-            xml += '    </image:image>\n';
-          }
-        }
-        
-        xml += '  </url>\n';
-      }
-      
-      // Add video sitemap entry for home page video
-      xml += '  <url>\n';
-      xml += `    <loc>${baseUrl}/</loc>\n`;
-      xml += '    <video:video>\n';
-      xml += '      <video:thumbnail_loc>https://ohanarealty.com/video-thumbnail.jpg</video:thumbnail_loc>\n';
-      xml += '      <video:title>Discover Laredo Real Estate with Ohana Realty</video:title>\n';
-      xml += '      <video:description>Tour the finest properties in Laredo with our immersive real estate video showcase.</video:description>\n';
-      xml += '      <video:content_loc>https://ohanarealty.com/videos/showcase.mp4</video:content_loc>\n';
-      xml += '      <video:duration>120</video:duration>\n';
-      xml += '      <video:publication_date>2023-01-01T12:00:00+00:00</video:publication_date>\n';
-      xml += '      <video:family_friendly>yes</video:family_friendly>\n';
-      xml += '      <video:requires_subscription>no</video:requires_subscription>\n';
-      xml += '    </video:video>\n';
-      xml += '  </url>\n';
-      
-      xml += '</urlset>';
-      
-      // Send XML response
-      res.setHeader('Content-Type', 'application/xml');
-      res.send(xml);
+      res.json(Object.values(latestRankings));
     } catch (error) {
-      console.error('Error generating sitemap:', error);
-      res.status(500).send('Error generating sitemap');
+      console.error('Error fetching SEO rankings:', error);
+      res.status(500).json({ message: 'Failed to fetch SEO rankings' });
     }
   });
   
-  // Add dynamic robots.txt with sitemap reference
-  app.get('/robots.txt', (req, res) => {
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const robotsTxt = `# robots.txt for Ohana Realty
+  app.post('/api/seo/rankings', async (req: Request, res: Response) => {
+    try {
+      const { keywordId, position, url, competitors } = req.body;
+      
+      // Validate input
+      if (!keywordId || typeof position !== 'number' || !url) {
+        return res.status(400).json({ message: 'Invalid ranking data' });
+      }
+      
+      // Check if keyword exists
+      const [keyword] = await db.select().from(seoKeywords).where(eq(seoKeywords.id, keywordId));
+      if (!keyword) {
+        return res.status(404).json({ message: 'Keyword not found' });
+      }
+      
+      // Insert new ranking
+      const [ranking] = await db.insert(seoRankings).values({
+        keywordId,
+        position,
+        url,
+        date: new Date(),
+        coldwellPosition: competitors?.coldwell || null,
+        remaxPosition: competitors?.remax || null,
+        zillowPosition: competitors?.zillow || null,
+        truliaPosition: competitors?.trulia || null
+      }).returning();
+      
+      res.status(201).json(ranking);
+    } catch (error) {
+      console.error('Error adding SEO ranking:', error);
+      res.status(500).json({ message: 'Failed to add SEO ranking' });
+    }
+  });
+  
+  // Search engine optimization tools and resources
+  app.get('/api/seo/insights', async (req: Request, res: Response) => {
+    try {
+      // Get top performing keywords
+      const topKeywords = await db.select({
+        keyword: seoKeywords.keyword,
+        category: seoKeywords.category,
+        avgPosition: sql<number>`avg(${seoRankings.position})`,
+        rankingCount: sql<number>`count(${seoRankings.id})`,
+        latestPosition: sql<number>`min(${seoRankings.position})`
+      })
+      .from(seoKeywords)
+      .innerJoin(seoRankings, eq(seoRankings.keywordId, seoKeywords.id))
+      .groupBy(seoKeywords.id, seoKeywords.keyword, seoKeywords.category)
+      .orderBy(sql<number>`min(${seoRankings.position})`);
+      
+      // Get keywords with position improvements
+      const improvingKeywords = await db.select({
+        keyword: seoKeywords.keyword,
+        category: seoKeywords.category,
+        currentPosition: sql<number>`first_value(${seoRankings.position}) over (partition by ${seoKeywords.id} order by ${seoRankings.date} desc)`,
+        previousPosition: sql<number>`first_value(${seoRankings.position}) over (partition by ${seoKeywords.id} order by ${seoRankings.date} asc)`
+      })
+      .from(seoKeywords)
+      .innerJoin(seoRankings, eq(seoRankings.keywordId, seoKeywords.id))
+      .groupBy(seoKeywords.id, seoKeywords.keyword, seoKeywords.category, seoRankings.position, seoRankings.date)
+      .having(sql`first_value(${seoRankings.position}) over (partition by ${seoKeywords.id} order by ${seoRankings.date} desc) < first_value(${seoRankings.position}) over (partition by ${seoKeywords.id} order by ${seoRankings.date} asc)`);
+      
+      // Potential issues
+      const keywordsNeeedingImprovement = await db.select()
+      .from(seoKeywords)
+      .innerJoin(seoRankings, eq(seoRankings.keywordId, seoKeywords.id))
+      .where(sql`${seoRankings.position} > 10`);
+      
+      res.json({
+        topKeywords: topKeywords.slice(0, 10),
+        improvingKeywords,
+        keywordsNeeedingImprovement: keywordsNeeedingImprovement.slice(0, 10)
+      });
+    } catch (error) {
+      console.error('Error generating SEO insights:', error);
+      res.status(500).json({ message: 'Failed to generate SEO insights' });
+    }
+  });
+  
+  // Route for sitemap generation
+  app.get('/sitemap.xml', (_req: Request, res: Response) => {
+    generateSitemap(res);
+  });
+  
+  // Route for robots.txt
+  app.get('/robots.txt', (_req: Request, res: Response) => {
+    res.type('text/plain');
+    res.send(`User-agent: *\nAllow: /\nSitemap: https://ohanarealty.com/sitemap.xml\n`);
+  });
+}
 
-User-agent: *
-Allow: /
-
-# Sitemaps
-Sitemap: ${baseUrl}/sitemap.xml
-
-# Disallow admin areas
-Disallow: /admin/
-Disallow: /private/
-
-# Allow search engines to index images and media
-Allow: /images/
-Allow: /videos/
-`;
+/**
+ * Middleware to inject SEO metadata into the response
+ */
+function seoMiddleware(req: Request, res: Response, next: NextFunction) {
+  // Store original send function
+  const originalSend = res.send;
+  
+  // Override send method to inject SEO data
+  res.send = function (body) {
+    // Only process HTML responses
+    if (typeof body === 'string' && body.includes('<html')) {
+      // Determine page type from URL
+      const url = req.originalUrl;
+      let pageType = 'other';
+      let specificData = null;
+      
+      if (url === '/' || url === '/home') {
+        pageType = 'home';
+      } else if (url.startsWith('/properties/') && req.app.locals.property) {
+        pageType = 'property';
+        specificData = req.app.locals.property;
+      } else if (url.startsWith('/neighborhoods/') && req.app.locals.neighborhood) {
+        pageType = 'neighborhood';
+        specificData = req.app.locals.neighborhood;
+      } else if (url.startsWith('/rentals/') && req.app.locals.rental) {
+        pageType = 'airbnb';
+        specificData = req.app.locals.rental;
+      }
+      
+      // Generate SEO metadata
+      const seoTags = generateSEOMetaTags(pageType, specificData);
+      const structuredData = generateStructuredData(pageType, specificData);
+      
+      // Inject meta tags
+      body = body.replace('</head>', `
+        <!-- SEO Meta Tags -->
+        <title>${seoTags.title}</title>
+        <meta name="description" content="${seoTags.description}">
+        <meta name="keywords" content="${seoTags.keywords}">
+        <link rel="canonical" href="${seoTags.canonical}">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="${seoTags.ogUrl}">
+        <meta property="og:title" content="${seoTags.ogTitle}">
+        <meta property="og:description" content="${seoTags.ogDescription}">
+        <meta property="og:image" content="${seoTags.ogImage}">
+        
+        <!-- Twitter -->
+        <meta property="twitter:card" content="${seoTags.twitterCard}">
+        <meta property="twitter:url" content="${seoTags.ogUrl}">
+        <meta property="twitter:title" content="${seoTags.twitterTitle}">
+        <meta property="twitter:description" content="${seoTags.twitterDescription}">
+        <meta property="twitter:image" content="${seoTags.twitterImage}">
+        
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+          ${JSON.stringify(structuredData)}
+        </script>
+        </head>
+      `);
+    }
     
-    res.setHeader('Content-Type', 'text/plain');
-    res.send(robotsTxt);
-  });
+    // Call original send
+    return originalSend.call(this, body);
+  };
   
-  console.log('Enhanced SEO routes configured');
+  next();
+}
+
+/**
+ * Generate XML sitemap for search engines
+ */
+function generateSitemap(res: Response) {
+  try {
+    // Start XML
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    
+    // Static pages
+    const staticUrls = [
+      { url: '/', priority: '1.0', changefreq: 'daily' },
+      { url: '/properties', priority: '0.9', changefreq: 'daily' },
+      { url: '/neighborhoods', priority: '0.8', changefreq: 'weekly' },
+      { url: '/rentals', priority: '0.8', changefreq: 'daily' },
+      { url: '/about', priority: '0.7', changefreq: 'monthly' },
+      { url: '/contact', priority: '0.7', changefreq: 'monthly' },
+      { url: '/blog', priority: '0.8', changefreq: 'weekly' }
+    ];
+    
+    // Add static URLs
+    staticUrls.forEach(page => {
+      xml += '  <url>\n';
+      xml += `    <loc>https://ohanarealty.com${page.url}</loc>\n`;
+      xml += '    <lastmod>' + new Date().toISOString() + '</lastmod>\n';
+      xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+      xml += `    <priority>${page.priority}</priority>\n`;
+      xml += '  </url>\n';
+    });
+    
+    // Close XML
+    xml += '</urlset>';
+    
+    // Send response
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (error) {
+    console.error('Error generating sitemap:', error);
+    res.status(500).send('Error generating sitemap');
+  }
 }

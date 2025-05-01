@@ -1,91 +1,132 @@
 #!/bin/bash
 
-# Ohana Realty Database Deployment Script
-# This script handles database migrations for production deployment
+# Make script executable
+chmod +x "$0"
 
-set -e  # Exit immediately if a command exits with a non-zero status
+# This script automates the database push process for Ohana Realty's SEO system
+echo "Starting enterprise-grade SEO database deployment..."
 
-echo "===== OHANA REALTY DATABASE DEPLOYMENT ====="
-echo "Starting database deployment process..."
+# Create the SEO-related tables directly using SQL
+echo "Creating SEO database tables..."
+cat << EOF | psql $DATABASE_URL
+-- SEO keyword tracking table for monitoring rankings
+CREATE TABLE IF NOT EXISTS seo_keywords (
+  id SERIAL PRIMARY KEY,
+  keyword TEXT NOT NULL UNIQUE,
+  category TEXT NOT NULL,
+  search_volume INTEGER DEFAULT 0,
+  difficulty_score INTEGER DEFAULT 50,
+  priority INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
 
-# Ensure DATABASE_URL is available
-if [ -z "$DATABASE_URL" ]; then
-  echo "ERROR: DATABASE_URL environment variable is not set"
-  echo "Please set the DATABASE_URL environment variable before running this script"
-  exit 1
-fi
+-- SEO ranking history table for tracking position changes over time
+CREATE TABLE IF NOT EXISTS seo_rankings (
+  id SERIAL PRIMARY KEY,
+  keyword_id INTEGER NOT NULL REFERENCES seo_keywords(id),
+  position INTEGER NOT NULL,
+  date TIMESTAMP NOT NULL DEFAULT NOW(),
+  url TEXT NOT NULL,
+  coldwell_position INTEGER,
+  remax_position INTEGER,
+  zillow_position INTEGER,
+  trulia_position INTEGER
+);
 
-# Step 1: Push schema changes to database
-echo "\n[1/3] Pushing schema changes to production database..."
-NODE_ENV=production npx drizzle-kit push
-echo "✓ Schema changes applied successfully"
+-- SEO backlinks table for tracking external links to the site
+CREATE TABLE IF NOT EXISTS seo_backlinks (
+  id SERIAL PRIMARY KEY,
+  source_domain TEXT NOT NULL,
+  source_url TEXT NOT NULL,
+  target_url TEXT NOT NULL,
+  anchor_text TEXT,
+  do_follow BOOLEAN NOT NULL DEFAULT TRUE,
+  domain_authority INTEGER,
+  page_authority INTEGER,
+  discovered TIMESTAMP NOT NULL DEFAULT NOW(),
+  last_checked TIMESTAMP,
+  active BOOLEAN NOT NULL DEFAULT TRUE
+);
 
-# Step 2: Run any additional database setup/migrations if needed
-echo "\n[2/3] Checking for existing database data..."
-# This is a simple check to see if we need to initialize sample data
-# In a real production environment, you might want to skip sample data
-# initialization completely
+-- Add SEO fields to existing tables if they don't exist
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS seo_meta_title TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS seo_meta_description TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS seo_keywords TEXT;
 
-NODE_ENV=production node -e '
-const { Pool } = require("@neondatabase/serverless");
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+ALTER TABLE neighborhoods ADD COLUMN IF NOT EXISTS seo_meta_title TEXT;
+ALTER TABLE neighborhoods ADD COLUMN IF NOT EXISTS seo_meta_description TEXT;
+ALTER TABLE neighborhoods ADD COLUMN IF NOT EXISTS seo_keywords TEXT;
 
-async function checkDatabaseContent() {
-  try {
-    // Check if users table has any records
-    const result = await pool.query("SELECT COUNT(*) FROM users");
-    const count = parseInt(result.rows[0].count, 10);
-    
-    if (count === 0) {
-      console.log("Database appears to be empty, will initialize sample data");
-      process.exit(1); // Exit with error code to trigger initialization
-    } else {
-      console.log(`Database already has ${count} users, skipping initialization");
-      process.exit(0); // Exit with success code to skip initialization
-    }
-  } catch (error) {
-    console.error("Error checking database content:", error);
-    process.exit(1); // Exit with error code
-  } finally {
-    await pool.end();
-  }
-}
+ALTER TABLE airbnb_rentals ADD COLUMN IF NOT EXISTS seo_meta_title TEXT;
+ALTER TABLE airbnb_rentals ADD COLUMN IF NOT EXISTS seo_meta_description TEXT;
+ALTER TABLE airbnb_rentals ADD COLUMN IF NOT EXISTS seo_keywords TEXT;
+EOF
 
-checkDatabaseContent();
-'
+# Seed the SEO keywords table with primary categories
+cat << EOF | psql $DATABASE_URL
+-- Insert primary keywords
+INSERT INTO seo_keywords (keyword, category, search_volume, difficulty_score, priority)
+VALUES 
+('homes for sale in Laredo TX', 'primary', 2200, 68, 10),
+('houses for sale in Laredo', 'primary', 1800, 62, 10),
+('Laredo real estate', 'primary', 1500, 75, 10),
+('Laredo homes for sale', 'primary', 1750, 70, 10),
+('houses for sale Laredo TX', 'primary', 1600, 65, 10),
+('condos for sale in Laredo', 'primary', 320, 45, 10),
+('Laredo houses for sale', 'primary', 1400, 67, 10),
+('real estate Laredo TX', 'primary', 980, 72, 10),
+('Laredo houses for rent', 'primary', 1350, 58, 10),
+('homes for rent in Laredo', 'primary', 1200, 52, 10)
+ON CONFLICT (keyword) DO UPDATE SET 
+  category = EXCLUDED.category,
+  search_volume = EXCLUDED.search_volume,
+  difficulty_score = EXCLUDED.difficulty_score,
+  priority = EXCLUDED.priority;
 
-# If the previous command exited with an error code (indicating empty DB)
-# then run the initialization
-if [ $? -ne 0 ]; then
-  echo "\n[3/3] Initializing database with sample data..."
-  NODE_ENV=production node -e '
-  const { initializeSampleData } = require("./server/storage.js");
-  
-  async function initialize() {
-    try {
-      await initializeSampleData();
-      console.log("Sample data initialized successfully");
-      process.exit(0);
-    } catch (error) {
-      console.error("Error initializing sample data:", error);
-      process.exit(1);
-    }
-  }
-  
-  initialize();
-  '
+-- Insert long-tail keywords
+INSERT INTO seo_keywords (keyword, category, search_volume, difficulty_score, priority)
+VALUES 
+('affordable homes for sale in Laredo TX', 'long-tail', 280, 35, 8),
+('houses for sale in Laredo under 200k', 'long-tail', 320, 38, 8),
+('luxury houses for sale in Laredo TX', 'long-tail', 150, 42, 8),
+('Laredo homes for sale with pool', 'long-tail', 180, 40, 8),
+('downtown Laredo condos for sale', 'long-tail', 120, 32, 8),
+('Laredo houses for rent pet friendly', 'long-tail', 210, 30, 8)
+ON CONFLICT (keyword) DO UPDATE SET 
+  category = EXCLUDED.category,
+  search_volume = EXCLUDED.search_volume,
+  difficulty_score = EXCLUDED.difficulty_score,
+  priority = EXCLUDED.priority;
 
-  if [ $? -eq 0 ]; then
-    echo "✓ Database initialized successfully with sample data"
-  else
-    echo "❌ Failed to initialize database with sample data"
-    exit 1
-  fi
-else
-  echo "\n[3/3] Skipping database initialization (data already exists)"
-  echo "✓ Database is already populated"
-fi
+-- Insert neighborhood keywords
+INSERT INTO seo_keywords (keyword, category, search_volume, difficulty_score, priority)
+VALUES 
+('Downtown Laredo real estate', 'neighborhood', 210, 39, 7),
+('North Laredo homes for sale', 'neighborhood', 190, 36, 7),
+('South Laredo houses', 'neighborhood', 170, 37, 7),
+('East Laredo properties', 'neighborhood', 110, 35, 7),
+('West Laredo homes for rent', 'neighborhood', 150, 33, 7)
+ON CONFLICT (keyword) DO UPDATE SET 
+  category = EXCLUDED.category,
+  search_volume = EXCLUDED.search_volume,
+  difficulty_score = EXCLUDED.difficulty_score,
+  priority = EXCLUDED.priority;
 
-echo "\n===== DATABASE DEPLOYMENT COMPLETED SUCCESSFULLY ====="
-echo "Your Ohana Realty database is now ready for production use."
-echo "==================================================="
+-- Insert competitor keywords
+INSERT INTO seo_keywords (keyword, category, search_volume, difficulty_score, priority)
+VALUES 
+('better than Coldwell Banker Laredo', 'competitor', 45, 62, 9),
+('Laredo real estate alternatives to RE/MAX', 'competitor', 70, 65, 9),
+('why choose Ohana Realty over Coldwell Banker', 'competitor', 30, 58, 9),
+('Ohana Realty vs RE/MAX Laredo', 'competitor', 55, 60, 9),
+('best real estate agency in Laredo TX', 'competitor', 95, 68, 9),
+('top rated Laredo realtors', 'competitor', 110, 58, 9)
+ON CONFLICT (keyword) DO UPDATE SET 
+  category = EXCLUDED.category,
+  search_volume = EXCLUDED.search_volume,
+  difficulty_score = EXCLUDED.difficulty_score,
+  priority = EXCLUDED.priority;
+EOF
+
+echo "Enterprise SEO database deployment complete!"

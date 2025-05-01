@@ -5,6 +5,7 @@ import path from "path";
 import helmet from "helmet";
 import { db } from "./db";
 import { configureSecurity } from "./security";
+import { configureSEO } from "./seo";
 import { initializeSampleData } from "./storage";
 
 const app = express();
@@ -117,6 +118,11 @@ app.use((req, res, next) => {
   } catch (error) {
     console.error('Database initialization failed:', error);
   }
+  
+  // Configure SEO with advanced features
+  console.log('Setting up enterprise-grade SEO optimization...');
+  configureSEO(app);
+  console.log('SEO optimization system configured successfully!');
   
   const server = await registerRoutes(app);
 
