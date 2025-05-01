@@ -60,7 +60,7 @@ export function FeaturedAirbnbRentals({
             <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-indigo-400 rounded-br-2xl z-10"></div>
             
             <OhanaVideoPlayer 
-              src="/api/video/ohana" 
+              src="/api/video/ohana/highperf" 
               poster="/shiloh-primary.jpg"
               autoPlay={true}
               muted={true}

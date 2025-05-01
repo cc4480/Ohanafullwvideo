@@ -1145,8 +1145,8 @@ Crawl-delay: 1
     serveVideoFile(req, res, 'property-video.mp4');
   });
   
-  // High-performance video cache endpoint for power users with 16GB+ RAM 
-  // This endpoint serves the entire video file with aggressive caching for quick reuse
+  // High-performance video cache endpoint optimized for 16GB+ RAM systems
+  // This endpoint uses larger chunk sizes and aggressive caching for smoother playback
   app.get('/api/video/ohana/highperf', (req, res) => {
     try {
       const videoPath = path.join(process.cwd(), 'public', 'OHANAVIDEOMASTER.mp4');
@@ -1175,9 +1175,9 @@ Crawl-delay: 1
         'Last-Modified': stat.mtime.toUTCString(),
       });
       
-      // Use optimized file streaming with large buffer
+      // Use optimized file streaming with extra large buffer for high-end systems
       const fileStream = fs.createReadStream(videoPath, {
-        highWaterMark: 8 * 1024 * 1024 // 8MB buffer for maximum throughput
+        highWaterMark: 16 * 1024 * 1024 // 16MB buffer for maximum throughput on 16GB+ RAM systems
       });
       
       // Pipe directly to response with end

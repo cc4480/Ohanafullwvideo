@@ -159,16 +159,14 @@ export function OhanaVideoPlayer({
     */
   }, []);
   
-  // Use high-performance endpoint if detected - temporarily disabled to fix video loading issues
+  // Use high-performance endpoint for better video playback
   useEffect(() => {
-    // Disable high-performance endpoint switching to prevent video loading issues
-    // This simplifies the video loading process and avoids potential errors
-    return;
+    // Enable high-performance endpoint for better video streaming performance
+    // This will help reduce video choppiness on high-performance systems
     
-    /* Original implementation - temporarily disabled
     // Check if we should use the high-performance endpoint
-    if (videoRef.current && src.includes('/api/video/ohana') && isHighPerformanceDevice()) {
-      // Replace standard endpoint with high-performance version that sends entire video file
+    if (videoRef.current && src.includes('/api/video/ohana')) {
+      // Always use high-performance endpoint for better video experience
       let highPerfSrc = '/api/video/ohana/highperf';
       
       // If we received specific cached URLs from the WebSocket, use the best one
@@ -176,10 +174,9 @@ export function OhanaVideoPlayer({
         highPerfSrc = optimizedConfig.cachedUrls[0];
       }
       
-      console.log('Using high-performance video endpoint for 16GB+ RAM systems:', highPerfSrc);
+      console.log('Using high-performance video endpoint for smoother playback:', highPerfSrc);
       videoRef.current.src = highPerfSrc;
     }
-    */
   }, [src, optimizedConfig]);
 
   useEffect(() => {
@@ -401,7 +398,10 @@ export function OhanaVideoPlayer({
           objectPosition: 'center',
           objectFit: 'cover',
           transform: 'scale(0.9)', /* Reduce zoom while maintaining coverage */
-          margin: 'auto'
+          margin: 'auto',
+          willChange: 'transform',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden'
         }}
       >  
         {/* Add a fallback text for browsers that don't support video */}
