@@ -919,26 +919,26 @@ Crawl-delay: 1
       
       // Configure settings based on endpoint type with DRASTICALLY smaller chunks
       if (endpointType === 'mobile') {
-        // Mobile-optimized settings (larger chunks to prevent frequent buffering)
-        chunkSize = 2 * 1024 * 1024;     // 2MB chunks - larger to prevent buffering
-        bufferSize = 512 * 1024;         // 512KB buffer - increased for smoother playback
-        initialChunkSize = 1 * 1024 * 1024; // 1MB initial chunk - enough to start playing with minimal buffering
+        // Mobile-optimized settings (much larger chunks to prevent buffering)
+        chunkSize = 8 * 1024 * 1024;     // 8MB chunks - extremely large chunks for very smooth playback
+        bufferSize = 1 * 1024 * 1024;    // 1MB buffer - much larger buffer for better performance
+        initialChunkSize = 4 * 1024 * 1024; // 4MB initial chunk - substantial first segment for minimal buffering
         logPrefix = '📱 Mobile';
         console.log(`${logPrefix}: Serving super-optimized video for mobile: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`); 
       } 
       else if (endpointType === 'highperf') {
-        // High-performance settings with much smaller chunks
-        chunkSize = 2 * 1024 * 1024;     // 2MB chunks - radically reduced from 40MB
-        bufferSize = 512 * 1024;         // 512KB buffer - much smaller buffer
-        initialChunkSize = 1 * 1024 * 1024; // 1MB initial chunk - gets playback going immediately
+        // High-performance settings with much larger chunks
+        chunkSize = 16 * 1024 * 1024;    // 16MB chunks - huge chunks for maximum performance
+        bufferSize = 2 * 1024 * 1024;    // 2MB buffer - very large buffer
+        initialChunkSize = 8 * 1024 * 1024; // 8MB initial chunk - large initial chunk for immediate playback
         logPrefix = '🖥️ HighPerf';
         console.log(`${logPrefix}: Serving chunk-optimized video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
       } 
       else {
         // Standard settings (balanced for most devices)
-        chunkSize = 1 * 1024 * 1024;     // 1MB chunks - reduced from 5MB
-        bufferSize = 256 * 1024;         // 256KB buffer - reduced
-        initialChunkSize = 768 * 1024;   // 768KB preview - smaller initial chunk for faster start
+        chunkSize = 4 * 1024 * 1024;     // 4MB chunks - larger chunks for smoother playback
+        bufferSize = 1 * 1024 * 1024;    // 1MB buffer - increased for better performance
+        initialChunkSize = 2 * 1024 * 1024; // 2MB initial chunk - larger initial chunk for faster start
         logPrefix = '📺 Standard';
         console.log(`${logPrefix}: Serving optimized standard video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
       }
