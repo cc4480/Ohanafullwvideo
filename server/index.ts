@@ -32,23 +32,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Use Helmet for production security headers
+// Apply enhanced security middleware
 if (process.env.NODE_ENV === 'production') {
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://fonts.googleapis.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://fonts.googleapis.com"],
-        imgSrc: ["'self'", "data:", "https://*"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://unpkg.com"],
-        connectSrc: ["'self'", "https://api.ohanarealty.com", "*"],
-        frameSrc: ["'self'", "https://*.stripe.com"],
-        objectSrc: ["'none'"]
-      }
-    },
-    crossOriginEmbedderPolicy: false // Allow embedding of cross-origin resources
-  }));
+  // Use enterprise-grade security settings in production
+  configureSecurity(app);
+  console.log('Enterprise-grade security enabled for production');
 } else {
   // Less restrictive security for development
   app.use(helmet({
@@ -57,6 +45,7 @@ if (process.env.NODE_ENV === 'production') {
     crossOriginOpenerPolicy: false,
     crossOriginEmbedderPolicy: false
   }));
+  console.log('Development security settings applied');
 }
 
 // Health check endpoint (useful for deployment monitoring)
@@ -120,6 +109,15 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize database with sample data
+  console.log('Initializing database with sample data...');
+  try {
+    await initializeSampleData();
+    console.log('Database initialization complete.');
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+  }
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

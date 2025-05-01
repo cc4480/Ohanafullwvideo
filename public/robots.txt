@@ -1,18 +1,25 @@
-# robots.txt for Ohana Realty
+# Ohana Realty robots.txt
+# This file tells search engines which pages they can or cannot visit.
 
 User-agent: *
 Allow: /
-Disallow: /api/
+
+# Disallow crawling of administrative areas
 Disallow: /admin/
-Disallow: /backend/
+Disallow: /dashboard/
 Disallow: /login
-Disallow: /logout
+Disallow: /register
+Disallow: /api/
 
-# Allow search engines to crawl all properties
-Allow: /properties/*
+# Allow Google Image to index all images
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /properties/images/
+Allow: /neighborhoods/images/
 
-# Optimize crawl rate
-Crawl-delay: 10
+# Disallow access to development-specific paths
+Disallow: /*?debug=*
+Disallow: /*?dev=*
 
 # Sitemap location
 Sitemap: https://ohanarealty.com/sitemap.xml

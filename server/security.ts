@@ -110,10 +110,11 @@ function configureRateLimiting(app: Express) {
   // Cleanup old entries every minute
   setInterval(() => {
     const now = Date.now();
-    for (const [ip, data] of requestCounts.entries()) {
+    // Use Array.from to convert the map entries to an array to avoid iterator issues
+    Array.from(requestCounts.entries()).forEach(([ip, data]) => {
       if (now > data.resetTime) {
         requestCounts.delete(ip);
       }
-    }
+    });
   }, 60000);
 }

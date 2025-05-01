@@ -1,112 +1,138 @@
-// Sitemap Generator for Ohana Realty
-// This script generates a sitemap.xml file based on current properties and pages
+/**
+ * Sitemap Generator for Ohana Realty
+ * 
+ * This script generates a sitemap.xml file listing all the public pages on the site
+ * for better SEO visibility. It also generates per-property URLs.
+ */
 
 const fs = require('fs');
 const path = require('path');
 const { Pool } = require('@neondatabase/serverless');
 
-// Base URL of the website
-const SITE_URL = process.env.SITE_URL || 'https://ohanarealty.com';
+const SITE_URL = 'https://ohanarealty.com';
 
-// Static pages that should be included in the sitemap
-const STATIC_PAGES = [
-  { url: '', priority: 1.0, changefreq: 'weekly' },         // Home page
-  { url: 'about', priority: 0.8, changefreq: 'monthly' },    // About page
-  { url: 'contact', priority: 0.8, changefreq: 'monthly' },  // Contact page
-  { url: 'properties', priority: 0.9, changefreq: 'daily' }, // Properties listing
-  { url: 'rentals', priority: 0.9, changefreq: 'daily' },    // Rentals listing
+// Pages that should be included in the sitemap
+const staticPages = [
+  '',                 // Home page
+  'properties',       // Properties listing page
+  'airbnb-rentals',   // Airbnb rentals page
+  'neighborhoods',    // Neighborhoods page
+  'about',            // About page
+  'contact',          // Contact page
+  'gallery',          // Gallery page
+  'testimonials',     // Testimonials page
 ];
 
 async function generateSitemap() {
-  console.log('Generating sitemap.xml...');
+  console.log('Starting sitemap generation...');
   
   try {
-    // Connect to the database
-    if (!process.env.DATABASE_URL) {
-      throw new Error('DATABASE_URL is not defined');
+    // Create database connection
+    const connectionString = process.env.DATABASE_URL;
+    
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is not set');
     }
     
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const pool = new Pool({ connectionString });
     
-    // Fetch all properties from the database
-    const propertyResult = await pool.query('SELECT id, address, city, state, "createdAt", "updatedAt" FROM properties WHERE status = \'ACTIVE\'');
-    const properties = propertyResult.rows;
+    // Get dynamic property pages
+    console.log('Fetching properties data...');
+    const propertiesResult = await pool.query('SELECT id, updated_at FROM properties');
     
-    // Fetch all rentals from the database
-    const rentalResult = await pool.query('SELECT id, title, address, city, state, "createdAt", "updatedAt" FROM airbnb_rentals');
-    const rentals = rentalResult.rows;
+    // Get dynamic neighborhood pages
+    console.log('Fetching neighborhoods data...');
+    const neighborhoodsResult = await pool.query('SELECT id, updated_at FROM neighborhoods');
     
-    // Fetch all neighborhoods from the database
-    const neighborhoodResult = await pool.query('SELECT id, name, "createdAt", "updatedAt" FROM neighborhoods');
-    const neighborhoods = neighborhoodResult.rows;
+    // Get dynamic Airbnb rental pages
+    console.log('Fetching Airbnb rental data...');
+    const airbnbResult = await pool.query('SELECT id, updated_at FROM airbnb_rentals');
     
-    // Start building the XML content
-    let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xmlContent += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    // Start building the sitemap
+    let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
     
     // Add static pages
-    STATIC_PAGES.forEach(page => {
-      xmlContent += '  <url>\n';
-      xmlContent += `    <loc>${SITE_URL}/${page.url}</loc>\n`;
-      xmlContent += '    <lastmod>' + new Date().toISOString() + '</lastmod>\n';
-      xmlContent += `    <changefreq>${page.changefreq}</changefreq>\n`;
-      xmlContent += `    <priority>${page.priority}</priority>\n`;
-      xmlContent += '  </url>\n';
-    });
+    for (const page of staticPages) {
+      sitemap += '  <url>\n';
+      sitemap += `    <loc>${SITE_URL}/${page}</loc>\n`;
+      sitemap += '    <changefreq>weekly</changefreq>\n';
+      sitemap += '    <priority>0.8</priority>\n';
+      sitemap += '  </url>\n';
+    }
     
-    // Add properties
-    properties.forEach(property => {
-      const lastMod = property.updatedAt || property.createdAt || new Date();
+    // Add property pages
+    for (const property of propertiesResult.rows) {
+      const lastmod = property.updated_at ? new Date(property.updated_at).toISOString() : new Date().toISOString();
       
-      xmlContent += '  <url>\n';
-      xmlContent += `    <loc>${SITE_URL}/properties/${property.id}</loc>\n`;
-      xmlContent += '    <lastmod>' + new Date(lastMod).toISOString() + '</lastmod>\n';
-      xmlContent += '    <changefreq>weekly</changefreq>\n';
-      xmlContent += '    <priority>0.7</priority>\n';
-      xmlContent += '  </url>\n';
-    });
+      sitemap += '  <url>\n';
+      sitemap += `    <loc>${SITE_URL}/properties/${property.id}</loc>\n`;
+      sitemap += `    <lastmod>${lastmod}</lastmod>\n`;
+      sitemap += '    <changefreq>weekly</changefreq>\n';
+      sitemap += '    <priority>0.9</priority>\n';
+      sitemap += '  </url>\n';
+    }
     
-    // Add rentals
-    rentals.forEach(rental => {
-      const lastMod = rental.updatedAt || rental.createdAt || new Date();
+    // Add neighborhood pages
+    for (const neighborhood of neighborhoodsResult.rows) {
+      const lastmod = neighborhood.updated_at ? new Date(neighborhood.updated_at).toISOString() : new Date().toISOString();
       
-      xmlContent += '  <url>\n';
-      xmlContent += `    <loc>${SITE_URL}/rentals/${rental.id}</loc>\n`;
-      xmlContent += '    <lastmod>' + new Date(lastMod).toISOString() + '</lastmod>\n';
-      xmlContent += '    <changefreq>weekly</changefreq>\n';
-      xmlContent += '    <priority>0.7</priority>\n';
-      xmlContent += '  </url>\n';
-    });
+      sitemap += '  <url>\n';
+      sitemap += `    <loc>${SITE_URL}/neighborhoods/${neighborhood.id}</loc>\n`;
+      sitemap += `    <lastmod>${lastmod}</lastmod>\n`;
+      sitemap += '    <changefreq>monthly</changefreq>\n';
+      sitemap += '    <priority>0.7</priority>\n';
+      sitemap += '  </url>\n';
+    }
     
-    // Add neighborhoods
-    neighborhoods.forEach(neighborhood => {
-      const lastMod = neighborhood.updatedAt || neighborhood.createdAt || new Date();
+    // Add Airbnb rental pages
+    for (const rental of airbnbResult.rows) {
+      const lastmod = rental.updated_at ? new Date(rental.updated_at).toISOString() : new Date().toISOString();
       
-      xmlContent += '  <url>\n';
-      xmlContent += `    <loc>${SITE_URL}/neighborhoods/${neighborhood.id}</loc>\n`;
-      xmlContent += '    <lastmod>' + new Date(lastMod).toISOString() + '</lastmod>\n';
-      xmlContent += '    <changefreq>monthly</changefreq>\n';
-      xmlContent += '    <priority>0.6</priority>\n';
-      xmlContent += '  </url>\n';
-    });
+      sitemap += '  <url>\n';
+      sitemap += `    <loc>${SITE_URL}/airbnb-rentals/${rental.id}</loc>\n`;
+      sitemap += `    <lastmod>${lastmod}</lastmod>\n`;
+      sitemap += '    <changefreq>weekly</changefreq>\n';
+      sitemap += '    <priority>0.9</priority>\n';
+      sitemap += '  </url>\n';
+    }
     
-    // Close the XML content
-    xmlContent += '</urlset>';
+    // Close sitemap
+    sitemap += '</urlset>';
     
-    // Write to file
-    fs.writeFileSync(path.join(__dirname, '../public/sitemap.xml'), xmlContent);
+    // Write the sitemap to a file
+    const outputPath = path.join(process.cwd(), 'public', 'sitemap.xml');
+    fs.writeFileSync(outputPath, sitemap);
     
-    console.log(`Sitemap generated with ${STATIC_PAGES.length + properties.length + rentals.length + neighborhoods.length} URLs`);
-    console.log('Sitemap saved to public/sitemap.xml');
+    console.log(`Sitemap successfully generated and saved to ${outputPath}`);
+    console.log(`Total URLs: ${staticPages.length + propertiesResult.rows.length + neighborhoodsResult.rows.length + airbnbResult.rows.length}`);
     
     // Close the database connection
     await pool.end();
     
+    return true;
   } catch (error) {
     console.error('Error generating sitemap:', error);
-    process.exit(1);
+    return false;
   }
 }
 
-// Run the sitemap generator
-generateSitemap();
+// Run the sitemap generator if this script is executed directly
+if (require.main === module) {
+  generateSitemap()
+    .then(success => {
+      if (success) {
+        console.log('Sitemap generation completed successfully.');
+        process.exit(0);
+      } else {
+        console.error('Sitemap generation failed.');
+        process.exit(1);
+      }
+    })
+    .catch(error => {
+      console.error('Uncaught exception during sitemap generation:', error);
+      process.exit(1);
+    });
+}
+
+module.exports = { generateSitemap };
