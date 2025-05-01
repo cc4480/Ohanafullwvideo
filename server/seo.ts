@@ -5,8 +5,10 @@ import { seoKeywords, seoRankings } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 /**
- * Enhanced SEO Functions
- * Provides advanced SEO capabilities for improved search engine visibility
+ * Enterprise-Grade SEO Domination System
+ * Provides aggressive SEO capabilities designed to outrank major competitors
+ * Specifically optimized for Laredo real estate market domination
+ * Target competitors: Coldwell Banker, RE/MAX, Zillow, Trulia, and Realtor.com
  */
 export function configureSEO(app: Express) {
   // Add SEO middleware to inject metadata based on route path
@@ -152,11 +154,32 @@ export function configureSEO(app: Express) {
     generateSitemap(res);
   });
   
-  // Generate robots.txt for web crawlers
+  // Generate enhanced robots.txt to outrank competitors
   app.get('/robots.txt', (_req: Request, res: Response) => {
     const robotsTxt = `User-agent: *
 Allow: /
-Sitemap: https://ohanarealty.com/sitemap.xml`;
+Sitemap: https://ohanarealty.com/sitemap.xml
+
+# Prioritize major entry points for crawlers
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: bingbot
+Allow: /
+Crawl-delay: 1
+
+# Ensure archive pages are indexed to maximize keyword coverage
+User-agent: *
+Allow: /neighborhoods/*
+Allow: /properties/*
+Allow: /airbnb/*
+
+# Page importance hints for crawlers
+Allow: /neighborhoods/north-laredo
+Allow: /neighborhoods/downtown-laredo
+Allow: /neighborhoods/san-isidro
+Allow: /neighborhoods/del-mar`;
     res.type('text/plain').send(robotsTxt);
   });
 }
@@ -221,40 +244,73 @@ function seoMiddleware(req: Request, res: Response, next: NextFunction) {
 }
 
 /**
- * Generate XML sitemap for search engines
+ * Generate comprehensive XML sitemap to dominate search rankings
+ * Specifically designed to outrank Coldwell Banker, RE/MAX, and Realtor.com
+ * in all Laredo-specific real estate search terms
  */
 function generateSitemap(res: Response) {
   const baseUrl = 'https://ohanarealty.com';
   
-  // List of all public URLs in the sitemap
+  // Core URLs with aggressive SEO priorities
   const urls = [
     { url: '/', priority: 1.0, changefreq: 'daily' },
     { url: '/properties', priority: 0.9, changefreq: 'daily' },
-    { url: '/neighborhoods', priority: 0.9, changefreq: 'weekly' },
+    { url: '/properties?type=RESIDENTIAL', priority: 0.9, changefreq: 'daily' },
+    { url: '/properties?type=COMMERCIAL', priority: 0.9, changefreq: 'daily' },
+    { url: '/properties?type=RENTAL', priority: 0.9, changefreq: 'daily' },
+    { url: '/neighborhoods', priority: 0.95, changefreq: 'daily' },
+    { url: '/neighborhoods/1', priority: 0.9, changefreq: 'daily' }, // North Laredo
+    { url: '/neighborhoods/2', priority: 0.9, changefreq: 'daily' }, // Downtown Laredo
+    { url: '/neighborhoods/3', priority: 0.9, changefreq: 'daily' }, // San Isidro
     { url: '/airbnb', priority: 0.9, changefreq: 'daily' },
-    { url: '/about', priority: 0.7, changefreq: 'monthly' },
-    { url: '/contact', priority: 0.7, changefreq: 'monthly' },
-    { url: '/blog', priority: 0.8, changefreq: 'weekly' },
-    // In a real implementation, fetch dynamic URLs from the database
+    { url: '/about', priority: 0.8, changefreq: 'weekly' },
+    { url: '/contact', priority: 0.8, changefreq: 'weekly' },
+    { url: '/blog', priority: 0.9, changefreq: 'daily' },
+    
+    // Laredo-specific local keywords optimized pages
+    { url: '/laredo-real-estate-market', priority: 1.0, changefreq: 'daily' },
+    { url: '/luxury-homes-laredo', priority: 0.95, changefreq: 'daily' },
+    { url: '/new-construction-laredo', priority: 0.95, changefreq: 'daily' },
+    { url: '/laredo-condos', priority: 0.9, changefreq: 'daily' },
+    { url: '/laredo-investment-properties', priority: 0.9, changefreq: 'daily' },
+    { url: '/laredo-home-values', priority: 0.95, changefreq: 'daily' },
+    { url: '/laredo-rentals', priority: 0.9, changefreq: 'daily' },
+    { url: '/laredo-property-management', priority: 0.9, changefreq: 'weekly' },
+    { url: '/laredo-commercial-properties', priority: 0.9, changefreq: 'weekly' },
+    { url: '/laredo-real-estate-schools', priority: 0.8, changefreq: 'weekly' },
+    
+    // Beat competitor specific pages
+    { url: '/laredo-vs-coldwell-banker', priority: 0.8, changefreq: 'weekly' },
+    { url: '/laredo-vs-remax', priority: 0.8, changefreq: 'weekly' },
+    { url: '/laredo-vs-realtor-com', priority: 0.8, changefreq: 'weekly' },
   ];
   
-  // Generate XML content
+  // Generate XML content with advanced schema support
   let xml = '<?xml version="1.0" encoding="UTF-8"?>';
-  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:pagemap="http://www.google.com/schemas/sitemap-pagemap/1.0" xmlns:xhtml="http://www.w3.org/1999/xhtml" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
   
-  // Add each URL to the sitemap
+  // Add each URL to the sitemap with full schema support
   urls.forEach(item => {
     xml += '<url>';
     xml += `<loc>${baseUrl}${item.url}</loc>`;
     xml += `<priority>${item.priority}</priority>`;
     xml += `<changefreq>${item.changefreq}</changefreq>`;
     xml += `<lastmod>${new Date().toISOString()}</lastmod>`;
+    
+    // Add mobile crawler support
+    xml += '<mobile:mobile/>';
+    
+    // Add alternate language support for Spanish speakers (important for Laredo)
+    xml += `<xhtml:link rel="alternate" hreflang="es" href="${baseUrl}${item.url}?lang=es"/>`;
+    xml += `<xhtml:link rel="alternate" hreflang="en" href="${baseUrl}${item.url}"/>`;
+    
     xml += '</url>';
   });
   
   xml += '</urlset>';
   
-  // Send the XML response
+  // Send the XML response with cache control headers
   res.header('Content-Type', 'application/xml');
+  res.header('Cache-Control', 'max-age=86400'); // 24 hour cache
   res.send(xml);
 }
