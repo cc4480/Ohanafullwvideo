@@ -200,20 +200,20 @@ export function OhanaVideoPlayer({
     */
   }, []);
   
-  // RADICAL CHANGE: Always start with mobile version for all devices 
-  // This sacrifices quality for guaranteed smooth playback
+  // Use adaptive quality based on device capabilities
   useEffect(() => {
-    // Get the device info but ignore recommendations - we're going mobile-first for ALL devices
+    // Get the device info to determine optimal video quality
     const deviceType = getDeviceType();
     const devicePerformance = getDevicePerformance();
+    const settings = getVideoDisplaySettings();
     
     if (videoRef.current && src.includes('/api/video/ohana')) {
-      // CRITICAL CHANGE: Always start with the mobile endpoint regardless of device
-      // This ensures smooth playback on all devices by starting with low quality
-      console.log(`CRITICAL: Starting with mobile-optimized video for ALL devices (${deviceType}, ${devicePerformance})`);
+      // Use the optimal endpoint based on device capabilities
+      console.log(`Using adaptive video quality for ${deviceType} device with ${devicePerformance} performance`);
+      console.log(`Selected video endpoint: ${settings.videoEndpoint}`);
       
-      // Set src directly to mobile endpoint - guaranteed to work without buffering
-      videoRef.current.src = '/api/video/ohana/mobile';
+      // Set src based on device capabilities
+      videoRef.current.src = settings.videoEndpoint;
       videoRef.current.load();
     }
   }, [src]);
