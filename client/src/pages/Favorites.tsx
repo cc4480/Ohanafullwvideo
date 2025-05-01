@@ -8,7 +8,8 @@ import { Heart } from "lucide-react";
 
 export default function Favorites() {
   const [isDark, setIsDark] = useState(false);
-  const { favorites, favoritedProperties, setFavoritedProperties } = useFavorites();
+  const [favoritedProperties, setFavoritedProperties] = useState<Property[]>([]);
+  const { favorites, favoriteIds } = useFavorites();
   
   // Detect dark mode from document class
   useEffect(() => {
@@ -44,10 +45,11 @@ export default function Favorites() {
   // Filter properties to only show favorites
   useEffect(() => {
     if (properties) {
-      const favoriteProps = properties.filter(prop => favorites.includes(prop.id));
+      // Use favoriteIds to filter properties
+      const favoriteProps = properties.filter(prop => favoriteIds.includes(prop.id));
       setFavoritedProperties(favoriteProps);
     }
-  }, [properties, favorites, setFavoritedProperties]);
+  }, [properties, favoriteIds]);
   
   return (
     <>
@@ -74,7 +76,7 @@ export default function Favorites() {
                   <div key={i} className="h-96 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse"></div>
                 ))}
               </div>
-            ) : favorites.length === 0 ? (
+            ) : favoriteIds.length === 0 ? (
               <div className="py-16 text-center">
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 mb-6">
                   <Heart className="h-10 w-10 text-slate-400" />
