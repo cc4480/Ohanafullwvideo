@@ -46,8 +46,8 @@ export default function EnhancedNeighborhoodDemo() {
         <link rel="canonical" href={`https://ohanarealty.com/neighborhoods/${northLaredoData.slug}`} />
         
         {/* Additional locale alternate links for international SEO */}
-        <link rel="alternate" href={`https://ohanarealty.com/neighborhoods/${northLaredoData.slug}`} hreflang="en-us" />
-        <link rel="alternate" href={`https://ohanarealty.com/es/neighborhoods/${northLaredoData.slug}`} hreflang="es-mx" />
+        <link rel="alternate" href={`https://ohanarealty.com/neighborhoods/${northLaredoData.slug}`} hrefLang="en-us" />
+        <link rel="alternate" href={`https://ohanarealty.com/es/neighborhoods/${northLaredoData.slug}`} hrefLang="es-mx" />
       </Helmet>
       
       <div className="mb-6">
