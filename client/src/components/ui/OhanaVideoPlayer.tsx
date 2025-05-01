@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { getDeviceType, getVideoDisplaySettings, isHighPerformanceDevice } from '../../utils/deviceUtils';
 
 interface OhanaVideoPlayerProps {
   src: string;
@@ -55,25 +56,21 @@ export function OhanaVideoPlayer({
   const socketRef = useRef<WebSocket | null>(null);
   const [optimizedConfig, setOptimizedConfig] = useState<any>(null);
   
-  // Detect if user has high-performance device (16GB+ RAM)
-  const isHighPerformanceDevice = () => {
-    // Check if the browser reports more than 4 logical processors
-    const hasMultipleCores = navigator.hardwareConcurrency > 4;
+  // State to track device type and optimal settings
+  const [deviceSettings, setDeviceSettings] = useState(getVideoDisplaySettings());
+  
+  // Update device settings on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setDeviceSettings(getVideoDisplaySettings());
+    };
     
-    // Check device memory if available (Chrome-specific)
-    const hasHighMemory = (navigator as any).deviceMemory > 4; // More than 4GB suggests high-end device
+    window.addEventListener('resize', handleResize);
     
-    // Check if device pixel ratio is high (suggests high-end display)
-    const hasHighDPI = window.devicePixelRatio > 1.5;
-    
-    // If we can detect at least two of these conditions, consider it high-performance
-    let highPerfCount = 0;
-    if (hasMultipleCores) highPerfCount++;
-    if (hasHighMemory) highPerfCount++;
-    if (hasHighDPI) highPerfCount++;
-    
-    return highPerfCount >= 2;
-  };
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   
   // Connect to WebSocket for real-time video performance optimization
   useEffect(() => {
@@ -388,7 +385,7 @@ export function OhanaVideoPlayer({
         muted={isMuted}
         loop={loop}
         playsInline
-        preload="auto"
+        preload={deviceSettings.preload}
         x-webkit-airplay="allow"
         x-webkit-playsinline="true"
         controlsList="nodownload"
@@ -396,14 +393,16 @@ export function OhanaVideoPlayer({
         className="w-full h-full object-contain" 
         style={{
           objectPosition: 'center',
-          objectFit: 'contain', /* Changed from 'cover' to 'contain' to show full video without cropping */
+          objectFit: deviceSettings.objectFit, /* Responsive object-fit based on device */
           margin: 'auto',
           willChange: 'transform',
           WebkitBackfaceVisibility: 'hidden',
           backfaceVisibility: 'hidden',
           width: '100%',
           height: '100%',
-          background: '#000' /* Black background to fill any empty space */
+          maxHeight: deviceSettings.maxHeight,
+          maxWidth: deviceSettings.maxWidth,
+          background: deviceSettings.background /* Black background to fill any empty space */
         }}
       >  
         {/* Add a fallback text for browsers that don't support video */}
