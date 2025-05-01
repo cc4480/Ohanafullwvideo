@@ -29,10 +29,10 @@ export default function Home() {
         logo={`${websiteUrl}/logo.png`}
         description="Premier real estate agency in Laredo, TX specializing in residential and commercial properties, with personalized service and expert local knowledge."
         address={{
-          street: "5802 McPherson Rd",
+          street: "505 Shiloh Dr. #201",
           city: "Laredo", 
           state: "TX",
-          zip: "78041",
+          zip: "78045",
           country: "US"
         }}
         phone="+19563246714"
@@ -50,12 +50,12 @@ export default function Home() {
         description="Premier real estate agency in Laredo, TX specializing in residential and commercial properties, with personalized service and expert local market knowledge. We help buyers find their dream homes and sellers maximize their property value."
         businessType="RealEstateAgent"
         location={{
-          streetAddress: "5802 McPherson Rd",
+          streetAddress: "505 Shiloh Dr. #201",
           city: "Laredo",
           state: "TX",
-          zipCode: "78041",
-          latitude: 27.5629,
-          longitude: -99.4805
+          zipCode: "78045",
+          latitude: 27.5784,
+          longitude: -99.4991
         }}
         url={websiteUrl}
         logo={`${websiteUrl}/logo.png`}
