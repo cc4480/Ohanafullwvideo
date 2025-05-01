@@ -919,10 +919,10 @@ Crawl-delay: 1
       
       // Configure settings based on endpoint type with DRASTICALLY smaller chunks
       if (endpointType === 'mobile') {
-        // Mobile-optimized settings (tiny chunks, tiny buffers, extremely quick start)
-        chunkSize = 256 * 1024;          // 256KB chunks - drastically smaller
-        bufferSize = 128 * 1024;         // 128KB buffer - even smaller
-        initialChunkSize = 512 * 1024;   // 512KB initial chunk - just enough to start playing
+        // Mobile-optimized settings (larger chunks to prevent frequent buffering)
+        chunkSize = 2 * 1024 * 1024;     // 2MB chunks - larger to prevent buffering
+        bufferSize = 512 * 1024;         // 512KB buffer - increased for smoother playback
+        initialChunkSize = 1 * 1024 * 1024; // 1MB initial chunk - enough to start playing with minimal buffering
         logPrefix = '📱 Mobile';
         console.log(`${logPrefix}: Serving super-optimized video for mobile: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`); 
       } 
@@ -958,7 +958,7 @@ Crawl-delay: 1
           'X-Content-Type-Options': 'nosniff'
         };
         
-        console.log(`${logPrefix}: Sending perfect initial chunk: ${(initialChunkSize / 1024).toFixed(2)}KB`);
+        console.log(`${logPrefix}: Sending perfect initial chunk: ${(initialChunkSize / 1024 / 1024).toFixed(2)}MB`);
         
         // Create a special stream with a smaller buffer
         const fileStream = fs.createReadStream(videoPath, { 
@@ -1019,11 +1019,8 @@ Crawl-delay: 1
         const chunksize = (end - start) + 1;
         
         // Log range request with appropriate prefix
-        if (endpointType === 'mobile') {
-          console.log(`${logPrefix}: Range request: ${start}-${end}/${fileSize} (${(chunksize / 1024).toFixed(2)}KB)`);
-        } else {
-          console.log(`${logPrefix}: Range request: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`);
-        }
+        // For all endpoint types, we're now using MB to be consistent
+        console.log(`${logPrefix}: Range request: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`);
         
         // Set YouTube-like headers with adaptive caching
         res.writeHead(206, {
@@ -1071,10 +1068,8 @@ Crawl-delay: 1
         // For mobile, we send just enough to start playing quickly
         const initialSize = Math.min(initialChunkSize, fileSize);
         
-        // Log initial load with appropriate prefix
-        if (endpointType === 'mobile') {
-          console.log(`${logPrefix}: Initial segment: ${(initialSize / 1024).toFixed(2)}KB`);
-        } else if (endpointType === 'highperf') {
+        // Log initial load with appropriate prefix - all in MB for consistency
+        if (endpointType === 'highperf') {
           console.log(`${logPrefix}: Sending full video: ${(initialSize / 1024 / 1024).toFixed(2)}MB`);
         } else {
           console.log(`${logPrefix}: Initial segment: ${(initialSize / 1024 / 1024).toFixed(2)}MB`);
