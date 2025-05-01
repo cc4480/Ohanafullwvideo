@@ -32,6 +32,10 @@ const VideoDebug = lazy(() => import("@/pages/VideoDebug"));
 const SimpleVideo = lazy(() => import("@/pages/SimpleVideo"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
+// Enhanced SEO Pages
+const EnhancedNeighborhoodDemo = lazy(() => import("@/pages/EnhancedNeighborhoodDemo"));
+const BacklinkManagement = lazy(() => import("@/pages/BacklinkManagement"));
+
 // Import our $10,000 Enterprise-Grade SEO Solution
 import SEODashboard from "@/components/SEODashboard";
 import SchemaGraph from "@/components/SchemaGraph";
@@ -452,6 +456,30 @@ function App() {
                             <ScrollToTop />
                             <ErrorBoundary>
                               <SEODashboard />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/admin/backlinks">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <BacklinkManagement />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/neighborhoods/enhanced-demo">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <EnhancedNeighborhoodDemo />
                             </ErrorBoundary>
                           </>
                         );
