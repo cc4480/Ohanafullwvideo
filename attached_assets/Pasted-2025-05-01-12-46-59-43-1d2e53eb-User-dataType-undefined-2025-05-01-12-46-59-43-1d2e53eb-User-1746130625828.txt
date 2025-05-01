@@ -1,0 +1,124 @@
+2025-05-01 12:46:59.43
+1d2e53eb
+User
+dataType: undefined,
+2025-05-01 12:46:59.43
+1d2e53eb
+User
+constraint: undefined,
+2025-05-01 12:46:59.43
+1d2e53eb
+User
+file: 'parse_relation.c',
+2025-05-01 12:46:59.43
+1d2e53eb
+User
+line: '3729',
+2025-05-01 12:46:59.43
+1d2e53eb
+User
+routine: 'errorMissingColumn'
+2025-05-01 12:46:59.43
+1d2e53eb
+User
+}
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+Property fetch error: error: column "zip_code" does not exist
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+at file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1345:74
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+at async NeonPreparedQuery.execute (file:///home/runner/workspace/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+at async DatabaseStorage.getProperty (file:///home/runner/workspace/dist/index.js:319:24)
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+at async file:///home/runner/workspace/dist/index.js:1119:24 {
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+length: 173,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+severity: 'ERROR',
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+code: '42703',
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+detail: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+hint: 'Perhaps you meant to reference the column "properties.zipCode".',
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+position: '50',
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+internalPosition: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+internalQuery: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+where: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+schema: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+table: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+column: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+dataType: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+constraint: undefined,
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+file: 'parse_relation.c',
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+line: '3729',
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+routine: 'errorMissingColumn'
+2025-05-01 12:47:01.72
+1d2e53eb
+User
+}
+
+Wrap
+
+Colors
