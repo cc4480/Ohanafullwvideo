@@ -1,0 +1,18 @@
+# robots.txt for Ohana Realty
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /backend/
+Disallow: /login
+Disallow: /logout
+
+# Allow search engines to crawl all properties
+Allow: /properties/*
+
+# Optimize crawl rate
+Crawl-delay: 10
+
+# Sitemap location
+Sitemap: https://ohanarealty.com/sitemap.xml

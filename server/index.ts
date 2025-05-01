@@ -4,6 +4,8 @@ import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import helmet from "helmet";
 import { db } from "./db";
+import { configureSecurity } from "./security";
+import { initializeSampleData } from "./storage";
 
 const app = express();
 app.use(express.json());
