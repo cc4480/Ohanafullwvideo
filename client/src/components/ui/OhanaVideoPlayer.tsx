@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getDeviceType, getDevicePerformance, getVideoDisplaySettings, isHighPerformanceDevice } from '../../utils/deviceUtils';
+import { getOptimalVideoSources, loadOptimalSource, preloadVideoMetadata } from '../../utils/videoUtils';
 
 interface OhanaVideoPlayerProps {
   src: string;
@@ -199,45 +200,49 @@ export function OhanaVideoPlayer({
     */
   }, []);
   
-  // Use adaptive video endpoint based on device capabilities
+  // YouTube-like adaptive video loading
   useEffect(() => {
     // Get the optimal video settings for this device
     const settings = getVideoDisplaySettings();
     const deviceType = getDeviceType();
     const devicePerformance = getDevicePerformance();
+    const isHighPerf = devicePerformance === 'high';
     
     if (videoRef.current && src.includes('/api/video/ohana')) {
-      // Determine optimal video endpoint based on device performance
-      let optimalVideoSrc = settings.videoEndpoint;
+      // YouTube-like approach: generate multiple source options and try them in order
+      console.log(`Loading optimal video sources for ${deviceType} device with ${devicePerformance} performance`);
       
-      // Direct mapping based on device capabilities
-      if (devicePerformance === 'low' || (devicePerformance === 'medium' && (deviceType === 'mobile' || deviceType === 'tablet'))) {
-        // Always use mobile endpoint for lower-powered devices
-        optimalVideoSrc = '/api/video/ohana/mobile';
-      } else if (devicePerformance === 'high') {
-        // High-performance devices get the high-performance endpoint
-        optimalVideoSrc = '/api/video/ohana/highperf';
-      }
+      // Get all possible sources in priority order (like YouTube)
+      const videoSources = getOptimalVideoSources('/api/video/ohana', isHighPerf);
       
-      // If we received specific cached URLs from the WebSocket, consider those too
-      if (optimizedConfig?.cachedUrls?.length > 0) {
-        // For high-performance devices, use the highest quality option
-        if (settings.playbackQuality === 'high') {
-          optimalVideoSrc = optimizedConfig.cachedUrls[0]; // First option is high-performance
-        } 
-        // For low/medium performance, use the mobile-optimized endpoint if available
-        else if (settings.playbackQuality === 'low' || settings.playbackQuality === 'medium') {
-          const mobileEndpoint = optimizedConfig.cachedUrls.find((url: string) => url.includes('/mobile'));
-          if (mobileEndpoint) {
-            optimalVideoSrc = mobileEndpoint;
+      // Preload metadata for faster startup - this is a key YouTube technique
+      preloadVideoMetadata(videoSources);
+      
+      // Load the best source that will work on this device
+      loadOptimalSource(videoRef.current, videoSources)
+        .then(() => {
+          console.log('Successfully loaded optimal video source');
+        })
+        .catch((error) => {
+          console.error('Failed to load any video sources:', error);
+          
+          // Direct mapping fallback if our advanced approach fails
+          let fallbackSrc = settings.videoEndpoint;
+          if (devicePerformance === 'low' || (devicePerformance === 'medium' && 
+              (deviceType === 'mobile' || deviceType === 'tablet'))) {
+            fallbackSrc = '/api/video/ohana/mobile';
+          } else if (devicePerformance === 'high') {
+            fallbackSrc = '/api/video/ohana/highperf';
           }
-        }
-      }
-      
-      console.log(`Using ${settings.playbackQuality} quality video endpoint for device type ${deviceType} with performance ${devicePerformance}:`, optimalVideoSrc);
-      videoRef.current.src = optimalVideoSrc;
+          
+          console.log(`Using fallback video source: ${fallbackSrc}`);
+          if (videoRef.current) {
+            videoRef.current.src = fallbackSrc;
+            videoRef.current.load();
+          }
+        });
     }
-  }, [src, optimizedConfig]);
+  }, [src]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -415,6 +420,78 @@ export function OhanaVideoPlayer({
     video.muted = isMuted;
     video.volume = isMuted ? 0 : volume;
   }, [isMuted, volume]);
+  
+  // YouTube-like adaptive bitrate control: monitor playback and adjust quality when needed
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    
+    // This tracks playback performance metrics like YouTube does
+    let rebufferingEvents = 0;
+    let lastBufferCheck = Date.now();
+    let playbackStartTime = 0;
+    let isBuffering = false;
+    let loadAttempts = 0;
+    const rebufferingThreshold = 3; // Switch to lower quality after this many buffer events
+    
+    // YouTube-like metric for monitoring playback smoothness
+    const checkBuffering = () => {
+      if (!video) return;
+      
+      const now = Date.now();
+      // Don't check too frequently
+      if (now - lastBufferCheck < 2000) return;
+      lastBufferCheck = now;
+      
+      // Calculate how much video is buffered ahead of current playback
+      let bufferedAhead = 0;
+      if (video.buffered.length) {
+        const currentBufferEnd = video.buffered.end(video.buffered.length - 1);
+        bufferedAhead = currentBufferEnd - video.currentTime;
+      }
+      
+      // YouTube switches to lower quality when buffer gets low
+      if (bufferedAhead < 2 && video.readyState < 4 && !video.paused) {
+        // We're about to buffer
+        if (!isBuffering) {
+          console.log('OhanaVideoPlayer: Buffering detected, may need to switch quality');
+          rebufferingEvents++;
+          isBuffering = true;
+          
+          // After multiple rebuffering events, try switching to mobile-optimized version
+          if (rebufferingEvents >= rebufferingThreshold && !video.src.includes('/mobile')) {
+            console.log('OhanaVideoPlayer: Multiple rebuffering events, switching to mobile-optimized version');
+            video.src = '/api/video/ohana/mobile';
+            video.load();
+            video.currentTime = Math.max(0, video.currentTime - 2); // Go back slightly for seamless transition
+            loadAttempts++;
+            video.play().catch(err => console.log('Error after quality switch:', err));
+          }
+        }
+      } else if (bufferedAhead > 5) {
+        // We have good buffer now
+        isBuffering = false;
+      }
+    };
+    
+    // Track playback smoothness metrics like YouTube
+    const intervalId = setInterval(checkBuffering, 2000);
+    
+    // YouTube monitors when playback actually starts
+    const handlePlaying = () => {
+      if (playbackStartTime === 0) {
+        playbackStartTime = Date.now();
+        console.log(`OhanaVideoPlayer: Playback started after ${playbackStartTime - lastBufferCheck}ms`);
+      }
+    };
+    
+    video.addEventListener('playing', handlePlaying);
+    
+    return () => {
+      clearInterval(intervalId);
+      video.removeEventListener('playing', handlePlaying);
+    };
+  }, []);
   
   const togglePlay = () => {
     const video = videoRef.current;
