@@ -1139,6 +1139,132 @@ Crawl-delay: 1
     serveVideoFile(req, res, 'OHANAVIDEOMASTER.mp4');
   });
   
+  // Mobile-optimized video endpoint with smaller chunks and buffer
+  app.get('/api/video/ohana/mobile', (req, res) => {
+    // This endpoint is optimized for mobile devices with lower memory and processing power
+    try {
+      const videoPath = path.join(process.cwd(), 'public', 'OHANAVIDEOMASTER.mp4');
+      
+      // Check if file exists
+      if (!fs.existsSync(videoPath)) {
+        console.error(`Video file not found at: ${videoPath}`);
+        return res.status(404).send('Video file not found');
+      }
+      
+      // Get file stats
+      const stat = fs.statSync(videoPath);
+      const fileSize = stat.size;
+      
+      console.log(`Serving mobile-optimized video: OHANAVIDEOMASTER.mp4, size: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
+      
+      // Use smaller chunk sizes for mobile devices to prevent memory issues
+      const MAX_CHUNK_SIZE = 2 * 1024 * 1024; // 2MB in bytes for mobile
+      
+      const range = req.headers.range;
+      
+      // Handle range requests (for video seeking)
+      if (range) {
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        
+        // Calculate safe end position (don't exceed MAX_CHUNK_SIZE)
+        let end: number;
+        if (parts[1]) {
+          end = parseInt(parts[1], 10);
+        } else {
+          // If no end specified, limit to start + MAX_CHUNK_SIZE or file end
+          end = Math.min(start + MAX_CHUNK_SIZE, fileSize - 1);
+        }
+        
+        // Ensure end doesn't exceed file size
+        end = Math.min(end, fileSize - 1);
+        
+        const chunksize = (end - start) + 1;
+        
+        console.log(`Mobile video range request: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`);
+        
+        // Set mobile-optimized headers
+        res.writeHead(206, {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Type': 'video/mp4',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+          'Connection': 'keep-alive',
+        });
+        
+        // Use smaller buffer size for mobile devices
+        const fileStream = fs.createReadStream(videoPath, { 
+          start, 
+          end,
+          highWaterMark: 1 * 1024 * 1024 // 1MB buffer size for mobile devices
+        });
+        
+        fileStream.pipe(res, { end: true });
+        
+        fileStream.on('end', () => {
+          console.log('Mobile video chunk completed');
+        });
+        
+        fileStream.on('error', (error: Error) => {
+          console.error('Error streaming mobile video chunk:', error);
+          if (!res.headersSent) {
+            res.status(500).send('Error streaming video file');
+          }
+          fileStream.destroy();
+        });
+        
+        req.on('close', () => {
+          console.log('Client disconnected from mobile stream, closing video stream');
+          fileStream.destroy();
+        });
+      } 
+      // No range requested, serve a small preview
+      else {
+        // Serve just 1MB preview for mobile devices
+        const previewSize = Math.min(fileSize, 1 * 1024 * 1024);
+        
+        console.log(`Serving mobile preview (first ${(previewSize / 1024 / 1024).toFixed(2)}MB of file)`);
+        
+        res.writeHead(206, {
+          'Content-Range': `bytes 0-${previewSize - 1}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': previewSize,
+          'Content-Type': 'video/mp4',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        });
+        
+        const fileStream = fs.createReadStream(videoPath, { 
+          start: 0, 
+          end: previewSize - 1,
+          highWaterMark: 512 * 1024 // 512KB buffer for initial preview
+        });
+        
+        fileStream.pipe(res, { end: true });
+        
+        fileStream.on('end', () => {
+          console.log('Mobile preview completed');
+        });
+        
+        fileStream.on('error', (error: Error) => {
+          console.error('Error streaming mobile preview:', error);
+          if (!res.headersSent) {
+            res.status(500).send('Error streaming video file');
+          }
+          fileStream.destroy();
+        });
+        
+        req.on('close', () => {
+          console.log('Client disconnected from mobile preview, closing stream');
+          fileStream.destroy();
+        });
+      }
+    } catch (error) {
+      console.error('Error serving mobile-optimized video:', error);
+      res.status(500).send('Server error while serving mobile-optimized video');
+    }
+  });
+  
   // Legacy direct video serving implementation - Now improved with the same optimizations
   app.get('/api/video/property-legacy', (req, res) => {
     // Use the same optimized function for all video endpoints
@@ -1227,6 +1353,7 @@ Crawl-delay: 1
         highPerformanceMode: true,
         cachedUrls: [
           '/api/video/ohana/highperf',
+          '/api/video/ohana/mobile',
           '/static/OHANAVIDEOMASTER.mp4'
         ]
       }

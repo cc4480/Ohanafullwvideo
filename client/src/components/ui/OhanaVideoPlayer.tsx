@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { getDeviceType, getVideoDisplaySettings, isHighPerformanceDevice } from '../../utils/deviceUtils';
+import { getDeviceType, getDevicePerformance, getVideoDisplaySettings, isHighPerformanceDevice } from '../../utils/deviceUtils';
 
 interface OhanaVideoPlayerProps {
   src: string;
@@ -58,6 +58,27 @@ export function OhanaVideoPlayer({
   
   // State to track device type and optimal settings
   const [deviceSettings, setDeviceSettings] = useState(getVideoDisplaySettings());
+  
+  // Log device detection info when component mounts
+  useEffect(() => {
+    const deviceType = getDeviceType();
+    const devicePerformance = getDevicePerformance();
+    const settings = getVideoDisplaySettings();
+    
+    console.log('OhanaVideoPlayer: Device Detection', {
+      deviceType,
+      devicePerformance,
+      videoEndpoint: settings.videoEndpoint,
+      playbackQuality: settings.playbackQuality,
+      maxResolution: settings.maxResolution,
+      bufferSize: `${settings.bufferSize / (1024 * 1024)}MB`,
+      userAgent: navigator.userAgent,
+      cores: navigator.hardwareConcurrency || 'unknown',
+      memory: (navigator as any).deviceMemory || 'unknown',
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      pixelRatio: window.devicePixelRatio,
+    });
+  }, []);
   
   // Update device settings on window resize
   useEffect(() => {
@@ -156,23 +177,32 @@ export function OhanaVideoPlayer({
     */
   }, []);
   
-  // Use high-performance endpoint for better video playback
+  // Use adaptive video endpoint based on device capabilities
   useEffect(() => {
-    // Enable high-performance endpoint for better video streaming performance
-    // This will help reduce video choppiness on high-performance systems
+    // Get the optimal video settings for this device
+    const settings = getVideoDisplaySettings();
     
-    // Check if we should use the high-performance endpoint
     if (videoRef.current && src.includes('/api/video/ohana')) {
-      // Always use high-performance endpoint for better video experience
-      let highPerfSrc = '/api/video/ohana/highperf';
+      // Determine optimal video endpoint based on device performance
+      let optimalVideoSrc = settings.videoEndpoint;
       
-      // If we received specific cached URLs from the WebSocket, use the best one
+      // If we received specific cached URLs from the WebSocket, consider those too
       if (optimizedConfig?.cachedUrls?.length > 0) {
-        highPerfSrc = optimizedConfig.cachedUrls[0];
+        // For high-performance devices, use the highest quality option
+        if (settings.playbackQuality === 'high') {
+          optimalVideoSrc = optimizedConfig.cachedUrls[0]; // First option is high-performance
+        } 
+        // For low/medium performance, use the mobile-optimized endpoint if available
+        else if (settings.playbackQuality === 'low' || settings.playbackQuality === 'medium') {
+          const mobileEndpoint = optimizedConfig.cachedUrls.find((url: string) => url.includes('/mobile'));
+          if (mobileEndpoint) {
+            optimalVideoSrc = mobileEndpoint;
+          }
+        }
       }
       
-      console.log('Using high-performance video endpoint for smoother playback:', highPerfSrc);
-      videoRef.current.src = highPerfSrc;
+      console.log(`Using ${settings.playbackQuality} quality video endpoint for device type ${getDeviceType()} with performance ${getDevicePerformance()}:`, optimalVideoSrc);
+      videoRef.current.src = optimalVideoSrc;
     }
   }, [src, optimizedConfig]);
 
