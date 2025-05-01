@@ -735,6 +735,7 @@ export class DatabaseStorage implements IStorage {
 }
 
 // Initialize sample data function
+// Initialize database with sample data
 export async function initializeSampleData() {
   try {
     // Check if data already exists
