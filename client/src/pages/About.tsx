@@ -76,15 +76,15 @@ export default function About() {
         description="Premier real estate agency in Laredo, TX founded by Valentin Cuellar in 1998. Specializing in residential and commercial properties with personalized service and expert local knowledge with over 27 years of experience."
         url={websiteUrl}
         logo={`${websiteUrl}/logo.png`}
-        streetAddress="5802 McPherson Rd"
+        streetAddress="505 Shiloh Dr. #201"
         addressLocality="Laredo"
         addressRegion="TX"
-        postalCode="78041"
+        postalCode="78045"
         telephone="+19563246714"
         email="valentin_cuellar@hotmail.com"
         priceRange="$$$"
-        latitude={27.5629}
-        longitude={-99.4805}
+        latitude={27.5784}
+        longitude={-99.4991}
         openingHours={[
           "Monday 9:00-18:00",
           "Tuesday 9:00-18:00",

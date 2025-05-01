@@ -45,7 +45,7 @@ export default function Footer() {
               <p className="flex items-start">
                 <i className='bx bx-map text-secondary text-lg mr-2 mt-0.5'></i>
                 <span>
-                  505 Shiloh Dr, Apt 201<br />
+                  505 Shiloh Dr. #201<br />
                   Laredo, TX 78045
                 </span>
               </p>

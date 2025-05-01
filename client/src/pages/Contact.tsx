@@ -10,7 +10,7 @@ export default function Contact() {
     <>
       <SEOHead 
         title="Contact Ohana Realty | Laredo TX Real Estate Agency | Valentin Cuellar"
-        description="Contact Valentin Cuellar at Ohana Realty for all your real estate needs in Laredo, TX. Visit our office at 5702 McPherson Rd, call us at (956) 324-6714, or fill out our online form for prompt assistance."
+        description="Contact Valentin Cuellar at Ohana Realty for all your real estate needs in Laredo, TX. Visit our office at 505 Shiloh Dr. #201, call us at (956) 324-6714, or fill out our online form for prompt assistance."
         canonicalUrl="/contact"
         ogImage={`${websiteUrl}/og-image-contact.jpg`}
       />
@@ -21,15 +21,15 @@ export default function Contact() {
         description="Premier real estate agency in Laredo, TX offering personalized service for buying, selling, and renting properties. Contact Valentin Cuellar for expert assistance with residential and commercial real estate."
         url={websiteUrl}
         logo={`${websiteUrl}/logo.png`}
-        streetAddress="5702 McPherson Rd, Suite 9"
+        streetAddress="505 Shiloh Dr. #201"
         addressLocality="Laredo"
         addressRegion="TX"
-        postalCode="78041"
+        postalCode="78045"
         telephone="+19563246714"
         email="valentin_cuellar@hotmail.com"
         priceRange="$$$"
-        latitude={27.5454625}
-        longitude={-99.4785054}
+        latitude={27.5784}
+        longitude={-99.4991}
         openingHours={[
           "Monday 9:00-18:00",
           "Tuesday 9:00-18:00",
@@ -64,7 +64,7 @@ export default function Contact() {
         questions={[
           {
             question: "What's the best way to contact Ohana Realty?",
-            answer: "The best way to contact Ohana Realty is by calling Valentin Cuellar directly at (956) 324-6714, sending an email to valentin_cuellar@hotmail.com, or using the contact form on our website. You can also visit our office at 5702 McPherson Rd, Suite 9, Laredo, TX 78041 during business hours."
+            answer: "The best way to contact Ohana Realty is by calling Valentin Cuellar directly at (956) 324-6714, sending an email to valentin_cuellar@hotmail.com, or using the contact form on our website. You can also visit our office at 505 Shiloh Dr. #201, Laredo, TX 78045 during business hours."
           },
           {
             question: "What are Ohana Realty's office hours?",
@@ -134,13 +134,13 @@ export default function Contact() {
               <h2 className="text-2xl font-serif font-semibold mb-4">Office Location</h2>
               <div className="flex items-start gap-3 mb-2">
                 <MapPin className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
-                <p>5702 McPherson Rd, Suite 9<br />Laredo, TX 78041</p>
+                <p>505 Shiloh Dr. #201<br />Laredo, TX 78045</p>
               </div>
             </div>
 
             <div className="aspect-video w-full rounded-lg overflow-hidden border shadow-sm">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3601.5794065365126!2d-99.4785054!3d27.5454625!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8661209c98bf4575%3A0x7ae365eb49d8866d!2s5702%20McPherson%20Rd%2C%20Laredo%2C%20TX%2078041!5e0!3m2!1sen!2sus!4v1650294322752!5m2!1sen!2sus"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3601.060669362333!2d-99.5015856!3d27.578421!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8661209fd18108ad%3A0xd28b548264006d21!2s505%20Shiloh%20Dr%2C%20Laredo%2C%20TX%2078045!5e0!3m2!1sen!2sus!4v1682511555742!5m2!1sen!2sus"
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
