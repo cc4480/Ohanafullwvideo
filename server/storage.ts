@@ -761,12 +761,32 @@ export class DatabaseStorage implements IStorage {
   
   // Create a new Airbnb rental
   async createAirbnbRental(insertRental: InsertAirbnbRental): Promise<AirbnbRental> {
-    const rentalToInsert = { ...insertRental };
-    const [rental] = await db
-      .insert(airbnbRentals)
-      .values(rentalToInsert)
-      .returning();
-    return rental;
+    try {
+      // Extract fields from insertRental
+      const {
+        type, address, city, state, zipCode, price, bedrooms, bathrooms,
+        description, title, maxGuests, neighborhoodId, images, amenities,
+        calendar, reviews, featured
+      } = insertRental;
+      
+      // Insert using raw SQL
+      const result = await db.execute(sql`
+        INSERT INTO airbnb_rentals (
+          type, address, city, state, "zipCode", price, bedrooms, bathrooms,
+          description, title, "maxGuests", "neighborhoodId", images, amenities,
+          calendar, reviews, featured, "createdAt", "updatedAt"
+        ) VALUES (
+          ${type}, ${address}, ${city}, ${state}, ${zipCode}, ${price}, ${bedrooms}, ${bathrooms},
+          ${description}, ${title}, ${maxGuests}, ${neighborhoodId}, ${images}, ${amenities},
+          ${calendar}, ${reviews}, ${featured}, NOW(), NOW()
+        ) RETURNING *
+      `);
+      
+      return result.rows[0] as AirbnbRental;
+    } catch (error) {
+      console.error("Error creating Airbnb rental:", error);
+      throw error;
+    }
   }
   
   // Update an existing Airbnb rental
