@@ -337,12 +337,34 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProperty(insertProperty: InsertProperty): Promise<Property> {
-    const propertyToInsert = { ...insertProperty };
-    const [property] = await db
-      .insert(properties)
-      .values(propertyToInsert)
-      .returning();
-    return property;
+    try {
+      // Using raw SQL to avoid column name issues
+      // We need to extract all the fields from insertProperty
+      const {
+        type, address, city, state, zipCode, price, bedrooms, bathrooms, squareFeet,
+        description, images, amenities, features, neighborhood, neighborhoodId, mlsNumber,
+        daysOnMarket, virtualTourUrl, videoUrl, featured
+      } = insertProperty;
+      
+      // Insert with raw SQL
+      const result = await db.execute(sql`
+        INSERT INTO properties (
+          "type", address, city, state, "zipCode", price, bedrooms, bathrooms, "squareFeet",
+          description, images, amenities, features, neighborhood, "neighborhoodId", "mlsNumber",
+          "daysOnMarket", "virtualTourUrl", "videoUrl", featured, "createdAt", "updatedAt"
+        ) VALUES (
+          ${type}, ${address}, ${city}, ${state}, ${zipCode}, ${price}, ${bedrooms}, ${bathrooms}, ${squareFeet},
+          ${description}, ${images}, ${amenities}, ${features}, ${neighborhood}, ${neighborhoodId}, ${mlsNumber},
+          ${daysOnMarket}, ${virtualTourUrl}, ${videoUrl}, ${featured}, NOW(), NOW()
+        ) RETURNING *
+      `);
+      
+      // Return the first row as the created property
+      return result.rows[0] as Property;
+    } catch (error) {
+      console.error("Error creating property:", error);
+      throw error;
+    }
   }
 
   async updateProperty(id: number, propertyData: Partial<Property>): Promise<Property | undefined> {
@@ -403,20 +425,51 @@ export class DatabaseStorage implements IStorage {
   
   // Get properties by neighborhood ID
   async getPropertiesByNeighborhood(neighborhoodId: number): Promise<Property[]> {
-    console.log(`Fetching properties for neighborhood ID: ${neighborhoodId}`);
-    
-    return await db
-      .select()
-      .from(properties)
-      .where(eq(properties.neighborhoodId, neighborhoodId));
+    try {
+      console.log(`Fetching properties for neighborhood ID: ${neighborhoodId}`);
+      
+      // Using raw SQL to avoid column name issues
+      const result = await db.execute(
+        sql`SELECT * FROM properties WHERE "neighborhoodId" = ${neighborhoodId}`
+      );
+      
+      return result.rows as Property[];
+    } catch (error) {
+      console.error("Error fetching properties by neighborhood:", error);
+      return [];
+    }
   }
 
   async createNeighborhood(insertNeighborhood: InsertNeighborhood): Promise<Neighborhood> {
-    const [neighborhood] = await db
-      .insert(neighborhoods)
-      .values(insertNeighborhood)
-      .returning();
-    return neighborhood;
+    try {
+      // Extract fields from insertNeighborhood
+      const {
+        name, city, state, zipCode, description, image, lat, lng, introduction, history,
+        schools, parks, shopping, restaurants, safetyRating, walkabilityScore, 
+        medianHomePrice, medianRent, populationDensity, localBusiness, events, attractions,
+        publicTransport, demographics, faqs, localLandmarks
+      } = insertNeighborhood;
+      
+      // Insert using raw SQL
+      const result = await db.execute(sql`
+        INSERT INTO neighborhoods (
+          name, city, state, "zipCode", description, image, lat, lng, introduction, history,
+          schools, parks, shopping, restaurants, "safetyRating", "walkabilityScore", 
+          "medianHomePrice", "medianRent", "populationDensity", "localBusiness", events, attractions,
+          "publicTransport", demographics, faqs, "localLandmarks", "createdAt", "updatedAt"
+        ) VALUES (
+          ${name}, ${city}, ${state}, ${zipCode}, ${description}, ${image}, ${lat}, ${lng}, ${introduction}, ${history},
+          ${schools}, ${parks}, ${shopping}, ${restaurants}, ${safetyRating}, ${walkabilityScore}, 
+          ${medianHomePrice}, ${medianRent}, ${populationDensity}, ${localBusiness}, ${events}, ${attractions},
+          ${publicTransport}, ${demographics}, ${faqs}, ${localLandmarks}, NOW(), NOW()
+        ) RETURNING *
+      `);
+      
+      return result.rows[0] as Neighborhood;
+    } catch (error) {
+      console.error("Error creating neighborhood:", error);
+      throw error;
+    }
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
@@ -433,20 +486,23 @@ export class DatabaseStorage implements IStorage {
   
   // Get featured properties (top properties by price)
   async getFeaturedProperties(limit: number = 4): Promise<Property[]> {
-    // Ensure limit is a valid number
-    const validLimit = isNaN(limit) || limit <= 0 ? 4 : limit;
-    
-    console.log(`Fetching featured properties with limit: ${validLimit}`);
-    
-    // Build a more explicit query to control the limit
-    const result = await db
-      .select()
-      .from(properties)
-      .orderBy(desc(properties.price))
-      .limit(validLimit);
-    
-    // Only return the specified number of properties, enforced by JavaScript
-    return result.slice(0, validLimit);
+    try {
+      // Ensure limit is a valid number
+      const validLimit = isNaN(limit) || limit <= 0 ? 4 : limit;
+      
+      console.log(`Fetching featured properties with limit: ${validLimit}`);
+      
+      // Using raw SQL to avoid column name issues
+      const result = await db.execute(
+        sql`SELECT * FROM properties ORDER BY price DESC LIMIT ${validLimit}`
+      );
+      
+      // Return the properties
+      return result.rows.slice(0, validLimit) as Property[];
+    } catch (error) {
+      console.error("Error fetching featured properties:", error);
+      return [];
+    }
   }
   
   // Update user's last login timestamp
@@ -546,8 +602,12 @@ export class DatabaseStorage implements IStorage {
   // Get all Airbnb rentals
   async getAirbnbRentals(): Promise<AirbnbRental[]> {
     try {
-      // Get all rentals
-      return await db.select().from(airbnbRentals);
+      // Using raw SQL to avoid column name issues
+      const result = await db.execute(
+        sql`SELECT * FROM airbnb_rentals`
+      );
+      
+      return result.rows as AirbnbRental[];
     } catch (error) {
       console.error("Error fetching Airbnb rentals:", error);
       return [];
@@ -571,17 +631,21 @@ export class DatabaseStorage implements IStorage {
   
   // Get featured Airbnb rentals
   async getFeaturedAirbnbRentals(limit: number = 4): Promise<AirbnbRental[]> {
-    // Ensure limit is valid
-    const validLimit = isNaN(limit) || limit <= 0 ? 4 : limit;
-    
-    // Get featured rentals
-    const result = await db
-      .select()
-      .from(airbnbRentals)
-      .orderBy(desc(airbnbRentals.price))
-      .limit(validLimit);
-    
-    return result.slice(0, validLimit);
+    try {
+      // Ensure limit is valid
+      const validLimit = isNaN(limit) || limit <= 0 ? 4 : limit;
+      
+      // Using raw SQL to avoid column name issues
+      const result = await db.execute(
+        sql`SELECT * FROM airbnb_rentals ORDER BY price DESC LIMIT ${validLimit}`
+      );
+      
+      // Return the rentals
+      return result.rows.slice(0, validLimit) as AirbnbRental[];
+    } catch (error) {
+      console.error("Error fetching featured Airbnb rentals:", error);
+      return [];
+    }
   }
   
   // Search Airbnb rentals with filters
@@ -599,8 +663,9 @@ export class DatabaseStorage implements IStorage {
     offset?: number;
   }): Promise<AirbnbRental[]> {
     try {
-      // First get all rentals
-      const allRentals = await db.select().from(airbnbRentals);
+      // First get all rentals using raw SQL
+      const result = await db.execute(sql`SELECT * FROM airbnb_rentals`);
+      const allRentals = result.rows as AirbnbRental[];
       
       // Then filter in memory
       let filteredRentals = allRentals.filter(rental => {
