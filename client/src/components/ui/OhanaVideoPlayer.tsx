@@ -647,6 +647,17 @@ export function OhanaVideoPlayer({
     }
   };
   
+  // Function to cycle through different video display modes
+  const cycleDisplayMode = () => {
+    if (objectFit === 'contain') {
+      setObjectFit('fill');
+    } else if (objectFit === 'fill') {
+      setObjectFit('cover');
+    } else {
+      setObjectFit('contain');
+    }
+  };
+  
   const formatTime = (seconds: number) => {
     const min = Math.floor(seconds / 60);
     const sec = Math.floor(seconds % 60);
@@ -682,7 +693,7 @@ export function OhanaVideoPlayer({
         className="w-full h-full" 
         style={{
           objectPosition: 'center',
-          objectFit: 'contain', /* This ensures all content is visible */
+          objectFit: objectFit, /* Use the state value to control display mode */
           margin: 'auto',
           willChange: 'transform',
           WebkitBackfaceVisibility: 'hidden',
@@ -875,6 +886,30 @@ export function OhanaVideoPlayer({
             {isLoaded ? 'Ohana Realty Video' : 'Preparing video...'}
           </div>
           
+          {/* Display mode toggle button */}
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              cycleDisplayMode();
+            }}
+            className="text-white focus:outline-none mr-3"
+            title={`Display mode: ${objectFit}`}
+          >
+            {objectFit === 'contain' ? (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5" />
+              </svg>
+            ) : objectFit === 'fill' ? (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m9 0v4.5m0-4.5h4.5m0 9v4.5m0-4.5h-4.5m-9 0H3.75m0 0v4.5" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M4.5 4.5h15v15h-15z" />
+              </svg>
+            )}
+          </button>
+
           {/* Fullscreen button */}
           <button 
             onClick={(e) => {
