@@ -393,15 +393,17 @@ export function OhanaVideoPlayer({
         x-webkit-playsinline="true"
         controlsList="nodownload"
         disablePictureInPicture={false}
-        className="w-full h-full object-cover" 
+        className="w-full h-full object-contain" 
         style={{
           objectPosition: 'center',
-          objectFit: 'cover',
-          transform: 'scale(0.9)', /* Reduce zoom while maintaining coverage */
+          objectFit: 'contain', /* Changed from 'cover' to 'contain' to show full video without cropping */
           margin: 'auto',
           willChange: 'transform',
           WebkitBackfaceVisibility: 'hidden',
-          backfaceVisibility: 'hidden'
+          backfaceVisibility: 'hidden',
+          width: '100%',
+          height: '100%',
+          background: '#000' /* Black background to fill any empty space */
         }}
       >  
         {/* Add a fallback text for browsers that don't support video */}
