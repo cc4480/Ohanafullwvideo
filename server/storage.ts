@@ -1,11 +1,13 @@
-import { properties, neighborhoods, messages, users, favorites, airbnbRentals } from "@shared/schema";
+import { properties, neighborhoods, messages, users, favorites, airbnbRentals, seoKeywords, seoRankings } from "@shared/schema";
 import type { 
   Property, InsertProperty, 
   Neighborhood, InsertNeighborhood, 
   Message, InsertMessage, 
   User, InsertUser, 
   Favorite, InsertFavorite,
-  AirbnbRental, InsertAirbnbRental
+  AirbnbRental, InsertAirbnbRental,
+  SeoKeyword, InsertSeoKeyword,
+  SeoRanking, InsertSeoRanking
 } from "@shared/schema";
 import { db } from './db';
 import { eq, sql, and, or, asc, desc, type SQL } from 'drizzle-orm';
@@ -743,6 +745,10 @@ export async function initializeSampleData() {
     if (Number(existingProperties[0].count) > 0) {
       // Skip Airbnb rentals initialization entirely per customer request
       console.log("Data already exists, skipping initialization");
+      
+      // Always add SEO data for testing the dashboard
+      await addSEOData();
+      
       return; // Data already exists
     }
   } catch (error) {
@@ -927,6 +933,199 @@ async function addAirbnbRentals() {
     console.log("Airbnb rentals added successfully");
   } catch (error) {
     console.error("Error adding Airbnb rentals:", error);
+  }
+}
+
+// Function to add SEO data for dashboard testing
+async function addSEOData() {
+  try {
+    // Check if SEO data already exists
+    const existingKeywords = await db.select({ count: sql`count(*)` }).from(seoKeywords);
+    if (Number(existingKeywords[0].count) > 0) {
+      console.log("SEO data already exists, skipping initialization");
+      return;
+    }
+    
+    // Sample SEO keywords for tracking
+    const sampleKeywords = [
+      {
+        keyword: "homes laredo",
+        category: "primary",
+        searchVolume: 2400,
+        difficultyScore: 65,
+        priority: 10
+      },
+      {
+        keyword: "laredo homes for sale",
+        category: "primary",
+        searchVolume: 1900,
+        difficultyScore: 60,
+        priority: 10
+      },
+      {
+        keyword: "houses for sale in laredo",
+        category: "primary",
+        searchVolume: 2200,
+        difficultyScore: 62,
+        priority: 9
+      },
+      {
+        keyword: "laredo tx real estate",
+        category: "primary",
+        searchVolume: 1800,
+        difficultyScore: 58,
+        priority: 8
+      },
+      {
+        keyword: "north laredo homes",
+        category: "neighborhood",
+        searchVolume: 720,
+        difficultyScore: 45,
+        priority: 7
+      },
+      {
+        keyword: "downtown laredo apartments",
+        category: "neighborhood",
+        searchVolume: 590,
+        difficultyScore: 40,
+        priority: 6
+      },
+      {
+        keyword: "del mar laredo houses",
+        category: "neighborhood",
+        searchVolume: 480,
+        difficultyScore: 38,
+        priority: 6
+      },
+      {
+        keyword: "luxury homes laredo",
+        category: "long-tail",
+        searchVolume: 320,
+        difficultyScore: 35,
+        priority: 5
+      },
+      {
+        keyword: "laredo houses with pool",
+        category: "long-tail",
+        searchVolume: 290,
+        difficultyScore: 32,
+        priority: 5
+      },
+      {
+        keyword: "new construction homes laredo",
+        category: "long-tail",
+        searchVolume: 350,
+        difficultyScore: 40,
+        priority: 7
+      },
+      {
+        keyword: "laredo commercial property",
+        category: "long-tail",
+        searchVolume: 180,
+        difficultyScore: 30,
+        priority: 4
+      },
+      {
+        keyword: "coldwell banker laredo",
+        category: "competitor",
+        searchVolume: 880,
+        difficultyScore: 70,
+        priority: 8
+      },
+      {
+        keyword: "remax laredo",
+        category: "competitor",
+        searchVolume: 720,
+        difficultyScore: 65,
+        priority: 7
+      },
+      {
+        keyword: "zillow laredo",
+        category: "competitor",
+        searchVolume: 1600,
+        difficultyScore: 80,
+        priority: 9
+      },
+      {
+        keyword: "trulia laredo",
+        category: "competitor",
+        searchVolume: 920,
+        difficultyScore: 72,
+        priority: 8
+      }
+    ];
+    
+    // Insert the keywords
+    await db.insert(seoKeywords).values(sampleKeywords);
+    
+    // Get the inserted keywords to reference their IDs for rankings
+    const keywords = await db.select().from(seoKeywords);
+    
+    // Create sample rankings for the keywords
+    const today = new Date();
+    const sampleRankings = [];
+    
+    // For each keyword, create a ranking entry
+    for (const keyword of keywords) {
+      // For primary keywords, show Ohana ranking higher than competitors
+      if (keyword.category === 'primary') {
+        sampleRankings.push({
+          keywordId: keyword.id,
+          position: Math.floor(Math.random() * 3) + 1, // Position 1-3
+          date: today,
+          url: `https://ohanarealty.com/search?q=${encodeURIComponent(keyword.keyword)}`,
+          coldwellPosition: Math.floor(Math.random() * 5) + 4, // Position 4-8
+          remaxPosition: Math.floor(Math.random() * 5) + 5, // Position 5-9
+          zillowPosition: Math.floor(Math.random() * 3) + 2, // Position 2-4
+          truliaPosition: Math.floor(Math.random() * 4) + 6 // Position 6-9
+        });
+      } 
+      // For neighborhood keywords, also ranking well
+      else if (keyword.category === 'neighborhood') {
+        sampleRankings.push({
+          keywordId: keyword.id,
+          position: Math.floor(Math.random() * 4) + 1, // Position 1-4
+          date: today,
+          url: `https://ohanarealty.com/neighborhoods?q=${encodeURIComponent(keyword.keyword)}`,
+          coldwellPosition: Math.floor(Math.random() * 5) + 3, // Position 3-7
+          remaxPosition: Math.floor(Math.random() * 5) + 4, // Position 4-8
+          zillowPosition: Math.floor(Math.random() * 3) + 1, // Position 1-3
+          truliaPosition: Math.floor(Math.random() * 5) + 5 // Position 5-9
+        });
+      }
+      // For long-tail keywords, mixed results
+      else if (keyword.category === 'long-tail') {
+        sampleRankings.push({
+          keywordId: keyword.id,
+          position: Math.floor(Math.random() * 10) + 1, // Position 1-10
+          date: today,
+          url: `https://ohanarealty.com/properties?q=${encodeURIComponent(keyword.keyword)}`,
+          coldwellPosition: Math.floor(Math.random() * 10) + 1, // Position 1-10
+          remaxPosition: Math.floor(Math.random() * 10) + 1, // Position 1-10
+          zillowPosition: Math.floor(Math.random() * 10) + 1, // Position 1-10
+          truliaPosition: Math.floor(Math.random() * 10) + 1 // Position 1-10
+        });
+      }
+      // For competitor keywords, ranking below them
+      else if (keyword.category === 'competitor') {
+        sampleRankings.push({
+          keywordId: keyword.id,
+          position: Math.floor(Math.random() * 5) + 6, // Position 6-10
+          date: today,
+          url: `https://ohanarealty.com`,
+          coldwellPosition: keyword.keyword.includes('coldwell') ? 1 : Math.floor(Math.random() * 5) + 3,
+          remaxPosition: keyword.keyword.includes('remax') ? 1 : Math.floor(Math.random() * 5) + 3,
+          zillowPosition: keyword.keyword.includes('zillow') ? 1 : Math.floor(Math.random() * 5) + 3,
+          truliaPosition: keyword.keyword.includes('trulia') ? 1 : Math.floor(Math.random() * 5) + 3
+        });
+      }
+    }
+    
+    // Insert all the rankings
+    await db.insert(seoRankings).values(sampleRankings);
+    console.log(`SEO data initialized with ${keywords.length} keywords and ${sampleRankings.length} rankings`);
+  } catch (error) {
+    console.error("Error adding SEO data:", error);
   }
 }
 
