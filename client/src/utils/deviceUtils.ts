@@ -293,7 +293,10 @@ export const isHighPerformanceDevice = (): boolean => {
   const hasMultipleCores = typeof navigator !== 'undefined' && navigator.hardwareConcurrency > 4;
   
   // Check device memory if available (Chrome-specific)
-  const hasHighMemory = typeof navigator !== 'undefined' && (navigator as any).deviceMemory > 4; // More than 4GB
+  const memoryGB = typeof navigator !== 'undefined' ? (navigator as any).deviceMemory || 4 : 4;
+  const hasHighMemory = memoryGB > 4; // More than 4GB
+  const hasUltraHighMemory = memoryGB >= 8; // 8GB or more (gaming PC, workstation)
+  const hasSuperHighMemory = memoryGB >= 16; // 16GB+ (high-end workstation)
   
   // Check if device pixel ratio is high (suggests high-end display)
   const hasHighDPI = typeof window !== 'undefined' && window.devicePixelRatio > 1.5;
@@ -307,6 +310,32 @@ export const isHighPerformanceDevice = (): boolean => {
   if (hasHighMemory) highPerfCount++;
   if (hasHighDPI) highPerfCount++;
   if (isLargeScreen) highPerfCount++;
+  
+  // Bonus points for ultra-high memory devices
+  if (hasUltraHighMemory) highPerfCount++;
+  if (hasSuperHighMemory) highPerfCount += 2; // Extra bonus for 16GB+ systems
+  
+  // Log device capabilities for debugging
+  console.log('OhanaVideoPlayer: Device Detection', {
+    deviceType: getDeviceType(),
+    devicePerformance: getDevicePerformance(),
+    videoEndpoint: getVideoDisplaySettings().videoEndpoint,
+    playbackQuality: getVideoDisplaySettings().playbackQuality,
+    maxResolution: getVideoDisplaySettings().maxResolution,
+    bufferSize: getVideoDisplaySettings().bufferSize / (1024 * 1024) + 'MB',
+    userAgent: navigator.userAgent,
+    cores: navigator.hardwareConcurrency,
+    memory: memoryGB,
+    viewport: window.innerWidth + 'x' + window.innerHeight,
+    pixelRatio: window.devicePixelRatio
+  });
+  
+  // On 16GB+ systems, always return true for high performance
+  if (hasSuperHighMemory) {
+    console.log('Using adaptive video quality for high-memory system with 16GB+ RAM');
+    console.log('Selected video endpoint: /api/video/ohana/highperf');
+    return true;
+  }
   
   // Return true if we have at least 2 indicators of high performance
   return highPerfCount >= 2;

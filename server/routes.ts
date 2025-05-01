@@ -927,12 +927,12 @@ Crawl-delay: 1
         console.log(`${logPrefix}: Serving super-optimized video for mobile: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`); 
       } 
       else if (endpointType === 'highperf') {
-        // High-performance settings with larger 8MB chunks for faster loading
-        chunkSize = 8 * 1024 * 1024;     // 8MB chunks for high-performance devices
-        bufferSize = 8 * 1024 * 1024;    // 8MB buffer for faster loading
-        initialChunkSize = 4 * 1024 * 1024; // 4MB initial chunk for faster startup
+        // High-performance settings optimized for 16GB+ RAM systems
+        chunkSize = 16 * 1024 * 1024;    // 16MB chunks for high-RAM devices
+        bufferSize = 24 * 1024 * 1024;   // 24MB buffer for much faster loading
+        initialChunkSize = 8 * 1024 * 1024; // 8MB initial chunk for near-instant startup
         logPrefix = '🖥️ HighPerf';
-        console.log(`${logPrefix}: Serving high-performance optimized video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
+        console.log(`${logPrefix}: Serving ultra high-performance optimized video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
       } 
       else {
         // Standard settings with balanced 4MB chunk size
