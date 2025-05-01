@@ -273,7 +273,7 @@ const NeighborhoodDetail: React.FC<{ neighborhood: any }> = ({ neighborhood }) =
             <NeighborhoodScoreBox 
               score={neighborhood.safety_score / 10} 
               label="Safety Score" 
-              icon={<ShieldCheck className="h-6 w-6" />} 
+              icon={<Shield className="h-6 w-6" />} 
               color="text-green-500" 
             />
             <NeighborhoodScoreBox 
@@ -630,7 +630,7 @@ const NeighborhoodComparison: React.FC = () => {
                   <NeighborhoodAmenityScore name="Schools" icon={<School className="h-5 w-5 text-blue-500" />} score={9.2} />
                   <NeighborhoodAmenityScore name="Safety" icon={<AlertTriangle className="h-5 w-5 text-green-500" />} score={8.5} />
                   <NeighborhoodAmenityScore name="Shopping" icon={<ShoppingBag className="h-5 w-5 text-purple-500" />} score={9.0} />
-                  <NeighborhoodAmenityScore name="Parks" icon={<Park className="h-5 w-5 text-amber-500" />} score={8.5} />
+                  <NeighborhoodAmenityScore name="Parks" icon={<Leaf className="h-5 w-5 text-amber-500" />} score={8.5} />
                 </div>
                 <div className="pt-2">
                   <span className="text-sm font-medium">Best for:</span>
@@ -657,7 +657,7 @@ const NeighborhoodComparison: React.FC = () => {
                   <NeighborhoodAmenityScore name="Schools" icon={<School className="h-5 w-5 text-blue-500" />} score={7.0} />
                   <NeighborhoodAmenityScore name="Safety" icon={<AlertTriangle className="h-5 w-5 text-green-500" />} score={6.5} />
                   <NeighborhoodAmenityScore name="Shopping" icon={<ShoppingBag className="h-5 w-5 text-purple-500" />} score={6.0} />
-                  <NeighborhoodAmenityScore name="Parks" icon={<Park className="h-5 w-5 text-amber-500" />} score={6.5} />
+                  <NeighborhoodAmenityScore name="Parks" icon={<Leaf className="h-5 w-5 text-amber-500" />} score={6.5} />
                 </div>
                 <div className="pt-2">
                   <span className="text-sm font-medium">Best for:</span>
@@ -689,7 +689,7 @@ const NeighborhoodComparison: React.FC = () => {
                   <NeighborhoodAmenityScore name="Schools" icon={<School className="h-5 w-5 text-blue-500" />} score={9.8} />
                   <NeighborhoodAmenityScore name="Safety" icon={<AlertTriangle className="h-5 w-5 text-green-500" />} score={9.5} />
                   <NeighborhoodAmenityScore name="Shopping" icon={<ShoppingBag className="h-5 w-5 text-purple-500" />} score={8.0} />
-                  <NeighborhoodAmenityScore name="Parks" icon={<Park className="h-5 w-5 text-amber-500" />} score={9.5} />
+                  <NeighborhoodAmenityScore name="Parks" icon={<Leaf className="h-5 w-5 text-amber-500" />} score={9.5} />
                 </div>
                 <div className="pt-2">
                   <span className="text-sm font-medium">Best for:</span>
@@ -716,7 +716,7 @@ const NeighborhoodComparison: React.FC = () => {
                   <NeighborhoodAmenityScore name="Schools" icon={<School className="h-5 w-5 text-blue-500" />} score={6.5} />
                   <NeighborhoodAmenityScore name="Safety" icon={<AlertTriangle className="h-5 w-5 text-green-500" />} score={6.0} />
                   <NeighborhoodAmenityScore name="Shopping" icon={<ShoppingBag className="h-5 w-5 text-purple-500" />} score={7.5} />
-                  <NeighborhoodAmenityScore name="Parks" icon={<Park className="h-5 w-5 text-amber-500" />} score={5.5} />
+                  <NeighborhoodAmenityScore name="Parks" icon={<Leaf className="h-5 w-5 text-amber-500" />} score={5.5} />
                 </div>
                 <div className="pt-2">
                   <span className="text-sm font-medium">Best for:</span>
@@ -827,7 +827,7 @@ const SchoolsInfo: React.FC = () => {
           <CardContent className="space-y-4">
             <div>
               <h4 className="font-medium flex items-center">
-                <BadgeCheck className="h-5 w-5 text-green-500 mr-2" />
+                <Check className="h-5 w-5 text-green-500 mr-2" />
                 Best Neighborhoods for Education
               </h4>
               <ul className="ml-7 mt-1 list-disc text-sm space-y-1">
@@ -839,7 +839,7 @@ const SchoolsInfo: React.FC = () => {
           
             <div>
               <h4 className="font-medium flex items-center">
-                <BadgeCheck className="h-5 w-5 text-green-500 mr-2" />
+                <Check className="h-5 w-5 text-green-500 mr-2" />
                 Bilingual Education
               </h4>
               <p className="text-sm text-gray-700 ml-7">Many Laredo schools offer strong bilingual programs recognizing the border city's bicultural nature. This is valuable for families seeking bilingual education.</p>
@@ -847,7 +847,7 @@ const SchoolsInfo: React.FC = () => {
 
             <div>
               <h4 className="font-medium flex items-center">
-                <BadgeCheck className="h-5 w-5 text-green-500 mr-2" />
+                <Check className="h-5 w-5 text-green-500 mr-2" />
                 Higher Education
               </h4>
               <p className="text-sm text-gray-700 ml-7">Laredo is home to Texas A&M International University and Laredo College, providing higher education options within the city.</p>
