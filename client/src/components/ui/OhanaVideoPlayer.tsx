@@ -200,47 +200,21 @@ export function OhanaVideoPlayer({
     */
   }, []);
   
-  // YouTube-like adaptive video loading
+  // RADICAL CHANGE: Always start with mobile version for all devices 
+  // This sacrifices quality for guaranteed smooth playback
   useEffect(() => {
-    // Get the optimal video settings for this device
-    const settings = getVideoDisplaySettings();
+    // Get the device info but ignore recommendations - we're going mobile-first for ALL devices
     const deviceType = getDeviceType();
     const devicePerformance = getDevicePerformance();
-    const isHighPerf = devicePerformance === 'high';
     
     if (videoRef.current && src.includes('/api/video/ohana')) {
-      // YouTube-like approach: generate multiple source options and try them in order
-      console.log(`Loading optimal video sources for ${deviceType} device with ${devicePerformance} performance`);
+      // CRITICAL CHANGE: Always start with the mobile endpoint regardless of device
+      // This ensures smooth playback on all devices by starting with low quality
+      console.log(`CRITICAL: Starting with mobile-optimized video for ALL devices (${deviceType}, ${devicePerformance})`);
       
-      // Get all possible sources in priority order (like YouTube)
-      const videoSources = getOptimalVideoSources('/api/video/ohana', isHighPerf);
-      
-      // Preload metadata for faster startup - this is a key YouTube technique
-      preloadVideoMetadata(videoSources);
-      
-      // Load the best source that will work on this device
-      loadOptimalSource(videoRef.current, videoSources)
-        .then(() => {
-          console.log('Successfully loaded optimal video source');
-        })
-        .catch((error) => {
-          console.error('Failed to load any video sources:', error);
-          
-          // Direct mapping fallback if our advanced approach fails
-          let fallbackSrc = settings.videoEndpoint;
-          if (devicePerformance === 'low' || (devicePerformance === 'medium' && 
-              (deviceType === 'mobile' || deviceType === 'tablet'))) {
-            fallbackSrc = '/api/video/ohana/mobile';
-          } else if (devicePerformance === 'high') {
-            fallbackSrc = '/api/video/ohana/highperf';
-          }
-          
-          console.log(`Using fallback video source: ${fallbackSrc}`);
-          if (videoRef.current) {
-            videoRef.current.src = fallbackSrc;
-            videoRef.current.load();
-          }
-        });
+      // Set src directly to mobile endpoint - guaranteed to work without buffering
+      videoRef.current.src = '/api/video/ohana/mobile';
+      videoRef.current.load();
     }
   }, [src]);
 
