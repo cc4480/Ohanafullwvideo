@@ -218,7 +218,7 @@ export default function PropertyDetails({ id }: { id: number }) {
                 name: "Valentin Cuellar",
                 url: `${websiteUrl}/realtors/valentin-cuellar`,
                 image: valentinCuellarImg,
-                telephone: "+1-555-123-4567",
+                telephone: "+1-956-324-6714",
                 email: "valentin_cuellar@hotmail.com"
               }
             }))
