@@ -47,7 +47,7 @@ async function generateSitemap() {
     
     // Get dynamic property pages
     console.log('Fetching properties data...');
-    const propertiesResult = await pool.query('SELECT id, updated_at FROM properties');
+    const propertiesResult = await pool.query('SELECT id, created_at FROM properties');
     
     // Get dynamic neighborhood pages
     console.log('Fetching neighborhoods data...');
@@ -55,7 +55,7 @@ async function generateSitemap() {
     
     // Get dynamic Airbnb rental pages
     console.log('Fetching Airbnb rental data...');
-    const airbnbResult = await pool.query('SELECT id, updated_at FROM airbnb_rentals');
+    const airbnbResult = await pool.query('SELECT id, "createdAt" FROM airbnb_rentals');
     
     // Start building the sitemap
     let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -72,7 +72,7 @@ async function generateSitemap() {
     
     // Add property pages
     for (const property of propertiesResult.rows) {
-      const lastmod = property.updated_at ? new Date(property.updated_at).toISOString() : new Date().toISOString();
+      const lastmod = property.created_at ? new Date(property.created_at).toISOString() : new Date().toISOString();
       
       sitemap += '  <url>\n';
       sitemap += `    <loc>${SITE_URL}/properties/${property.id}</loc>\n`;
@@ -96,7 +96,7 @@ async function generateSitemap() {
     
     // Add Airbnb rental pages
     for (const rental of airbnbResult.rows) {
-      const lastmod = rental.updated_at ? new Date(rental.updated_at).toISOString() : new Date().toISOString();
+      const lastmod = rental.createdAt ? new Date(rental.createdAt).toISOString() : new Date().toISOString();
       
       sitemap += '  <url>\n';
       sitemap += `    <loc>${SITE_URL}/airbnb-rentals/${rental.id}</loc>\n`;
