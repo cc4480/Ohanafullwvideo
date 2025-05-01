@@ -77,10 +77,10 @@ export default function AboutRealtor() {
                   <Mail className="ml-2 h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <a href="tel:+19567123000">
+              <a href="tel:+19563246714">
                 <Button variant="outline" className="border-primary w-full sm:w-auto hover:bg-primary/5 shadow-lg hover:shadow-xl transition-all duration-300 group">
                   <Phone className="h-4 w-4 mr-2 text-primary" />
-                  <span>Call: 956-712-3000</span>
+                  <span>Call: 956-324-6714</span>
                 </Button>
               </a>
             </div>
@@ -96,7 +96,7 @@ export default function AboutRealtor() {
                 {
                   icon: <Phone className="h-5 w-5 text-secondary" />,
                   title: "Contact Info",
-                  content: "Office: 956-712-3000\nMobile: 956-324-6714"
+                  content: "Contact: 956-324-6714"
                 }
               ].map((card, index) => (
                 <div 

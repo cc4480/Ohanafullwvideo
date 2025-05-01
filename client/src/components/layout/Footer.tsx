@@ -111,17 +111,9 @@ export default function Footer() {
             <h3 className="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">Contact</h3>
             <ul className="space-y-4 mb-6">
               <li className="group">
-                <a href="tel:+19567123000" className="flex items-center hover:text-white text-white/90 transition-colors duration-300 py-1 sm:py-0.5">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mr-3 group-hover:bg-secondary/20 transition-colors duration-300">
-                    <i className='bx bx-phone text-secondary text-xl'></i>
-                  </div>
-                  <span className="group-hover:translate-x-1 transition-transform duration-300">956-712-3000</span>
-                </a>
-              </li>
-              <li className="group">
                 <a href="tel:+19563246714" className="flex items-center hover:text-white text-white/90 transition-colors duration-300 py-1 sm:py-0.5">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mr-3 group-hover:bg-secondary/20 transition-colors duration-300">
-                    <i className='bx bx-mobile text-secondary text-xl'></i>
+                    <i className='bx bx-phone text-secondary text-xl'></i>
                   </div>
                   <span className="group-hover:translate-x-1 transition-transform duration-300">956-324-6714</span>
                 </a>

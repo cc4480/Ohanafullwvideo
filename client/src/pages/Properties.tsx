@@ -104,7 +104,7 @@ export default function Properties() {
           },
           {
             question: "Are virtual tours available for Ohana Realty properties?",
-            answer: "Yes, many of our property listings feature high-quality images and virtual tours. For properties without virtual tours, you can easily schedule an in-person viewing by contacting Valentin Cuellar directly through our website or by calling (956) 712-3000."
+            answer: "Yes, many of our property listings feature high-quality images and virtual tours. For properties without virtual tours, you can easily schedule an in-person viewing by contacting Valentin Cuellar directly through our website or by calling (956) 324-6714."
           },
           {
             question: "How often are new properties added to the Ohana Realty listings?",

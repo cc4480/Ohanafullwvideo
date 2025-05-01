@@ -34,10 +34,7 @@ export default function ContactInfo({ isDarkMode }: ContactInfoProps) {
           <div>
             <h3 className={`font-medium ${isDarkMode ? 'text-white' : 'text-neutral-800'} mb-1`}>Phone</h3>
             <p className={isDarkMode ? 'text-slate-300' : 'text-neutral-600'}>
-              Office: <a href="tel:+19567123000" className="hover:text-primary">956-712-3000</a>
-            </p>
-            <p className={isDarkMode ? 'text-slate-300' : 'text-neutral-600'}>
-              Mobile: <a href="tel:+19563246714" className="hover:text-primary">956-324-6714</a>
+              Contact: <a href="tel:+19563246714" className="hover:text-primary">956-324-6714</a>
             </p>
           </div>
         </div>
