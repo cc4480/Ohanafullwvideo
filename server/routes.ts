@@ -213,247 +213,151 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to search properties" });
     }
   });
+
+  // Get a property by ID
+  apiRouter.get("/properties/:id", async (req, res) => {
+    try {
+      const propertyId = parseInt(req.params.id);
+      if (isNaN(propertyId)) {
+        return res.status(400).json({ message: "Invalid property ID" });
+      }
+      
+      const property = await storage.getProperty(propertyId);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      
+      res.json(property);
+    } catch (error) {
+      console.error("Property fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch property details" });
+    }
+  });
   
-  // Get properties by type (moved to non-conflicting route)
-  apiRouter.get("/propertiesByType/:type", async (req, res) => {
+  // Get all properties of a specified type
+  apiRouter.get("/properties/type/:type", async (req, res) => {
     try {
       const type = req.params.type;
+      if (!type) {
+        return res.status(400).json({ message: "Invalid property type" });
+      }
+      
       const properties = await storage.getPropertiesByType(type);
+      
       res.json(properties);
     } catch (error) {
+      console.error("Property type fetch error:", error);
       res.status(500).json({ message: "Failed to fetch properties by type" });
     }
   });
   
-  // Get property by ID (needs to be AFTER the specific routes to avoid conflicts)
-  apiRouter.get("/properties/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid property ID" });
-      }
-
-      const property = await storage.getProperty(id);
-      if (!property) {
-        return res.status(404).json({ message: "Property not found" });
-      }
-
-      res.json(property);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch property" });
-    }
-  });
-
-
   // Get all neighborhoods
   apiRouter.get("/neighborhoods", async (req, res) => {
     try {
       const neighborhoods = await storage.getNeighborhoods();
       res.json(neighborhoods);
     } catch (error) {
+      console.error("Neighborhoods fetch error:", error);
       res.status(500).json({ message: "Failed to fetch neighborhoods" });
     }
   });
   
-  // Get a single neighborhood by ID
+  // Get a neighborhood by ID with its properties
   apiRouter.get("/neighborhoods/:id", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
+      const neighborhoodId = parseInt(req.params.id);
+      if (isNaN(neighborhoodId)) {
         return res.status(400).json({ message: "Invalid neighborhood ID" });
       }
       
-      const neighborhood = await storage.getNeighborhood(id);
+      const neighborhood = await storage.getNeighborhood(neighborhoodId);
       if (!neighborhood) {
         return res.status(404).json({ message: "Neighborhood not found" });
       }
       
-      res.json(neighborhood);
+      // Fetch properties in this neighborhood
+      const properties = await storage.getPropertiesByNeighborhood(neighborhoodId);
+      
+      // Return combined response
+      res.json({
+        ...neighborhood,
+        properties
+      });
     } catch (error) {
+      console.error("Neighborhood detail fetch error:", error);
       res.status(500).json({ message: "Failed to fetch neighborhood details" });
     }
   });
   
-  // Get properties by neighborhood ID
-  apiRouter.get("/neighborhoods/:id/properties", async (req, res) => {
+  // Submit a contact message
+  apiRouter.post("/messages", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid neighborhood ID" });
-      }
+      const result = insertMessageSchema.safeParse(req.body);
       
-      // First check if the neighborhood exists
-      const neighborhood = await storage.getNeighborhood(id);
-      if (!neighborhood) {
-        return res.status(404).json({ message: "Neighborhood not found" });
-      }
-      
-      // Then get all properties in that neighborhood
-      const properties = await storage.getPropertiesByNeighborhood(id);
-      
-      res.json(properties);
-    } catch (error) {
-      console.error("Error fetching properties by neighborhood:", error);
-      res.status(500).json({ message: "Failed to fetch properties for this neighborhood" });
-    }
-  });
-
-  // Submit contact form
-  apiRouter.post("/contact", async (req, res) => {
-    try {
-      const result = insertMessageSchema.safeParse({
-        ...req.body,
-        createdAt: new Date().toISOString()
-      });
-
       if (!result.success) {
         return res.status(400).json({ 
-          message: "Invalid form data", 
-          errors: result.error.errors 
+          message: "Invalid message data",
+          errors: result.error.flatten() 
         });
       }
-
-      const message = await storage.createMessage(result.data);
-      res.status(201).json({ message: "Message sent successfully", id: message.id });
+      
+      // Validate email format
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(result.data.email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+      }
+      
+      // Create the message
+      const newMessage = await storage.createMessage(result.data);
+      
+      res.status(201).json({
+        message: "Message sent successfully",
+        data: newMessage
+      });
     } catch (error) {
-      res.status(500).json({ message: "Failed to send message" });
+      console.error("Message creation error:", error);
+      res.status(500).json({ message: "Failed to submit your message" });
     }
   });
   
-  // Schedule a property viewing
-  apiRouter.post("/schedule-viewing", async (req, res) => {
+  // Get all messages (admin route)
+  apiRouter.get("/messages", async (req, res) => {
     try {
-      const viewingSchema = z.object({
-        propertyId: z.number(),
-        name: z.string().min(2),
-        email: z.string().email(),
-        phone: z.string().min(10),
-        date: z.string(),
-        time: z.string(),
-        notes: z.string().optional()
-      });
-      
-      const result = viewingSchema.safeParse(req.body);
-      
-      if (!result.success) {
-        return res.status(400).json({ 
-          message: "Invalid viewing request data", 
-          errors: result.error.errors 
-        });
-      }
-      
-      const { propertyId, name, email, phone, date, time, notes } = result.data;
-      
-      // Get property details
-      const property = await storage.getProperty(propertyId);
-      if (!property) {
-        return res.status(404).json({ message: "Property not found" });
-      }
-      
-      // Create a message with the viewing request details
-      const message = await storage.createMessage({
-        name,
-        email,
-        phone,
-        interest: "Property Viewing",
-        message: `Viewing request for ${property.address} on ${date} at ${time}. ${notes ? 'Notes: ' + notes : ''}`,
-        createdAt: new Date().toISOString()
-      });
-      
-      res.status(201).json({ 
-        message: "Viewing scheduled successfully", 
-        details: {
-          property: property.address,
-          date,
-          time,
-          id: message.id
-        }
-      });
+      // In a real application, authentication would be required here
+      const messages = await storage.getMessages();
+      res.json(messages);
     } catch (error) {
-      res.status(500).json({ message: "Failed to schedule viewing" });
+      console.error("Messages fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch messages" });
     }
   });
   
-  // Property inquiry
-  apiRouter.post("/property-inquiry", async (req, res) => {
-    try {
-      const inquirySchema = z.object({
-        propertyId: z.number(),
-        name: z.string().min(2),
-        email: z.string().email(),
-        phone: z.string().min(10),
-        questions: z.string().min(5)
-      });
-      
-      const result = inquirySchema.safeParse(req.body);
-      
-      if (!result.success) {
-        return res.status(400).json({ 
-          message: "Invalid inquiry data", 
-          errors: result.error.errors 
-        });
-      }
-      
-      const { propertyId, name, email, phone, questions } = result.data;
-      
-      // Get property details
-      const property = await storage.getProperty(propertyId);
-      if (!property) {
-        return res.status(404).json({ message: "Property not found" });
-      }
-      
-      // Create a message with the inquiry details
-      const message = await storage.createMessage({
-        name,
-        email,
-        phone,
-        interest: "Property Inquiry",
-        message: `Inquiry about ${property.address}: ${questions}`,
-        createdAt: new Date().toISOString()
-      });
-      
-      res.status(201).json({ 
-        message: "Inquiry submitted successfully", 
-        id: message.id 
-      });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to submit inquiry" });
-    }
-  });
-
-  // No AI chat features as requested
-
-  // User favorites endpoints
+  // Add a property to favorites
   apiRouter.post("/favorites", async (req, res) => {
     try {
       const { userId, propertyId } = req.body;
       
-      if (!userId || !propertyId) {
-        return res.status(400).json({ 
-          message: "User ID and Property ID are required" 
-        });
+      // Validate IDs
+      if (!userId || !propertyId || isNaN(Number(userId)) || isNaN(Number(propertyId))) {
+        return res.status(400).json({ message: "Invalid user ID or property ID" });
       }
       
-      // Validate that the user and property exist
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      // Check if already favorite
+      const isAlreadyFavorite = await storage.isFavorite(userId, propertyId);
+      if (isAlreadyFavorite) {
+        return res.json({ message: "Property is already in favorites", favorite: true });
       }
       
-      const property = await storage.getProperty(propertyId);
-      if (!property) {
-        return res.status(404).json({ message: "Property not found" });
-      }
-      
-      // Add the favorite
+      // Add to favorites
       const favorite = await storage.addFavorite({ userId, propertyId });
       
       res.status(201).json({
         message: "Property added to favorites",
-        favorite
+        favorite: true,
+        data: favorite
       });
     } catch (error) {
-      console.error("Error adding favorite:", error);
+      console.error("Add favorite error:", error);
       res.status(500).json({ message: "Failed to add property to favorites" });
     }
   });
@@ -465,38 +369,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const propertyId = parseInt(req.params.propertyId);
       
       if (isNaN(userId) || isNaN(propertyId)) {
-        return res.status(400).json({ 
-          message: "Invalid user ID or property ID" 
-        });
+        return res.status(400).json({ message: "Invalid user ID or property ID" });
       }
       
-      // Remove the favorite
-      const success = await storage.removeFavorite(userId, propertyId);
+      // Remove from favorites
+      const removed = await storage.removeFavorite(userId, propertyId);
       
-      if (success) {
-        res.json({ message: "Property removed from favorites" });
+      if (removed) {
+        res.json({
+          message: "Property removed from favorites",
+          favorite: false
+        });
       } else {
         res.status(404).json({ message: "Favorite not found" });
       }
     } catch (error) {
-      console.error("Error removing favorite:", error);
+      console.error("Remove favorite error:", error);
       res.status(500).json({ message: "Failed to remove property from favorites" });
     }
   });
   
-  // Get a user's favorite properties
+  // Get user's favorite properties
   apiRouter.get("/favorites/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
       
       if (isNaN(userId)) {
         return res.status(400).json({ message: "Invalid user ID" });
-      }
-      
-      // Check if user exists
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
       }
       
       // Get the user's favorites
@@ -699,102 +598,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get Airbnb rental by ID
   apiRouter.get("/airbnb/:id", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid Airbnb rental ID" });
+      const rentalId = parseInt(req.params.id);
+      if (isNaN(rentalId)) {
+        return res.status(400).json({ message: "Invalid rental ID" });
       }
-
-      const rental = await storage.getAirbnbRental(id);
+      
+      const rental = await storage.getAirbnbRental(rentalId);
       if (!rental) {
-        return res.status(404).json({ message: "Airbnb rental not found" });
+        return res.status(404).json({ message: "Rental not found" });
       }
-
+      
       res.json(rental);
     } catch (error) {
-      console.error("Error fetching Airbnb rental:", error);
-      res.status(500).json({ message: "Failed to fetch Airbnb rental" });
+      console.error("Airbnb rental fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch rental details" });
     }
   });
 
-  // Health check endpoint for deployment monitoring
-  apiRouter.get("/health", async (req, res) => {
-    try {
-      // Check database connection
-      await db.execute(sql`SELECT 1`);
-      
-      // Return health status with basic system information
-      res.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development',
-        server: {
-          node: process.version,
-          memory: process.memoryUsage(),
+  // Create WebSocket server for real-time communications
+  const server = createServer(app);
+  const wss = new WebSocketServer({ server, path: '/ws' });
+  
+  wss.on('connection', (ws) => {
+    console.log('New WebSocket connection established');
+    
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('Received WebSocket message:', data);
+        
+        // Handle different message types
+        if (data.type === 'video_metrics') {
+          // Process video metrics from the client
+          const metrics = data.metrics;
+          console.log('Received video metrics:', metrics);
+          
+          // Based on metrics, we could respond with optimized video settings
+          // Just a simple example response
+          ws.send(JSON.stringify({
+            type: 'video_config',
+            config: {
+              quality: metrics.memoryUsage > 70 ? 'medium' : 'high',
+              bufferSize: metrics.bufferLevel < 5 ? 10 : 5,
+              // Add suggested cached URLs if available
+              cachedUrls: [
+                '/api/video/ohana/highperf',
+                '/api/video/ohana/mobile'
+              ]
+            }
+          }));
         }
-      });
-    } catch (error) {
-      console.error('Health check failed:', error);
-      res.status(500).json({ 
-        status: 'unhealthy',
-        timestamp: new Date().toISOString(),
-        error: process.env.NODE_ENV === 'production' ? 'Service unavailable' : String(error)
-      });
-    }
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      console.log('WebSocket connection closed');
+    });
+    
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
   });
 
-  // Register the API router
-  app.use("/api", apiRouter);
+  // Register API routes
+  app.use('/api', apiRouter);
   
-  // SEO Routes - Sitemap and Robots.txt
-  
-  // XML Sitemap
+  // Generate XML sitemap for SEO
   app.get('/sitemap.xml', async (req, res) => {
     try {
       // Get all properties and neighborhoods from the database
       const properties = await storage.getProperties();
       const neighborhoods = await storage.getNeighborhoods();
       
-      // Base URL for the sitemap
+      // Base URL for the website
       const baseUrl = process.env.NODE_ENV === 'production' 
         ? 'https://ohanarealty.com'
         : `http://${req.headers.host}`;
       
-      // Generate sitemap XML content
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
+      // Generate XML sitemap
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>';
+      xml += '\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
       
-      // Add main pages
-      const mainPages = [
-        { url: '', changefreq: 'weekly', priority: 1.0 },
-        { url: 'properties', changefreq: 'daily', priority: 0.9 },
-        { url: 'neighborhoods', changefreq: 'weekly', priority: 0.8 },
-        { url: 'about', changefreq: 'monthly', priority: 0.7 },
-        { url: 'contact', changefreq: 'monthly', priority: 0.7 }
-      ];
-      
-      // Add main pages to sitemap
-      for (const page of mainPages) {
+      // Add static pages
+      const staticPages = ['', 'properties', 'about', 'contact', 'neighborhoods', 'favorites'];
+      for (const page of staticPages) {
         xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/${page.url}</loc>\n`;
-        xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
-        xml += `    <priority>${page.priority.toFixed(1)}</priority>\n`;
+        xml += `    <loc>${baseUrl}/${page}</loc>\n`;
+        xml += '    <changefreq>daily</changefreq>\n';
+        xml += '    <priority>1.0</priority>\n';
         xml += '  </url>\n';
       }
       
-      // Add property pages
+      // Add property detail pages
       for (const property of properties) {
         xml += '  <url>\n';
         xml += `    <loc>${baseUrl}/properties/${property.id}</loc>\n`;
-        // Use current date for lastmod
-        const today = new Date().toISOString().split('T')[0];
-        xml += `    <lastmod>${today}</lastmod>\n`;
         xml += '    <changefreq>weekly</changefreq>\n';
         xml += '    <priority>0.8</priority>\n';
         xml += '  </url>\n';
       }
       
-      // Add neighborhood pages
+      // Add neighborhood detail pages
       for (const neighborhood of neighborhoods) {
         xml += '  <url>\n';
         xml += `    <loc>${baseUrl}/neighborhoods/${neighborhood.id}</loc>\n`;
@@ -990,8 +896,8 @@ Crawl-delay: 1
     res.send(robotsTxt);
   });
 
-  // Optimized helper function to serve video files with improved streaming performance
-  function serveVideoFile(req: express.Request, res: express.Response, videoFileName: string) {
+  // YouTube-like adaptive video serving based on request path and device capabilities
+  function serveAdaptiveVideo(req: express.Request, res: express.Response, videoFileName: string, endpointType: 'standard' | 'mobile' | 'highperf') {
     try {
       const videoPath = path.join(process.cwd(), 'public', videoFileName);
       
@@ -1005,26 +911,52 @@ Crawl-delay: 1
       const stat = fs.statSync(videoPath);
       const fileSize = stat.size;
       
-      console.log(`Serving video file: ${videoFileName}, size: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
+      // YouTube-like adaptive streaming parameters based on endpoint type
+      let chunkSize: number;
+      let bufferSize: number;
+      let previewSize: number;
+      let logPrefix: string;
       
-      // Increase chunk size more aggressively for high-performance systems
-      // Using larger chunk sizes for systems with 16GB RAM or more
-      const MAX_CHUNK_SIZE = 40 * 1024 * 1024; // 40MB in bytes
+      // Configure settings based on endpoint type
+      if (endpointType === 'mobile') {
+        // Mobile-optimized settings (small chunks, small buffers, quick start)
+        chunkSize = 1 * 1024 * 1024;     // 1MB chunks
+        bufferSize = 512 * 1024;         // 512KB buffer
+        previewSize = 1 * 1024 * 1024;   // 1MB preview
+        logPrefix = '📱 Mobile';
+        console.log(`${logPrefix}: Serving optimized video for mobile devices: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`); 
+      } 
+      else if (endpointType === 'highperf') {
+        // High-performance settings (large chunks, large buffers, prepare for binge watching)
+        chunkSize = 40 * 1024 * 1024;    // 40MB chunks
+        bufferSize = 8 * 1024 * 1024;    // 8MB buffer
+        previewSize = fileSize;          // Send whole file for high-performance devices
+        logPrefix = '🖥️ HighPerf';
+        console.log(`${logPrefix}: Serving entire video file for high-performance devices: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
+      } 
+      else {
+        // Standard settings (balanced for most devices)
+        chunkSize = 5 * 1024 * 1024;     // 5MB chunks
+        bufferSize = 2 * 1024 * 1024;    // 2MB buffer
+        previewSize = 4 * 1024 * 1024;   // 4MB preview
+        logPrefix = '📺 Standard';
+        console.log(`${logPrefix}: Serving standard video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
+      }
       
       const range = req.headers.range;
       
-      // Handle range requests (for video seeking)
+      // YouTube-like handling of range requests for video seeking
       if (range) {
         const parts = range.replace(/bytes=/, "").split("-");
         const start = parseInt(parts[0], 10);
         
-        // Calculate safe end position (don't exceed MAX_CHUNK_SIZE)
+        // Adaptive end position based on device capabilities
         let end: number;
         if (parts[1]) {
           end = parseInt(parts[1], 10);
         } else {
-          // If no end specified, limit to start + MAX_CHUNK_SIZE or file end
-          end = Math.min(start + MAX_CHUNK_SIZE, fileSize - 1);
+          // If no end specified, use the appropriate chunk size
+          end = Math.min(start + chunkSize, fileSize - 1);
         }
         
         // Ensure end doesn't exceed file size
@@ -1032,363 +964,144 @@ Crawl-delay: 1
         
         const chunksize = (end - start) + 1;
         
-        console.log(`Video range request for ${videoFileName}: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`)
+        // Log range request with appropriate prefix
+        if (endpointType === 'mobile') {
+          console.log(`${logPrefix}: Range request: ${start}-${end}/${fileSize} (${(chunksize / 1024).toFixed(2)}KB)`);
+        } else {
+          console.log(`${logPrefix}: Range request: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`);
+        }
         
-        // Set performance-optimized headers
+        // Set YouTube-like headers with adaptive caching
         res.writeHead(206, {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': chunksize,
           'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year with immutable flag for permanent caching
-          'Connection': 'keep-alive', // Keep connection alive for better HTTP/1.1 performance
-          'X-Content-Type-Options': 'nosniff',
+          'Cache-Control': 'public, max-age=31536000, immutable', // YouTube-like aggressive caching
+          'Connection': 'keep-alive',
         });
         
-        // Optimize read stream with higher highWaterMark for better throughput
+        // Create optimized read stream with adaptive buffer size
         const fileStream = fs.createReadStream(videoPath, { 
           start, 
           end,
-          highWaterMark: 4 * 1024 * 1024 // 4MB buffer size for high-performance systems
+          highWaterMark: bufferSize // Adaptive buffer size based on device type
         });
         
-        // Use more efficient piping
+        // YouTube-like efficient piping
         fileStream.pipe(res, { end: true });
         
         // Handle stream end
         fileStream.on('end', () => {
-          console.log(`Video stream completed for range: ${start}-${end}`);
+          console.log(`${logPrefix}: Video chunk complete: ${start}-${end}`);
         });
         
-        // Handle errors
+        // Enhanced error handling
         fileStream.on('error', (error: Error) => {
-          console.error('Error streaming video file:', error);
+          console.error(`${logPrefix}: Error streaming video:`, error);
           if (!res.headersSent) {
-            res.status(500).send('Error streaming video file');
+            res.status(500).send('Error streaming video');
           }
-          // Close the stream to prevent memory leaks
           fileStream.destroy();
         });
         
         // Handle client disconnect
         req.on('close', () => {
-          console.log('Client disconnected, closing video stream');
+          console.log(`${logPrefix}: Client disconnected, closing video stream`);
           fileStream.destroy();
         });
       } 
-      // No range requested, serve a slightly larger preview for better initial playback
+      // No range requested - deliver YouTube-like optimized initial segment
       else {
-        // Serve 10MB preview instead of 5MB for better initial buffering
-        const previewSize = Math.min(fileSize, 10 * 1024 * 1024);
+        // For high-performance, we might send the entire video
+        // For mobile, we send just enough to start playing quickly
+        const initialSize = Math.min(previewSize, fileSize);
         
-        console.log(`Serving preview video (first ${(previewSize / 1024 / 1024).toFixed(2)}MB of ${(fileSize / 1024 / 1024).toFixed(2)}MB file)`);
+        // Log initial load with appropriate prefix
+        if (endpointType === 'mobile') {
+          console.log(`${logPrefix}: Initial segment: ${(initialSize / 1024).toFixed(2)}KB`);
+        } else if (endpointType === 'highperf') {
+          console.log(`${logPrefix}: Sending full video: ${(initialSize / 1024 / 1024).toFixed(2)}MB`);
+        } else {
+          console.log(`${logPrefix}: Initial segment: ${(initialSize / 1024 / 1024).toFixed(2)}MB`);
+        }
         
-        // Set performance-optimized headers
+        // Set YouTube-like optimized headers
         res.writeHead(206, {
-          'Content-Range': `bytes 0-${previewSize - 1}/${fileSize}`,
+          'Content-Range': `bytes 0-${initialSize - 1}/${fileSize}`,
           'Accept-Ranges': 'bytes',
-          'Content-Length': previewSize,
+          'Content-Length': initialSize,
           'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year with immutable flag for permanent caching
+          'Cache-Control': 'public, max-age=31536000, immutable', // YouTube-like aggressive caching
           'Connection': 'keep-alive',
-          'X-Content-Type-Options': 'nosniff',
         });
         
-        // Optimize read stream with higher highWaterMark
+        // Create optimized read stream with adaptive buffer size
         const fileStream = fs.createReadStream(videoPath, { 
           start: 0, 
-          end: previewSize - 1,
-          highWaterMark: 4 * 1024 * 1024 // 4MB buffer size for high-performance systems
+          end: initialSize - 1,
+          highWaterMark: bufferSize // Adaptive buffer size based on device type
         });
         
+        // YouTube-like efficient piping
         fileStream.pipe(res, { end: true });
         
-        // Handle stream end
-        fileStream.on('end', () => {
-          console.log('Preview video stream completed');
-        });
-        
-        // Handle errors
+        // Enhanced error handling
         fileStream.on('error', (error: Error) => {
-          console.error('Error streaming video file:', error);
+          console.error(`${logPrefix}: Error streaming video:`, error);
           if (!res.headersSent) {
-            res.status(500).send('Error streaming video file');
+            res.status(500).send('Error streaming video');
           }
-          // Close the stream to prevent memory leaks
           fileStream.destroy();
         });
         
         // Handle client disconnect
         req.on('close', () => {
-          console.log('Client disconnected, closing video stream');
+          console.log(`${logPrefix}: Client disconnected, closing stream`);
           fileStream.destroy();
         });
       }
     } catch (error) {
-      console.error(`Error serving video ${videoFileName}:`, error);
-      res.status(500).send('Server error while serving video');
+      console.error(`Error serving video (${endpointType}):`, error);
+      if (!res.headersSent) {
+        res.status(500).send('Error serving video file');
+      }
     }
   }
-  // Direct video serving endpoints that bypass Vite's handling
+
+  // Legacy endpoint for property video
   app.get('/api/video/property', (req, res) => {
     serveVideoFile(req, res, 'property-video.mp4');
   });
   
-  // Endpoint for OHANAVIDEOMASTER.mp4
+  // YouTube-like streaming endpoints for OHANAVIDEOMASTER.mp4
   app.get('/api/video/ohana', (req, res) => {
-    serveVideoFile(req, res, 'OHANAVIDEOMASTER.mp4');
+    serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'standard');
   });
   
   // Mobile-optimized video endpoint with smaller chunks and buffer
   app.get('/api/video/ohana/mobile', (req, res) => {
-    // This endpoint is optimized for mobile devices with lower memory and processing power
-    try {
-      const videoPath = path.join(process.cwd(), 'public', 'OHANAVIDEOMASTER.mp4');
-      
-      // Check if file exists
-      if (!fs.existsSync(videoPath)) {
-        console.error(`Video file not found at: ${videoPath}`);
-        return res.status(404).send('Video file not found');
-      }
-      
-      // Get file stats
-      const stat = fs.statSync(videoPath);
-      const fileSize = stat.size;
-      
-      console.log(`Serving mobile-optimized video: OHANAVIDEOMASTER.mp4, size: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
-      
-      // Use smaller chunk sizes for mobile devices to prevent memory issues
-      const MAX_CHUNK_SIZE = 2 * 1024 * 1024; // 2MB in bytes for mobile
-      
-      const range = req.headers.range;
-      
-      // Handle range requests (for video seeking)
-      if (range) {
-        const parts = range.replace(/bytes=/, "").split("-");
-        const start = parseInt(parts[0], 10);
-        
-        // Calculate safe end position (don't exceed MAX_CHUNK_SIZE)
-        let end: number;
-        if (parts[1]) {
-          end = parseInt(parts[1], 10);
-        } else {
-          // If no end specified, limit to start + MAX_CHUNK_SIZE or file end
-          end = Math.min(start + MAX_CHUNK_SIZE, fileSize - 1);
-        }
-        
-        // Ensure end doesn't exceed file size
-        end = Math.min(end, fileSize - 1);
-        
-        const chunksize = (end - start) + 1;
-        
-        console.log(`Mobile video range request: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`);
-        
-        // Set mobile-optimized headers
-        res.writeHead(206, {
-          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': chunksize,
-          'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=31536000, immutable',
-          'Connection': 'keep-alive',
-        });
-        
-        // Use smaller buffer size for mobile devices
-        const fileStream = fs.createReadStream(videoPath, { 
-          start, 
-          end,
-          highWaterMark: 1 * 1024 * 1024 // 1MB buffer size for mobile devices
-        });
-        
-        fileStream.pipe(res, { end: true });
-        
-        fileStream.on('end', () => {
-          console.log('Mobile video chunk completed');
-        });
-        
-        fileStream.on('error', (error: Error) => {
-          console.error('Error streaming mobile video chunk:', error);
-          if (!res.headersSent) {
-            res.status(500).send('Error streaming video file');
-          }
-          fileStream.destroy();
-        });
-        
-        req.on('close', () => {
-          console.log('Client disconnected from mobile stream, closing video stream');
-          fileStream.destroy();
-        });
-      } 
-      // No range requested, serve a small preview
-      else {
-        // Serve just 1MB preview for mobile devices
-        const previewSize = Math.min(fileSize, 1 * 1024 * 1024);
-        
-        console.log(`Serving mobile preview (first ${(previewSize / 1024 / 1024).toFixed(2)}MB of file)`);
-        
-        res.writeHead(206, {
-          'Content-Range': `bytes 0-${previewSize - 1}/${fileSize}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': previewSize,
-          'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        });
-        
-        const fileStream = fs.createReadStream(videoPath, { 
-          start: 0, 
-          end: previewSize - 1,
-          highWaterMark: 512 * 1024 // 512KB buffer for initial preview
-        });
-        
-        fileStream.pipe(res, { end: true });
-        
-        fileStream.on('end', () => {
-          console.log('Mobile preview completed');
-        });
-        
-        fileStream.on('error', (error: Error) => {
-          console.error('Error streaming mobile preview:', error);
-          if (!res.headersSent) {
-            res.status(500).send('Error streaming video file');
-          }
-          fileStream.destroy();
-        });
-        
-        req.on('close', () => {
-          console.log('Client disconnected from mobile preview, closing stream');
-          fileStream.destroy();
-        });
-      }
-    } catch (error) {
-      console.error('Error serving mobile-optimized video:', error);
-      res.status(500).send('Server error while serving mobile-optimized video');
-    }
+    serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'mobile');
   });
   
-  // Legacy direct video serving implementation - Now improved with the same optimizations
-  app.get('/api/video/property-legacy', (req, res) => {
-    // Use the same optimized function for all video endpoints
-    serveVideoFile(req, res, 'property-video.mp4');
-  });
-  
-  // High-performance video cache endpoint optimized for 16GB+ RAM systems
-  // This endpoint uses larger chunk sizes and aggressive caching for smoother playback
+  // High-performance optimized endpoint with larger chunks and buffer
   app.get('/api/video/ohana/highperf', (req, res) => {
+    serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'highperf');
+  });
+  
+  // Legacy function to maintain compatibility with existing code
+  // Will be gradually replaced by serveAdaptiveVideo
+  function serveVideoFile(req: express.Request, res: express.Response, videoFileName: string) {
     try {
-      const videoPath = path.join(process.cwd(), 'public', 'OHANAVIDEOMASTER.mp4');
-      
-      // Check if file exists
-      if (!fs.existsSync(videoPath)) {
-        console.error(`Video file not found at: ${videoPath}`);
-        return res.status(404).send('Video file not found');
-      }
-      
-      // Get file stats
-      const stat = fs.statSync(videoPath);
-      const fileSize = stat.size;
-      
-      console.log(`Serving ENTIRE video file for high-performance devices: OHANAVIDEOMASTER.mp4, size: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
-      
-      // Set extremely aggressive caching headers for high-end clients
-      res.writeHead(200, {
-        'Accept-Ranges': 'bytes',
-        'Content-Length': fileSize,
-        'Content-Type': 'video/mp4',
-        'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year with immutable flag
-        'Connection': 'keep-alive',
-        'X-Content-Type-Options': 'nosniff',
-        'ETag': `"${stat.mtime.getTime().toString(16)}"`, // Strong ETag for caching
-        'Last-Modified': stat.mtime.toUTCString(),
-      });
-      
-      // Use optimized file streaming with extra large buffer for high-end systems
-      const fileStream = fs.createReadStream(videoPath, {
-        highWaterMark: 16 * 1024 * 1024 // 16MB buffer for maximum throughput on 16GB+ RAM systems
-      });
-      
-      // Pipe directly to response with end
-      fileStream.pipe(res, { end: true });
-      
-      // Handle stream end
-      fileStream.on('end', () => {
-        console.log('Complete high-performance video transfer finished');
-      });
-      
-      // Handle errors
-      fileStream.on('error', (error: Error) => {
-        console.error('Error streaming complete video file:', error);
-        if (!res.headersSent) {
-          res.status(500).send('Error streaming video file');
-        }
-        // Close the stream to prevent memory leaks
-        fileStream.destroy();
-      });
-      
-      // Handle client disconnect
-      req.on('close', () => {
-        console.log('Client disconnected from high-performance stream, closing video stream');
-        fileStream.destroy();
-      });
+      // Simply redirect to the adaptive video serving function with standard settings
+      serveAdaptiveVideo(req, res, videoFileName, 'standard');
     } catch (error) {
-      console.error('Error serving high-performance video:', error);
-      res.status(500).send('Server error while serving high-performance video');
+      console.error(`Legacy video serving error for ${videoFileName}:`, error);
+      if (!res.headersSent) {
+        res.status(500).send('Error serving video file');
+      }
     }
-  });
+  }
 
-  // Create the HTTP server
-  const httpServer = createServer(app);
-  
-  // Set up WebSocket server for enhanced video performance monitoring
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
-  
-  wss.on('connection', (ws) => {
-    console.log('WebSocket client connected for video performance monitoring');
-    
-    // Send initial performance configuration
-    ws.send(JSON.stringify({
-      type: 'video_config',
-      config: {
-        bufferSize: 4 * 1024 * 1024, // 4MB buffer size
-        chunkSize: 40 * 1024 * 1024, // 40MB chunks
-        highPerformanceMode: true,
-        cachedUrls: [
-          '/api/video/ohana/highperf',
-          '/api/video/ohana/mobile',
-          '/static/OHANAVIDEOMASTER.mp4'
-        ]
-      }
-    }));
-    
-    // Handle video performance metrics from client
-    ws.on('message', (message) => {
-      try {
-        const data = JSON.parse(message.toString());
-        
-        if (data.type === 'video_metrics') {
-          console.log('Video performance metrics received:', data.metrics);
-          
-          // Respond with optimized settings based on metrics
-          if (data.metrics.bufferLevel < 5 && data.metrics.memoryUsage < 70) {
-            // If buffer is low but memory usage is acceptable, increase buffer
-            ws.send(JSON.stringify({
-              type: 'video_config_update',
-              config: {
-                bufferSize: 8 * 1024 * 1024, // Increase to 8MB buffer
-                preferFullVideoDownload: true
-              }
-            }));
-          }
-        }
-      } catch (error) {
-        console.error('Error handling WebSocket message:', error);
-      }
-    });
-    
-    // Handle client disconnect
-    ws.on('close', () => {
-      console.log('WebSocket client disconnected');
-    });
-  });
-  
-  return httpServer;
+  return server;
 }

@@ -144,14 +144,28 @@ export const getOptimalVideoQuality = (): 'low' | 'medium' | 'high' | 'ultra' =>
 };
 
 /**
- * Get video settings based on device type and performance capabilities
- * @returns Object with video display settings
+ * Get YouTube-like video settings based on device type and performance capabilities
+ * @returns Object with optimized video display settings like YouTube
  */
 export const getVideoDisplaySettings = () => {
   const deviceType = getDeviceType();
   const devicePerformance = getDevicePerformance();
   
-  // Base settings
+  // Check connection quality if available (YouTube considers this very important)
+  const connection = (navigator as any).connection;
+  const isSlowConnection = connection && (
+    connection.saveData || 
+    connection.effectiveType === 'slow-2g' || 
+    connection.effectiveType === '2g' ||
+    connection.downlink < 1
+  );
+  
+  const isCellular = connection && (connection.type === 'cellular');
+  
+  // Additional detection for Safari, which tends to use different buffering mechanics
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  
+  // Base settings (YouTube-like defaults)
   const settings = {
     aspectRatio: '16/9',
     maxWidth: '100%',
@@ -164,75 +178,105 @@ export const getVideoDisplaySettings = () => {
     videoEndpoint: '/api/video/ohana', // Default endpoint
     playbackQuality: 'high', // Default quality
     maxResolution: 1080, // Default max resolution
+    // Additional YouTube-like settings
+    chunkSize: 5 * 1024 * 1024, // 5MB chunks (YouTube uses adaptive chunking)
+    retryAttempts: 3, // YouTube retries on failure
+    useAdaptiveBuffering: true, // YouTube adjusts buffering strategy during playback
   };
   
-  // First apply device-type specific settings
+  // Apply YouTube-like device-specific optimizations
   let deviceSettings = { ...settings };
   
   switch (deviceType) {
     case 'mobile':
       deviceSettings = {
         ...deviceSettings,
-        bufferSize: 4 * 1024 * 1024, // 4MB buffer for mobile
-        preload: 'metadata', // Use metadata preload on mobile to save data
-        maxHeight: '80vh', // Limit height on mobile
-        maxResolution: 720, // Lower resolution for mobile by default
+        bufferSize: isSafari ? 2 * 1024 * 1024 : 4 * 1024 * 1024, // Lower for Safari
+        chunkSize: 1 * 1024 * 1024, // 1MB chunks for mobile like YouTube
+        preload: isCellular ? 'metadata' : 'auto', // YouTube only uses metadata on cellular
+        maxHeight: '85vh', // Make slightly larger for better viewing
+        maxResolution: 720, // YouTube default for mobile
       };
       break;
       
     case 'tablet':
       deviceSettings = {
         ...deviceSettings,
-        bufferSize: 8 * 1024 * 1024, // 8MB buffer
+        bufferSize: 6 * 1024 * 1024, // 6MB buffer similar to YouTube tablet
+        chunkSize: 2 * 1024 * 1024, // 2MB chunks for tablet
         maxHeight: '90vh',
-        maxResolution: 1080,
+        maxResolution: isSafari ? 720 : 1080, // Lower for Safari which has different buffering
       };
       break;
       
     case 'desktop':
       deviceSettings = {
         ...deviceSettings,
-        bufferSize: 16 * 1024 * 1024, // 16MB buffer for desktop
+        bufferSize: 16 * 1024 * 1024, // 16MB buffer for desktop like YouTube
+        chunkSize: 8 * 1024 * 1024, // 8MB chunks for faster loading on desktop
+        retryAttempts: 5, // More retries on desktop where connection is usually more stable
       };
       break;
       
     case 'large-screen':
       deviceSettings = {
         ...deviceSettings,
-        bufferSize: 32 * 1024 * 1024, // 32MB buffer for large screens
+        bufferSize: 32 * 1024 * 1024, // 32MB buffer for large screens like YouTube
+        chunkSize: 16 * 1024 * 1024, // Larger chunks for TVs and large monitors
         maxWidth: '100%', // Full width
+        maxResolution: 1440, // Default to higher resolution
       };
       break;
   }
   
-  // Then apply performance-specific settings
+  // YouTube prioritizes connection quality over device in many cases
+  if (isSlowConnection) {
+    deviceSettings = {
+      ...deviceSettings,
+      bufferSize: Math.min(deviceSettings.bufferSize, 2 * 1024 * 1024),
+      chunkSize: Math.min(deviceSettings.chunkSize, 1 * 1024 * 1024), 
+      preload: 'metadata',
+      maxResolution: 480,
+    };
+  }
+  
+  // Then apply YouTube-like performance-specific settings
   switch (devicePerformance) {
     case 'low':
       return {
         ...deviceSettings,
         videoEndpoint: '/api/video/ohana/mobile', // Use mobile-optimized endpoint
         bufferSize: Math.min(deviceSettings.bufferSize, 2 * 1024 * 1024), // Max 2MB buffer
+        chunkSize: Math.min(deviceSettings.chunkSize, 512 * 1024), // 512KB chunks
         preload: 'metadata', // Metadata-only preload to conserve resources
         playbackQuality: 'low',
         maxResolution: 480, // Lower resolution for low-performance devices
+        retryAttempts: 2, // Fewer retries to avoid wasting resources
       };
       
     case 'medium':
       return {
         ...deviceSettings,
         // If it's a mobile or tablet with medium performance, still use mobile endpoint
-        videoEndpoint: (deviceType === 'mobile' || deviceType === 'tablet') 
+        videoEndpoint: (deviceType === 'mobile' || deviceType === 'tablet' || isSlowConnection) 
           ? '/api/video/ohana/mobile' 
           : deviceSettings.videoEndpoint,
-        bufferSize: Math.min(deviceSettings.bufferSize, 8 * 1024 * 1024), // Max 8MB buffer
+        bufferSize: Math.min(deviceSettings.bufferSize, 6 * 1024 * 1024), // Max 6MB buffer
+        chunkSize: Math.min(deviceSettings.chunkSize, 2 * 1024 * 1024), // 2MB chunks
         playbackQuality: 'medium',
+        // YouTube ensures a good user experience by limiting resolution based on performance
+        maxResolution: Math.min(deviceSettings.maxResolution, 720),
       };
       
     case 'high':
       return {
         ...deviceSettings,
-        videoEndpoint: '/api/video/ohana/highperf', // Use high-performance endpoint
+        // YouTube serves higher performance streams on powerful devices
+        videoEndpoint: isSlowConnection ? deviceSettings.videoEndpoint : '/api/video/ohana/highperf',
         playbackQuality: 'high',
+        // Even on high-performance devices, YouTube is conservative with cellular connections
+        bufferSize: isCellular ? Math.min(deviceSettings.bufferSize, 8 * 1024 * 1024) : deviceSettings.bufferSize,
+        chunkSize: isCellular ? Math.min(deviceSettings.chunkSize, 4 * 1024 * 1024) : deviceSettings.chunkSize,
       };
       
     default:
