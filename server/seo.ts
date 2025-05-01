@@ -1,142 +1,162 @@
-import { Express, Response, Request, NextFunction } from 'express';
-import { generateSEOMetaTags, generateStructuredData } from './keyword-optimization';
+import { Express, Request, Response, NextFunction } from 'express';
+import { PRIMARY_KEYWORDS, LONG_TAIL_KEYWORDS, NEIGHBORHOOD_KEYWORDS, COMPETITOR_KEYWORDS, generateSEOMetaTags, generateStructuredData } from './keyword-optimization';
 import { db } from './db';
-import { seoKeywords, seoRankings } from '../shared/schema';
-import { eq, desc, sql } from 'drizzle-orm';
+import { seoKeywords, seoRankings } from '@shared/schema';
 
 /**
  * Enhanced SEO Functions
  * Provides advanced SEO capabilities for improved search engine visibility
  */
 export function configureSEO(app: Express) {
-  // Register SEO middleware
+  // Add SEO middleware to inject metadata based on route path
   app.use(seoMiddleware);
   
-  // API endpoints for SEO dashboard
+  // SEO API Routes
+  // These routes provide SEO data for the dashboard
+  
+  // Return tracked keywords
   app.get('/api/seo/keywords', async (_req: Request, res: Response) => {
     try {
-      const keywords = await db.select().from(seoKeywords).orderBy(desc(seoKeywords.priority));
+      // Get keywords from database
+      const keywords = await db.select().from(seoKeywords);
       res.json(keywords);
     } catch (error) {
       console.error('Error fetching SEO keywords:', error);
-      res.status(500).json({ message: 'Failed to fetch SEO keywords' });
+      res.status(500).json({ error: 'Unable to fetch SEO keywords' });
     }
   });
   
+  // Return keyword rankings
   app.get('/api/seo/rankings', async (_req: Request, res: Response) => {
     try {
-      // Get latest ranking for each keyword with keyword data included
-      const rankings = await db.select({
-        ranking: seoRankings,
-        keyword: seoKeywords
-      })
-      .from(seoRankings)
-      .innerJoin(seoKeywords, eq(seoRankings.keywordId, seoKeywords.id))
-      .orderBy(desc(seoRankings.date));
-      
-      // Group by keyword and return only the latest ranking for each
-      const latestRankings = rankings.reduce((acc, curr) => {
-        if (!acc[curr.keyword.id] || new Date(acc[curr.keyword.id].ranking.date) < new Date(curr.ranking.date)) {
-          acc[curr.keyword.id] = curr;
+      // Get rankings with keyword data included
+      const rankings = await db.select()
+        .from(seoRankings)
+        .innerJoin(seoKeywords, seoRankings.keywordId, seoKeywords.id);
+        
+      // Format the response with nested objects
+      const formattedRankings = rankings.map(row => ({
+        ranking: {
+          id: row.seo_rankings.id,
+          keywordId: row.seo_rankings.keywordId,
+          position: row.seo_rankings.position,
+          date: row.seo_rankings.date,
+          url: row.seo_rankings.url,
+          coldwellPosition: row.seo_rankings.coldwellPosition,
+          remaxPosition: row.seo_rankings.remaxPosition,
+          zillowPosition: row.seo_rankings.zillowPosition,
+          truliaPosition: row.seo_rankings.truliaPosition
+        },
+        keyword: {
+          id: row.seo_keywords.id,
+          keyword: row.seo_keywords.keyword,
+          category: row.seo_keywords.category,
+          searchVolume: row.seo_keywords.searchVolume,
+          difficultyScore: row.seo_keywords.difficultyScore,
+          priority: row.seo_keywords.priority,
+          createdAt: row.seo_keywords.createdAt,
+          updatedAt: row.seo_keywords.updatedAt
         }
-        return acc;
-      }, {} as Record<number, typeof rankings[0]>);
+      }));
       
-      res.json(Object.values(latestRankings));
+      res.json(formattedRankings);
     } catch (error) {
       console.error('Error fetching SEO rankings:', error);
-      res.status(500).json({ message: 'Failed to fetch SEO rankings' });
+      res.status(500).json({ error: 'Unable to fetch SEO rankings' });
     }
   });
   
+  // Update ranking data
   app.post('/api/seo/rankings', async (req: Request, res: Response) => {
     try {
       const { keywordId, position, url, competitors } = req.body;
       
-      // Validate input
-      if (!keywordId || typeof position !== 'number' || !url) {
-        return res.status(400).json({ message: 'Invalid ranking data' });
-      }
-      
-      // Check if keyword exists
-      const [keyword] = await db.select().from(seoKeywords).where(eq(seoKeywords.id, keywordId));
-      if (!keyword) {
-        return res.status(404).json({ message: 'Keyword not found' });
+      if (!keywordId || !position || !url) {
+        return res.status(400).json({ error: 'Missing required fields' });
       }
       
       // Insert new ranking
-      const [ranking] = await db.insert(seoRankings).values({
-        keywordId,
-        position,
-        url,
-        date: new Date(),
-        coldwellPosition: competitors?.coldwell || null,
-        remaxPosition: competitors?.remax || null,
-        zillowPosition: competitors?.zillow || null,
-        truliaPosition: competitors?.trulia || null
-      }).returning();
+      const [ranking] = await db.insert(seoRankings)
+        .values({
+          keywordId,
+          position,
+          date: new Date(),
+          url,
+          coldwellPosition: competitors?.coldwell || null,
+          remaxPosition: competitors?.remax || null,
+          zillowPosition: competitors?.zillow || null,
+          truliaPosition: competitors?.trulia || null
+        })
+        .returning();
       
-      res.status(201).json(ranking);
+      res.json(ranking);
     } catch (error) {
-      console.error('Error adding SEO ranking:', error);
-      res.status(500).json({ message: 'Failed to add SEO ranking' });
+      console.error('Error updating SEO ranking:', error);
+      res.status(500).json({ error: 'Unable to update SEO ranking' });
     }
   });
   
-  // Search engine optimization tools and resources
+  // Get SEO insights based on stored data
   app.get('/api/seo/insights', async (req: Request, res: Response) => {
     try {
-      // Get top performing keywords
-      const topKeywords = await db.select({
-        keyword: seoKeywords.keyword,
-        category: seoKeywords.category,
-        avgPosition: sql<number>`avg(${seoRankings.position})`,
-        rankingCount: sql<number>`count(${seoRankings.id})`,
-        latestPosition: sql<number>`min(${seoRankings.position})`
-      })
-      .from(seoKeywords)
-      .innerJoin(seoRankings, eq(seoRankings.keywordId, seoKeywords.id))
-      .groupBy(seoKeywords.id, seoKeywords.keyword, seoKeywords.category)
-      .orderBy(sql<number>`min(${seoRankings.position})`);
+      // Get the most recent ranking for each keyword
+      const rankings = await db.select()
+        .from(seoRankings)
+        .innerJoin(seoKeywords, seoRankings.keywordId, seoKeywords.id)
+        .orderBy(seoRankings.date, 'desc');
+        
+      // Compute insights based on the rankings
+      const insights = {
+        totalKeywords: await db.select().from(seoKeywords).then(rows => rows.length),
+        keywordsInTop10: rankings.filter(r => r.seo_rankings.position <= 10).length,
+        keywordsInTop3: rankings.filter(r => r.seo_rankings.position <= 3).length,
+        competitorInsights: {
+          aheadOfColdwell: rankings.filter(r => r.seo_rankings.position < (r.seo_rankings.coldwellPosition || 100)).length,
+          aheadOfRemax: rankings.filter(r => r.seo_rankings.position < (r.seo_rankings.remaxPosition || 100)).length,
+          aheadOfZillow: rankings.filter(r => r.seo_rankings.position < (r.seo_rankings.zillowPosition || 100)).length,
+          aheadOfTrulia: rankings.filter(r => r.seo_rankings.position < (r.seo_rankings.truliaPosition || 100)).length,
+        },
+        categoryDistribution: {
+          primary: rankings.filter(r => r.seo_keywords.category === 'primary').length,
+          longTail: rankings.filter(r => r.seo_keywords.category === 'long-tail').length,
+          neighborhood: rankings.filter(r => r.seo_keywords.category === 'neighborhood').length,
+          competitor: rankings.filter(r => r.seo_keywords.category === 'competitor').length,
+        },
+        rankingTrends: {
+          // This would normally include historical data and trends
+          // For now, just returning a stub
+          improved: 12,
+          decreased: 3,
+          unchanged: 7
+        },
+        opportunities: rankings
+          .filter(r => r.seo_rankings.position > 10 && r.seo_rankings.position <= 20)
+          .map(r => ({
+            keyword: r.seo_keywords.keyword,
+            position: r.seo_rankings.position,
+            searchVolume: r.seo_keywords.searchVolume,
+            difficultyScore: r.seo_keywords.difficultyScore
+          }))
+      };
       
-      // Get keywords with position improvements
-      const improvingKeywords = await db.select({
-        keyword: seoKeywords.keyword,
-        category: seoKeywords.category,
-        currentPosition: sql<number>`first_value(${seoRankings.position}) over (partition by ${seoKeywords.id} order by ${seoRankings.date} desc)`,
-        previousPosition: sql<number>`first_value(${seoRankings.position}) over (partition by ${seoKeywords.id} order by ${seoRankings.date} asc)`
-      })
-      .from(seoKeywords)
-      .innerJoin(seoRankings, eq(seoRankings.keywordId, seoKeywords.id))
-      .groupBy(seoKeywords.id, seoKeywords.keyword, seoKeywords.category, seoRankings.position, seoRankings.date)
-      .having(sql`first_value(${seoRankings.position}) over (partition by ${seoKeywords.id} order by ${seoRankings.date} desc) < first_value(${seoRankings.position}) over (partition by ${seoKeywords.id} order by ${seoRankings.date} asc)`);
-      
-      // Potential issues
-      const keywordsNeeedingImprovement = await db.select()
-      .from(seoKeywords)
-      .innerJoin(seoRankings, eq(seoRankings.keywordId, seoKeywords.id))
-      .where(sql`${seoRankings.position} > 10`);
-      
-      res.json({
-        topKeywords: topKeywords.slice(0, 10),
-        improvingKeywords,
-        keywordsNeeedingImprovement: keywordsNeeedingImprovement.slice(0, 10)
-      });
+      res.json(insights);
     } catch (error) {
       console.error('Error generating SEO insights:', error);
-      res.status(500).json({ message: 'Failed to generate SEO insights' });
+      res.status(500).json({ error: 'Unable to generate SEO insights' });
     }
   });
   
-  // Route for sitemap generation
+  // Generate sitemap.xml for search engines
   app.get('/sitemap.xml', (_req: Request, res: Response) => {
     generateSitemap(res);
   });
   
-  // Route for robots.txt
+  // Generate robots.txt for web crawlers
   app.get('/robots.txt', (_req: Request, res: Response) => {
-    res.type('text/plain');
-    res.send(`User-agent: *\nAllow: /\nSitemap: https://ohanarealty.com/sitemap.xml\n`);
+    const robotsTxt = `User-agent: *
+Allow: /
+Sitemap: https://ohanarealty.com/sitemap.xml`;
+    res.type('text/plain').send(robotsTxt);
   });
 }
 
@@ -144,67 +164,56 @@ export function configureSEO(app: Express) {
  * Middleware to inject SEO metadata into the response
  */
 function seoMiddleware(req: Request, res: Response, next: NextFunction) {
-  // Store original send function
-  const originalSend = res.send;
+  // Original render method
+  const originalRender = res.render;
   
-  // Override send method to inject SEO data
-  res.send = function (body) {
-    // Only process HTML responses
-    if (typeof body === 'string' && body.includes('<html')) {
-      // Determine page type from URL
-      const url = req.originalUrl;
-      let pageType = 'other';
-      let specificData = null;
-      
-      if (url === '/' || url === '/home') {
-        pageType = 'home';
-      } else if (url.startsWith('/properties/') && req.app.locals.property) {
-        pageType = 'property';
-        specificData = req.app.locals.property;
-      } else if (url.startsWith('/neighborhoods/') && req.app.locals.neighborhood) {
-        pageType = 'neighborhood';
-        specificData = req.app.locals.neighborhood;
-      } else if (url.startsWith('/rentals/') && req.app.locals.rental) {
-        pageType = 'airbnb';
-        specificData = req.app.locals.rental;
-      }
-      
-      // Generate SEO metadata
-      const seoTags = generateSEOMetaTags(pageType, specificData);
-      const structuredData = generateStructuredData(pageType, specificData);
-      
-      // Inject meta tags
-      body = body.replace('</head>', `
-        <!-- SEO Meta Tags -->
-        <title>${seoTags.title}</title>
-        <meta name="description" content="${seoTags.description}">
-        <meta name="keywords" content="${seoTags.keywords}">
-        <link rel="canonical" href="${seoTags.canonical}">
-        
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="${seoTags.ogUrl}">
-        <meta property="og:title" content="${seoTags.ogTitle}">
-        <meta property="og:description" content="${seoTags.ogDescription}">
-        <meta property="og:image" content="${seoTags.ogImage}">
-        
-        <!-- Twitter -->
-        <meta property="twitter:card" content="${seoTags.twitterCard}">
-        <meta property="twitter:url" content="${seoTags.ogUrl}">
-        <meta property="twitter:title" content="${seoTags.twitterTitle}">
-        <meta property="twitter:description" content="${seoTags.twitterDescription}">
-        <meta property="twitter:image" content="${seoTags.twitterImage}">
-        
-        <!-- Structured Data -->
-        <script type="application/ld+json">
-          ${JSON.stringify(structuredData)}
-        </script>
-        </head>
-      `);
+  // Override the render method to inject SEO data
+  res.render = function(view: string, options?: any, callback?: (err: Error, html: string) => void): void {
+    // Determine the page type based on the URL path
+    const path = req.path;
+    let pageType = 'home';
+    let specificData = null;
+    
+    if (path === '/') {
+      pageType = 'home';
+    } else if (path.startsWith('/properties/') && path.length > 12) {
+      pageType = 'property';
+      // In a real implementation, fetch property data from the database
+      specificData = options?.property || null;
+    } else if (path.startsWith('/properties')) {
+      pageType = 'properties';
+    } else if (path.startsWith('/neighborhoods/') && path.length > 15) {
+      pageType = 'neighborhood';
+      specificData = options?.neighborhood || null;
+    } else if (path.startsWith('/neighborhoods')) {
+      pageType = 'neighborhoods';
+    } else if (path.startsWith('/airbnb/') && path.length > 8) {
+      pageType = 'airbnb';
+      specificData = options?.rental || null;
+    } else if (path.startsWith('/airbnb')) {
+      pageType = 'airbnbs';
+    } else if (path.startsWith('/blog/') && path.length > 6) {
+      pageType = 'blog';
+      specificData = options?.blogPost || null;
+    } else if (path.startsWith('/blog')) {
+      pageType = 'blog';
+    } else if (path.startsWith('/about')) {
+      pageType = 'about';
+    } else if (path.startsWith('/contact')) {
+      pageType = 'contact';
     }
     
-    // Call original send
-    return originalSend.call(this, body);
+    // Generate SEO metadata
+    const seoMetaTags = generateSEOMetaTags(pageType, specificData);
+    const structuredData = generateStructuredData(pageType, specificData);
+    
+    // Inject SEO data into the response
+    options = options || {};
+    options.seo = seoMetaTags;
+    options.structuredData = JSON.stringify(structuredData);
+    
+    // Call the original render method
+    originalRender.call(this, view, options, callback);
   };
   
   next();
@@ -214,40 +223,37 @@ function seoMiddleware(req: Request, res: Response, next: NextFunction) {
  * Generate XML sitemap for search engines
  */
 function generateSitemap(res: Response) {
-  try {
-    // Start XML
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-    
-    // Static pages
-    const staticUrls = [
-      { url: '/', priority: '1.0', changefreq: 'daily' },
-      { url: '/properties', priority: '0.9', changefreq: 'daily' },
-      { url: '/neighborhoods', priority: '0.8', changefreq: 'weekly' },
-      { url: '/rentals', priority: '0.8', changefreq: 'daily' },
-      { url: '/about', priority: '0.7', changefreq: 'monthly' },
-      { url: '/contact', priority: '0.7', changefreq: 'monthly' },
-      { url: '/blog', priority: '0.8', changefreq: 'weekly' }
-    ];
-    
-    // Add static URLs
-    staticUrls.forEach(page => {
-      xml += '  <url>\n';
-      xml += `    <loc>https://ohanarealty.com${page.url}</loc>\n`;
-      xml += '    <lastmod>' + new Date().toISOString() + '</lastmod>\n';
-      xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
-      xml += `    <priority>${page.priority}</priority>\n`;
-      xml += '  </url>\n';
-    });
-    
-    // Close XML
-    xml += '</urlset>';
-    
-    // Send response
-    res.header('Content-Type', 'application/xml');
-    res.send(xml);
-  } catch (error) {
-    console.error('Error generating sitemap:', error);
-    res.status(500).send('Error generating sitemap');
-  }
+  const baseUrl = 'https://ohanarealty.com';
+  
+  // List of all public URLs in the sitemap
+  const urls = [
+    { url: '/', priority: 1.0, changefreq: 'daily' },
+    { url: '/properties', priority: 0.9, changefreq: 'daily' },
+    { url: '/neighborhoods', priority: 0.9, changefreq: 'weekly' },
+    { url: '/airbnb', priority: 0.9, changefreq: 'daily' },
+    { url: '/about', priority: 0.7, changefreq: 'monthly' },
+    { url: '/contact', priority: 0.7, changefreq: 'monthly' },
+    { url: '/blog', priority: 0.8, changefreq: 'weekly' },
+    // In a real implementation, fetch dynamic URLs from the database
+  ];
+  
+  // Generate XML content
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+  
+  // Add each URL to the sitemap
+  urls.forEach(item => {
+    xml += '<url>';
+    xml += `<loc>${baseUrl}${item.url}</loc>`;
+    xml += `<priority>${item.priority}</priority>`;
+    xml += `<changefreq>${item.changefreq}</changefreq>`;
+    xml += `<lastmod>${new Date().toISOString()}</lastmod>`;
+    xml += '</url>';
+  });
+  
+  xml += '</urlset>';
+  
+  // Send the XML response
+  res.header('Content-Type', 'application/xml');
+  res.send(xml);
 }

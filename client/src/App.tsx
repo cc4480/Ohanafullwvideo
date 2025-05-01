@@ -227,33 +227,7 @@ function App() {
       {!isAppLoaded && <AppLoading minimumDuration={1000} />}
       
       {/* $10,000 Enterprise-grade SEO Implementation */}
-      
-      {/* Main SEO Dashboard - comprehensive solution */}
-      <SEODashboard 
-        organization={organizationInfo}
-        baseUrl={baseUrl}
-        facebookAppId="123456789012345"
-        twitterUsername="ohanarealty"
-        primaryKeywords={["Laredo real estate", "homes for sale", "commercial properties"]}
-        secondaryKeywords={["luxury homes", "investment properties", "buy a home", "sell your house"]}
-        localSEOTerms={["Laredo", "Texas", "Laredo TX", "Webb County"]}
-        enableCoreWebVitals={true}
-        enableRealTimeOptimization={true}
-        faqItems={[
-          {
-            question: "What areas in Laredo do you serve?",
-            answer: "We serve all neighborhoods in Laredo including North Laredo, South Laredo, Downtown, and Del Mar."
-          },
-          {
-            question: "How can I schedule a property viewing?",
-            answer: "You can schedule a viewing directly through our website by visiting the property listing page and clicking the 'Schedule Viewing' button, or by contacting us at (956) 324-6714."
-          },
-          {
-            question: "Do you handle commercial properties?",
-            answer: "Yes, Ohana Realty offers a full range of commercial real estate services including sales, leasing, and property management."
-          }
-        ]}
-      />
+      {/* SEO Dashboard has been moved to a separate admin route */}
       
       {/* Sitemaps are now generated server-side */}
       
@@ -466,6 +440,18 @@ function App() {
                             <ScrollToTop />
                             <ErrorBoundary>
                               <SimpleVideo />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/admin/seo">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <SEODashboard />
                             </ErrorBoundary>
                           </>
                         );
