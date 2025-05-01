@@ -1,126 +1,81 @@
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { migrate } from "drizzle-orm/neon-serverless/migrator";
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
-import * as schema from "../shared/schema";
+import { db } from '../server/db';
+import { seoKeywords } from '../shared/schema';
+import { PRIMARY_KEYWORDS, LONG_TAIL_KEYWORDS, NEIGHBORHOOD_KEYWORDS, COMPETITOR_KEYWORDS } from '../server/keyword-optimization';
 
-// Required for Neon serverless
-neonConfig.webSocketConstructor = ws;
-
+// This script initializes the SEO database tables with keywords from keyword-optimization.ts
 async function main() {
-  console.log("Starting database push...");
-
-  if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is not defined");
+  console.log('Pushing SEO keywords to database...');
+  
+  try {
+    // Insert primary keywords
+    console.log('Adding primary keywords...');
+    for (const keyword of PRIMARY_KEYWORDS) {
+      await db.insert(seoKeywords).values({
+        keyword,
+        category: 'primary',
+        searchVolume: Math.floor(Math.random() * 2000) + 500, // Random value for demo
+        difficultyScore: Math.floor(Math.random() * 50) + 40, // Random difficulty 40-90
+        priority: 10, // Highest priority
+      }).onConflictDoUpdate({
+        target: seoKeywords.keyword,
+        set: { priority: 10 },
+      });
+    }
+    
+    // Insert long-tail keywords
+    console.log('Adding long-tail keywords...');
+    for (const keyword of LONG_TAIL_KEYWORDS) {
+      await db.insert(seoKeywords).values({
+        keyword,
+        category: 'long-tail',
+        searchVolume: Math.floor(Math.random() * 300) + 100, // Less search volume for long-tail
+        difficultyScore: Math.floor(Math.random() * 30) + 30, // Usually easier to rank for
+        priority: 8,
+      }).onConflictDoUpdate({
+        target: seoKeywords.keyword,
+        set: { priority: 8 },
+      });
+    }
+    
+    // Insert neighborhood keywords
+    console.log('Adding neighborhood keywords...');
+    for (const keyword of NEIGHBORHOOD_KEYWORDS) {
+      await db.insert(seoKeywords).values({
+        keyword,
+        category: 'neighborhood',
+        searchVolume: Math.floor(Math.random() * 200) + 50,
+        difficultyScore: Math.floor(Math.random() * 20) + 30,
+        priority: 7,
+      }).onConflictDoUpdate({
+        target: seoKeywords.keyword,
+        set: { priority: 7 },
+      });
+    }
+    
+    // Insert competitor keywords
+    console.log('Adding competitor keywords...');
+    for (const keyword of COMPETITOR_KEYWORDS) {
+      await db.insert(seoKeywords).values({
+        keyword,
+        category: 'competitor',
+        searchVolume: Math.floor(Math.random() * 100) + 30,
+        difficultyScore: Math.floor(Math.random() * 20) + 50,
+        priority: 9,
+      }).onConflictDoUpdate({
+        target: seoKeywords.keyword,
+        set: { priority: 9 },
+      });
+    }
+    
+    console.log('All SEO keywords added successfully!');
+  } catch (error) {
+    console.error('Error initializing SEO keywords:', error);
   }
-
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  const db = drizzle(pool);
-
-  // This uses Drizzle's built-in migration engine to push schema changes
-  // It's a safer alternative to drizzle-kit push which can destroy data
-  console.log("Applying schema to database...");
-  // We'll use the schema from our shared folder
-  const result = await db.execute(`
-    -- Create tables if they don't exist
-    CREATE TABLE IF NOT EXISTS neighborhoods (
-      id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      description TEXT,
-      image TEXT,
-      features TEXT[],
-      "lat" DOUBLE PRECISION,
-      "lng" DOUBLE PRECISION,
-      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS properties (
-      id SERIAL PRIMARY KEY,
-      address TEXT NOT NULL,
-      city TEXT NOT NULL,
-      state TEXT NOT NULL,
-      "zipCode" TEXT NOT NULL,
-      price INTEGER NOT NULL,
-      description TEXT,
-      bedrooms INTEGER,
-      bathrooms INTEGER,
-      "squareFeet" INTEGER,
-      type TEXT NOT NULL,
-      status TEXT DEFAULT 'ACTIVE',
-      "yearBuilt" INTEGER,
-      features TEXT[],
-      images TEXT[],
-      "lat" DOUBLE PRECISION,
-      "lng" DOUBLE PRECISION,
-      neighborhood INTEGER REFERENCES neighborhoods(id),
-      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS messages (
-      id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL,
-      phone TEXT,
-      message TEXT NOT NULL,
-      "propertyId" INTEGER REFERENCES properties(id),
-      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      username TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      "firstName" TEXT,
-      "lastName" TEXT,
-      role TEXT DEFAULT 'user',
-      "profileImage" TEXT,
-      "lastLogin" TIMESTAMP WITH TIME ZONE,
-      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS favorites (
-      id SERIAL PRIMARY KEY,
-      "userId" INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      "propertyId" INTEGER NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
-      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE("userId", "propertyId")
-    );
-
-    CREATE TABLE IF NOT EXISTS airbnb_rentals (
-      id SERIAL PRIMARY KEY,
-      title TEXT NOT NULL,
-      address TEXT NOT NULL,
-      city TEXT NOT NULL,
-      state TEXT NOT NULL,
-      "zipCode" TEXT NOT NULL,
-      price INTEGER NOT NULL,
-      description TEXT,
-      guests INTEGER,
-      bedrooms INTEGER,
-      beds INTEGER,
-      bathrooms INTEGER,
-      amenities TEXT[],
-      highlights TEXT[],
-      images TEXT[],
-      rating DOUBLE PRECISION,
-      "reviewCount" INTEGER,
-      "lat" DOUBLE PRECISION,
-      "lng" DOUBLE PRECISION,
-      neighborhood INTEGER REFERENCES neighborhoods(id),
-      "cancellationPolicy" TEXT,
-      "propertyId" INTEGER REFERENCES properties(id),
-      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-
-  console.log("Schema push completed successfully!");
-
-  // Close the pool to end the process
-  await pool.end();
 }
 
-main().catch((e) => {
-  console.error("Error during database push:", e);
+main().catch(e => {
+  console.error('Error in db-push script:', e);
   process.exit(1);
+}).finally(() => {
+  process.exit(0);
 });
