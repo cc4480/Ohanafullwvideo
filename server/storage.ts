@@ -125,8 +125,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
-    const [property] = await db.select().from(properties).where(eq(properties.id, id));
-    return property || undefined;
+    try {
+      // Using raw SQL to avoid column name issues
+      const result = await db.execute(sql`SELECT * FROM properties WHERE id = ${id}`);
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      return result.rows[0] as Property;
+    } catch (error) {
+      console.error("Property fetch error:", error);
+      throw error;
+    }
   }
 
   async getPropertiesByType(type: string): Promise<Property[]> {
@@ -357,8 +366,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNeighborhood(id: number): Promise<Neighborhood | undefined> {
-    const [neighborhood] = await db.select().from(neighborhoods).where(eq(neighborhoods.id, id));
-    return neighborhood || undefined;
+    try {
+      // Using raw SQL to avoid column name issues
+      const result = await db.execute(sql`SELECT * FROM neighborhoods WHERE id = ${id}`);
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      return result.rows[0] as Neighborhood;
+    } catch (error) {
+      console.error("Neighborhood fetch error:", error);
+      throw error;
+    }
   }
   
   /**
@@ -538,12 +556,17 @@ export class DatabaseStorage implements IStorage {
   
   // Get a single Airbnb rental by ID
   async getAirbnbRental(id: number): Promise<AirbnbRental | undefined> {
-    const [rental] = await db
-      .select()
-      .from(airbnbRentals)
-      .where(eq(airbnbRentals.id, id));
-    
-    return rental || undefined;
+    try {
+      // Using raw SQL to avoid column name issues
+      const result = await db.execute(sql`SELECT * FROM airbnb_rentals WHERE id = ${id}`);
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      return result.rows[0] as AirbnbRental;
+    } catch (error) {
+      console.error("Airbnb rental fetch error:", error);
+      throw error;
+    }
   }
   
   // Get featured Airbnb rentals
