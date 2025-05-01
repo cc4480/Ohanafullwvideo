@@ -84,6 +84,28 @@ export function OhanaVideoPlayer({
   useEffect(() => {
     const handleResize = () => {
       setDeviceSettings(getVideoDisplaySettings());
+      
+      // Re-evaluate the video source on resize (e.g., device orientation change)
+      if (videoRef.current && videoRef.current.src.includes('/api/video/ohana')) {
+        const settings = getVideoDisplaySettings();
+        const deviceType = getDeviceType();
+        const devicePerformance = getDevicePerformance();
+        
+        // Don't change source during active playback to avoid interruption
+        if (!videoRef.current.paused) return;
+        
+        console.log(`Device resize detected: ${deviceType} with ${devicePerformance} performance`);
+        
+        // Update video source to match new device orientation/size
+        if (devicePerformance === 'low' || 
+            (devicePerformance === 'medium' && (deviceType === 'mobile' || deviceType === 'tablet'))) {
+          if (!videoRef.current.src.includes('/mobile')) {
+            console.log('Switching to mobile-optimized endpoint due to device resize');
+            videoRef.current.src = '/api/video/ohana/mobile';
+            videoRef.current.load();
+          }
+        }
+      }
     };
     
     window.addEventListener('resize', handleResize);
@@ -181,10 +203,21 @@ export function OhanaVideoPlayer({
   useEffect(() => {
     // Get the optimal video settings for this device
     const settings = getVideoDisplaySettings();
+    const deviceType = getDeviceType();
+    const devicePerformance = getDevicePerformance();
     
     if (videoRef.current && src.includes('/api/video/ohana')) {
       // Determine optimal video endpoint based on device performance
       let optimalVideoSrc = settings.videoEndpoint;
+      
+      // Direct mapping based on device capabilities
+      if (devicePerformance === 'low' || (devicePerformance === 'medium' && (deviceType === 'mobile' || deviceType === 'tablet'))) {
+        // Always use mobile endpoint for lower-powered devices
+        optimalVideoSrc = '/api/video/ohana/mobile';
+      } else if (devicePerformance === 'high') {
+        // High-performance devices get the high-performance endpoint
+        optimalVideoSrc = '/api/video/ohana/highperf';
+      }
       
       // If we received specific cached URLs from the WebSocket, consider those too
       if (optimizedConfig?.cachedUrls?.length > 0) {
@@ -201,7 +234,7 @@ export function OhanaVideoPlayer({
         }
       }
       
-      console.log(`Using ${settings.playbackQuality} quality video endpoint for device type ${getDeviceType()} with performance ${getDevicePerformance()}:`, optimalVideoSrc);
+      console.log(`Using ${settings.playbackQuality} quality video endpoint for device type ${deviceType} with performance ${devicePerformance}:`, optimalVideoSrc);
       videoRef.current.src = optimalVideoSrc;
     }
   }, [src, optimizedConfig]);
@@ -248,10 +281,45 @@ export function OhanaVideoPlayer({
     };
     
     const handleError = (e: any) => {
-      setError(`Error loading video: ${e}`);
+      // Extract useful information from the error event
+      const videoElement = e.target as HTMLVideoElement;
+      const errorCode = videoElement.error ? videoElement.error.code : 'unknown';
+      const errorMessage = videoElement.error ? videoElement.error.message : 'Unknown error';
+      
+      // Map error codes to user-friendly messages
+      let userMessage = 'Error loading video';
+      switch (errorCode) {
+        case 1: // MEDIA_ERR_ABORTED
+          userMessage = 'Video playback was aborted';
+          break;
+        case 2: // MEDIA_ERR_NETWORK
+          userMessage = 'A network error occurred. Please check your connection.';
+          break;
+        case 3: // MEDIA_ERR_DECODE
+          userMessage = 'Video format error. Trying mobile-optimized version...';
+          // For decode errors, try mobile version if we're not already using it
+          if (videoRef.current && !videoRef.current.src.includes('/mobile')) {
+            console.log('Switching to mobile-optimized endpoint due to decode error');
+            videoRef.current.src = '/api/video/ohana/mobile';
+            videoRef.current.load();
+            return; // Don't show error as we're trying an alternative
+          }
+          break;
+        case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+          userMessage = 'Video format not supported by your browser';
+          break;
+        default:
+          userMessage = `Video playback error (${errorMessage})`;
+      }
+      
+      setError(userMessage);
       setIsPlaying(false);
       onError?.(e);
-      console.error('OhanaVideoPlayer error:', e);
+      console.error('OhanaVideoPlayer error:', {
+        code: errorCode,
+        message: errorMessage,
+        event: e
+      });
     };
     
     // Throttle time update to reduce unnecessary re-renders
@@ -491,6 +559,18 @@ export function OhanaVideoPlayer({
                   video.muted = true;
                   setIsMuted(true);
                   
+                  // Try mobile-optimized version regardless of current endpoint
+                  // This gives us a better chance of success on constrained devices
+                  const devicePerformance = getDevicePerformance();
+                  if (devicePerformance === 'low' || devicePerformance === 'medium') {
+                    console.log('Retry: Switching to mobile-optimized endpoint');
+                    video.src = '/api/video/ohana/mobile';
+                  } else if (!video.src.includes('/mobile') && !video.src.includes('/highperf')) {
+                    // If we're on the default endpoint, try mobile as a fallback
+                    console.log('Retry: Trying mobile endpoint as fallback');
+                    video.src = '/api/video/ohana/mobile';
+                  }
+                  
                   // Reload and attempt to play
                   video.load();
                   
@@ -499,6 +579,18 @@ export function OhanaVideoPlayer({
                     video.play().catch(e => {
                       console.error('Retry failed:', e);
                       // Don't update error state here to avoid an error loop
+                      
+                      // Final fallback: try the general endpoint
+                      if (video.src.includes('/mobile') || video.src.includes('/highperf')) {
+                        console.log('Final fallback: trying general endpoint');
+                        video.src = '/api/video/ohana';
+                        video.load();
+                        setTimeout(() => {
+                          video.play().catch(finalErr => {
+                            console.error('Final fallback failed:', finalErr);
+                          });
+                        }, 300);
+                      }
                     });
                   }, 300);
                 } catch (err) {
