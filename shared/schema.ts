@@ -213,6 +213,66 @@ export const insertSeoBacklinkSchema = createInsertSchema(seoBacklinks).omit({ i
 export type InsertSeoBacklink = z.infer<typeof insertSeoBacklinkSchema>;
 export type SeoBacklink = typeof seoBacklinks.$inferSelect;
 
+// Backlink organizations tracking table (for outreach purposes)
+export const backlinkOrganizations = pgTable('backlink_organizations', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  website: text('website').notNull(),
+  category: text('category').notNull(), // chamber, news, education, business, local, etc.
+  contactEmail: text('contact_email'),
+  contactPhone: text('contact_phone'),
+  contactPerson: text('contact_person'),
+  notes: text('notes'),
+  status: text('status').default('pending').notNull(), // pending, contacted, acquired, rejected
+  priority: integer('priority').default(5).notNull(), // 1-10 scale
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Backlink organization schema
+export const insertBacklinkOrganizationSchema = createInsertSchema(backlinkOrganizations).omit({ id: true });
+export type InsertBacklinkOrganization = z.infer<typeof insertBacklinkOrganizationSchema>;
+export type BacklinkOrganization = typeof backlinkOrganizations.$inferSelect;
+
+// SEO strategy table (for managing overall Laredo ranking strategies)
+export const seoStrategies = pgTable('seo_strategies', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  targetKeywords: jsonb('target_keywords').$type<string[]>(),
+  description: text('description').notNull(),
+  status: text('status').default('active').notNull(),
+  startDate: timestamp('start_date').defaultNow().notNull(),
+  endDate: timestamp('end_date'),
+  budget: integer('budget'),
+  progress: integer('progress').default(0), // 0-100
+  notes: text('notes'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// SEO strategy schema
+export const insertSeoStrategySchema = createInsertSchema(seoStrategies).omit({ id: true });
+export type InsertSeoStrategy = z.infer<typeof insertSeoStrategySchema>;
+export type SeoStrategy = typeof seoStrategies.$inferSelect;
+
+// Schema optimization table (for Schema.org markup management)
+export const schemaMarkups = pgTable('schema_markups', {
+  id: serial('id').primaryKey(),
+  pageUrl: text('page_url').notNull(),
+  pageType: text('page_type').notNull(), // homepage, property, neighborhood, about, contact
+  markupType: text('markup_type').notNull(), // LocalBusiness, RealEstateListing, Place, etc.
+  jsonData: jsonb('json_data').notNull(),
+  active: boolean('active').default(true).notNull(),
+  lastTested: timestamp('last_tested'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Schema markup schema
+export const insertSchemaMarkupSchema = createInsertSchema(schemaMarkups).omit({ id: true });
+export type InsertSchemaMarkup = z.infer<typeof insertSchemaMarkupSchema>;
+export type SchemaMarkup = typeof schemaMarkups.$inferSelect;
+
 // Define database relations
 export const usersRelations = relations(users, ({ many }) => ({
   favorites: many(favorites),
@@ -276,4 +336,16 @@ export const seoRankingsRelations = relations(seoRankings, ({ one }) => ({
     fields: [seoRankings.keywordId],
     references: [seoKeywords.id],
   }),
+}));
+
+export const backlinkOrganizationsRelations = relations(backlinkOrganizations, ({ }) => ({
+  // Add relations when needed
+}));
+
+export const seoStrategiesRelations = relations(seoStrategies, ({ }) => ({
+  // Add relations when needed
+}));
+
+export const schemaMarkupsRelations = relations(schemaMarkups, ({ }) => ({
+  // Add relations when needed
 }));
