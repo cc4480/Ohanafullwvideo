@@ -125,9 +125,9 @@ export default function AboutRealtor() {
               <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full border-2 border-dashed border-secondary/30 -z-10"></div>
               
               {/* Main image with clear styling - no blur effects */}
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/10 group" style={{ minHeight: '200px' }}>
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/10 group" style={{ minHeight: '100px', maxHeight: '150px', maxWidth: '200px' }}>
                 {/* Dark overlay ONLY at the bottom to ensure text visibility but keep image clear */}
-                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
                 
                 {/* Removed animated hover overlay for clarity */}
                 
@@ -135,8 +135,8 @@ export default function AboutRealtor() {
                   src={valentinCuellarImg} 
                   alt="Valentin Cuellar - Ohana Realty" 
                   className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                  width={200}
-                  height={250}
+                  width={100}
+                  height={125}
                   style={{ 
                     imageRendering: 'crisp-edges',
                     objectPosition: 'center top'
@@ -144,12 +144,12 @@ export default function AboutRealtor() {
                 />
                 
                 {/* Name tag overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+                <div className="absolute bottom-0 left-0 right-0 p-2 z-20">
                   <div className="flex items-center">
-                    <div className="w-1 h-12 bg-secondary mr-3 rounded-full"></div>
+                    <div className="w-1 h-6 bg-secondary mr-2 rounded-full"></div>
                     <div>
-                      <p className="text-white/80 text-sm">Your Trusted Realtor</p>
-                      <h3 className="text-white text-2xl font-serif font-bold">Valentin Cuellar</h3>
+                      <p className="text-white/80 text-xs">Your Trusted Realtor</p>
+                      <h3 className="text-white text-sm font-serif font-bold">Valentin Cuellar</h3>
                     </div>
                   </div>
                 </div>
