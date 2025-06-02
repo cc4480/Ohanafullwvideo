@@ -4,7 +4,7 @@ import PropertyCard from "@/components/properties/PropertyCard";
 import { useFeaturedProperties } from "@/hooks/useProperties";
 
 export default function FeaturedProperties() {
-  const { data: properties, isLoading } = useFeaturedProperties(4);
+  const { data: properties, isLoading, error, refetch } = useFeaturedProperties(4);
   
   // Create placeholder data for loading state
   const loadingPlaceholders = Array(4).fill(0).map((_, index) => ({
@@ -34,7 +34,25 @@ export default function FeaturedProperties() {
         
         {/* Enhanced responsive grid with smooth animations */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-          {isLoading ? (
+          {error ? (
+            <div className="col-span-full text-center py-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/20 mb-4">
+                <i className="bx bx-error text-2xl text-red-500"></i>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Database Connection Issue
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                The database is currently sleeping. This happens after 5 minutes of inactivity.
+              </p>
+              <button
+                onClick={() => refetch()}
+                className="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+              >
+                Wake Up Database
+              </button>
+            </div>
+          ) : isLoading ? (
             loadingPlaceholders.map((placeholder, index) => (
               <div 
                 key={placeholder.id} 
