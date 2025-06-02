@@ -125,7 +125,7 @@ export default function AboutRealtor() {
               <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full border-2 border-dashed border-secondary/30 -z-10"></div>
               
               {/* Main image with clear styling - no blur effects */}
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/10 group" style={{ minHeight: '400px' }}>
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/10 group" style={{ minHeight: '200px' }}>
                 {/* Dark overlay ONLY at the bottom to ensure text visibility but keep image clear */}
                 <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
                 
@@ -135,8 +135,8 @@ export default function AboutRealtor() {
                   src={valentinCuellarImg} 
                   alt="Valentin Cuellar - Ohana Realty" 
                   className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                  width={400}
-                  height={500}
+                  width={200}
+                  height={250}
                   style={{ 
                     imageRendering: 'crisp-edges',
                     objectPosition: 'center top'
