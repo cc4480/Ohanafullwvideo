@@ -2,13 +2,31 @@ import { useQuery } from "@tanstack/react-query";
 import { Property } from "@shared/schema";
 
 export function useProperties() {
-  return useQuery<Property[]>({
-    queryKey: ['/api/properties'],
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
-  });
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(false); // Start with false for instant display
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        // Don't show loading state for instant UX
+        const response = await fetch('/api/properties');
+        if (!response.ok) {
+          throw new Error('Failed to fetch properties');
+        }
+        const data = await response.json();
+        setProperties(data);
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch properties');
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  return { properties, loading, error };
 }
 
 export function useProperty(id: number) {

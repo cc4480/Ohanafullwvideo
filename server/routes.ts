@@ -940,7 +940,13 @@ Crawl-delay: 1
           'Content-Length': initialChunkSize,
           'Accept-Ranges': 'bytes',
           'Content-Type': 'video/mp4',
-          'Cache-Control': 'public, max-age=86400', // 24 hour cache
+          // Aggressive cache headers for instant playback
+          'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800, immutable',
+          'Expires': new Date(Date.now() + 86400000).toUTCString(),
+          'ETag': `"${videoPath}-${stat.mtime.getTime()}"`,
+          'Last-Modified': stat.mtime.toUTCString(),
+          'X-Content-Type-Options': 'nosniff',
+          'Access-Control-Max-Age': '86400',
           'Connection': 'keep-alive',
           'X-Content-Type-Options': 'nosniff'
         };

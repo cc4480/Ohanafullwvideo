@@ -190,22 +190,14 @@ function App() {
       }
     });
     
-    // Initialize app loading state
+    // Initialize app loading state with instant loading
     const markAppAsLoaded = () => {
-      // Wait for critical resources to load
-      Promise.all([
-        document.fonts.ready, 
-        // Add a small delay for better UX
-        new Promise(resolve => setTimeout(resolve, 800))
-      ])
-      .then(() => {
-        // Mark app as loaded
-        setIsAppLoaded(true);
-      })
-      .catch(error => {
-        console.error('Error during app loading:', error);
-        // Still mark as loaded if there's an error to prevent getting stuck
-        setIsAppLoaded(true);
+      // Mark app as loaded immediately for instant UX
+      setIsAppLoaded(true);
+      
+      // Load fonts in background without blocking UI
+      document.fonts.ready.catch(error => {
+        console.warn('Font loading error (non-blocking):', error);
       });
     };
     

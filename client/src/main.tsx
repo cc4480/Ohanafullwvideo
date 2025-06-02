@@ -34,19 +34,19 @@ const unregisterServiceWorkers = () => {
 const applyPerformanceOptimizations = () => {
   // Enable smooth scrolling for browsers that support it
   document.documentElement.style.scrollBehavior = "smooth";
-  
+
   // Basic font optimization
   const fontLink = document.createElement('link');
   fontLink.setAttribute('rel', 'preconnect');
   fontLink.setAttribute('href', 'https://fonts.googleapis.com');
   document.head.appendChild(fontLink);
-  
+
   // Just load the fonts directly to avoid any complicated loading strategies
   const fontStyleLink = document.createElement('link');
   fontStyleLink.setAttribute('rel', 'stylesheet');
   fontStyleLink.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
   document.head.appendChild(fontStyleLink);
-  
+
   // Skip other optimizations that might be causing issues
 };
 
@@ -54,14 +54,15 @@ const applyPerformanceOptimizations = () => {
 initializeTheme();
 applyPerformanceOptimizations();
 unregisterServiceWorkers();
+applyInstantOptimizations();
 
-// Create root with optimized rendering settings
-const root = createRoot(document.getElementById("root")!, {
-  // Use concurrent features for improved performance
-  onRecoverableError: (error) => {
-    console.warn('Recoverable rendering error:', error);
-  },
-});
+const container = document.getElementById("root");
 
-// Mount the app
+if (!container) {
+  throw new Error("Root element not found");
+}
+
+const root = createRoot(container);
+
+// Render immediately
 root.render(<App />);

@@ -56,20 +56,21 @@ export interface IStorage {
 }
 
 // Memory-based storage implementation
-export class MemoryStorage implements IStorage {
+class MemoryStorage {
   private properties: Property[] = [];
   private neighborhoods: Neighborhood[] = [];
   private users: User[] = [];
   private messages: Message[] = [];
-  private favorites: Favorite[] = [];
-  private airbnbRentals: AirbnbRental[] = [];
-  private nextId = 1;
+  private isInitialized = false;
+  private _propertiesCache: Map<number, Property> = new Map();
+  private _searchCache: Map<string, Property[]> = new Map();
 
   constructor() {
-    this.initializeData();
+    // Initialize data immediately for instant access
+    this.initializeDataSync();
   }
 
-  private initializeData() {
+  private initializeDataSync() {
     // Initialize neighborhoods first
     this.neighborhoods = [
       {
@@ -198,7 +199,7 @@ export class MemoryStorage implements IStorage {
         seoMetaDescription: 'Beautiful 3-bedroom home with modern kitchen and large backyard in Del Mar neighborhood',
         seoKeywords: 'Laredo house for sale, Don Tomas Loop, 3 bedroom home'
       },
-      
+
       {
         id: 2,
         type: 'house',
@@ -336,8 +337,24 @@ export class MemoryStorage implements IStorage {
   }
 
   async getProperties(): Promise<Property[]> {
-    console.log("Memory storage: Returning", this.properties.length, "properties");
-    return [...this.properties];
+    if (!this.isInitialized) {
+      this.initializeDataSync(); // Sync initialization for instant response
+    }
+    console.log(`Memory storage: Returning ${this.properties.length} properties (cached)`);
+    return this.properties;
+  }
+
+  // Add instant property lookup by ID
+  async getPropertyById(id: number): Promise<Property | null> {
+    if (this._propertiesCache.has(id)) {
+      return this._propertiesCache.get(id) || null;
+    }
+
+    const property = this.properties.find(p => p.id === id);
+    if (property) {
+      this._propertiesCache.set(id, property);
+    }
+    return property || null;
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
