@@ -20,3 +20,9 @@ export function usePropertiesByType(type: string) {
     enabled: !!type,
   });
 }
+
+export function useFeaturedProperties(limit?: number) {
+  return useQuery<Property[]>({
+    queryKey: ['/api/properties/featured', limit],
+  });
+}

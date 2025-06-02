@@ -1,13 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { Property } from "@shared/schema";
+import { useFeaturedProperties } from "@/hooks/useProperties";
 
 export default function FeaturedProperties() {
-  const { data: properties, isLoading } = useQuery<Property[]>({
-    queryKey: ['/api/properties'],
-  });
+  const { data: properties, isLoading } = useFeaturedProperties(4);
   
   // Create placeholder data for loading state
   const loadingPlaceholders = Array(4).fill(0).map((_, index) => ({
