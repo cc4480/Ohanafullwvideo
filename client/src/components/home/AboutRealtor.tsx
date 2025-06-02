@@ -44,7 +44,7 @@ export default function AboutRealtor() {
           <div className="order-2 lg:order-1 animate-fade-in" style={{ animationDelay: "0.3s" }}>
             <div className="bg-gradient-to-r from-primary/20 to-transparent w-24 h-1 rounded-full mb-4"></div>
             <span className="text-sm font-medium text-secondary uppercase tracking-wider">Meet Your Realtor</span>
-            <h2 className={`font-serif text-3xl md:text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mt-2 mb-6`}>
+            <h2 className={`font-serif text-3xl md:text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} mt-2 mb-10`}>
               Valentin Cuellar
             </h2>
             <p className={`${isDarkMode ? 'text-slate-300' : 'text-muted-foreground'} mb-6 leading-relaxed`}>
