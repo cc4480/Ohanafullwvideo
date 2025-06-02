@@ -98,6 +98,11 @@ export default function NeighborhoodCard({ neighborhood }: NeighborhoodCardProps
             className="w-full h-full object-cover group-hover:scale-105 transition duration-500 transform-gpu"
             loading="lazy"
             style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
+            onError={(e) => {
+              // Fallback for downtown Laredo image
+              (e.target as HTMLImageElement).src = "https://placehold.co/600x400/8B5A2B/white?text=Downtown+Laredo";
+              (e.target as HTMLImageElement).alt = "Downtown Laredo - Historic District";
+            }}
           />
         ) : neighborhood.name === "Del Mar" ? (
           <img 
