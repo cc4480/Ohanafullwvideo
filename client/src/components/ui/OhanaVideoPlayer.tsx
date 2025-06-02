@@ -39,7 +39,7 @@ export function OhanaVideoPlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isControlsVisible, setIsControlsVisible] = useState(false);
-  const [objectFit, setObjectFit] = useState<'contain' | 'cover' | 'fill'>('contain');
+  const [objectFit, setObjectFit] = useState<'contain' | 'cover' | 'fill'>('cover');
   const [videoEndpoint, setVideoEndpoint] = useState('/api/video/ohana');
   const [playbackQuality, setPlaybackQuality] = useState('standard');
   const [deviceType, setDeviceType] = useState('desktop');
