@@ -10,7 +10,7 @@ import { BreadcrumbStructuredData, FAQStructuredData } from "@/components/Struct
 
 export default function Neighborhoods() {
   const [activeTab, setActiveTab] = useState<string>("all");
-  
+
   const { data: neighborhoods, isLoading } = useQuery<Neighborhood[]>({
     queryKey: ["/api/neighborhoods"],
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -73,7 +73,7 @@ export default function Neighborhoods() {
         canonicalUrl="/neighborhoods"
         ogImage={`${websiteUrl}/og-image-neighborhoods.jpg`}
       />
-      
+
       {/* Breadcrumb Structured Data */}
       <BreadcrumbStructuredData
         items={[
@@ -87,7 +87,7 @@ export default function Neighborhoods() {
           }
         ]}
       />
-      
+
       {/* FAQ Structured Data */}
       <FAQStructuredData
         questions={[...neighborhoodFAQs, ...generalFAQs]}
@@ -124,7 +124,7 @@ export default function Neighborhoods() {
                 ))}
               </div>
             </TabsContent>
-            
+
             <TabsContent value="family">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {neighborhoods
@@ -137,7 +137,7 @@ export default function Neighborhoods() {
                   ))}
               </div>
             </TabsContent>
-            
+
             <TabsContent value="historic">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {neighborhoods
@@ -150,7 +150,7 @@ export default function Neighborhoods() {
                   ))}
               </div>
             </TabsContent>
-            
+
             <TabsContent value="affordable">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {neighborhoods
@@ -162,7 +162,7 @@ export default function Neighborhoods() {
                   ))}
               </div>
             </TabsContent>
-            
+
             <TabsContent value="modern">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {neighborhoods
@@ -175,7 +175,7 @@ export default function Neighborhoods() {
                   ))}
               </div>
             </TabsContent>
-            
+
             <TabsContent value="cultural">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {neighborhoods
@@ -255,6 +255,8 @@ export default function Neighborhoods() {
             </Badge>
           </div>
         </div>
+
+        {/* NeighborhoodInsights section removed for cleaner website */}
 
         <div className="mt-16">
           <h2 className="text-2xl font-serif font-semibold mb-6">Why Choose Laredo?</h2>
