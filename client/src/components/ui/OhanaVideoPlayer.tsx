@@ -179,55 +179,42 @@ export function OhanaVideoPlayer({
     };
   }, []);
 
-  // Connect to WebSocket for real-time video performance optimization
+  // Send performance metrics via WebSocket for server-side optimization
   useEffect(() => {
-    // Only enable WebSocket for high-performance devices
-    if (!isHighPerformanceDevice()) return;
-
-    // Create WebSocket connection for performance monitoring
     try {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}/ws`;
       const socket = new WebSocket(wsUrl);
-      socketRef.current = socket;
+      let metricsInterval: NodeJS.Timeout;
 
       socket.onopen = () => {
         console.log('WebSocket connected for video performance monitoring');
 
-        // Start sending performance metrics
-        const metricsInterval = setInterval(() => {
-          if (socket.readyState === WebSocket.OPEN && videoRef.current) {
-            try {
-              const metrics = {
-                bufferLevel: videoRef.current.buffered.length > 0 ? 
-                  videoRef.current.buffered.end(videoRef.current.buffered.length - 1) - videoRef.current.currentTime : 0,
-                playbackRate: videoRef.current.playbackRate,
-                readyState: videoRef.current.readyState,
-                memoryUsage: (performance as any).memory?.usedJSHeapSize ? 
-                  ((performance as any).memory.usedJSHeapSize / (performance as any).memory.jsHeapSizeLimit) * 100 : 50,
-                timestamp: Date.now()
-              };
+        // Send metrics every 5 seconds instead of constantly
+        metricsInterval = setInterval(() => {
+          if (videoRef.current && socket.readyState === WebSocket.OPEN) {
+            const video = videoRef.current;
+            const metrics = {
+              bufferLevel: video.buffered.length > 0 ? 
+                video.buffered.end(video.buffered.length - 1) - video.currentTime : 0,
+              playbackRate: video.playbackRate,
+              readyState: video.readyState,
+              networkState: video.networkState,
+              currentTime: video.currentTime,
+              duration: video.duration || 0
+            };
 
-              if (socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
-                  type: 'video_metrics',
-                  metrics
-                }));
-              }
-            } catch (err) {
-              console.error('Error sending metrics:', err);
-            }
+            socket.send(JSON.stringify({
+              type: 'video_metrics',
+              metrics
+            }));
           }
-        }, 5000); // Send metrics every 5 seconds
-
-        return () => clearInterval(metricsInterval);
+        }, 5000); // Send every 5 seconds instead of constantly
       };
 
       socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('Received WebSocket message:', data);
-
           if (data.type === 'video_config') {
             setOptimizedConfig(data.config);
             console.log('Received optimized video configuration:', data.config);
@@ -246,9 +233,15 @@ export function OhanaVideoPlayer({
 
       socket.onclose = () => {
         console.log('WebSocket connection closed');
+        if (metricsInterval) {
+          clearInterval(metricsInterval);
+        }
       };
 
       return () => {
+        if (metricsInterval) {
+          clearInterval(metricsInterval);
+        }
         if (socket && socket.readyState !== WebSocket.CLOSED) {
           socket.close();
         }

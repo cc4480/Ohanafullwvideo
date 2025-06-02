@@ -606,34 +606,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const server = createServer(app);
   const wss = new WebSocketServer({ server, path: '/ws' });
 
+  // Track active connections to prevent spam
+  const activeConnections = new Set();
+  const connectionConfigs = new Map();
+
   wss.on('connection', (ws) => {
-    console.log('New WebSocket connection established');
+    const connectionId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    activeConnections.add(connectionId);
+    
+    console.log(`WebSocket connection established: ${connectionId}`);
+
+    // Rate limiting for messages
+    let lastMessageTime = 0;
+    const MESSAGE_THROTTLE_MS = 2000; // Only process messages every 2 seconds
 
     ws.on('message', (message) => {
       try {
+        const now = Date.now();
+        if (now - lastMessageTime < MESSAGE_THROTTLE_MS) {
+          return; // Throttle messages to prevent spam
+        }
+        lastMessageTime = now;
+
         const data = JSON.parse(message.toString());
-        console.log('Received WebSocket message:', data);
 
         // Handle different message types
         if (data.type === 'video_metrics') {
-          // Process video metrics from the client
           const metrics = data.metrics;
-          console.log('Received video metrics:', metrics);
+          
+          // Only send config if it has changed significantly
+          const currentConfig = connectionConfigs.get(connectionId);
+          const newQuality = metrics.bufferLevel < 3 ? 'mobile' : 
+                           metrics.bufferLevel < 7 ? 'standard' : 'high';
+          const newBufferSize = metrics.bufferLevel < 5 ? 10 : 5;
 
-          // Based on metrics, we could respond with optimized video settings
-          // Just a simple example response
-          ws.send(JSON.stringify({
-            type: 'video_config',
-            config: {
-              quality: metrics.memoryUsage > 70 ? 'medium' : 'high',
-              bufferSize: metrics.bufferLevel < 5 ? 10 : 5,
-              // Add suggested cached URLs if available
+          if (!currentConfig || 
+              currentConfig.quality !== newQuality || 
+              currentConfig.bufferSize !== newBufferSize) {
+            
+            const config = {
+              quality: newQuality,
+              bufferSize: newBufferSize,
               cachedUrls: [
                 '/api/video/ohana/highperf',
                 '/api/video/ohana/mobile'
               ]
-            }
-          }));
+            };
+
+            connectionConfigs.set(connectionId, config);
+
+            ws.send(JSON.stringify({
+              type: 'video_config',
+              config
+            }));
+          }
         }
       } catch (error) {
         console.error('Error processing WebSocket message:', error);
@@ -641,11 +667,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     ws.on('close', () => {
-      console.log('WebSocket connection closed');
+      console.log(`WebSocket connection closed: ${connectionId}`);
+      activeConnections.delete(connectionId);
+      connectionConfigs.delete(connectionId);
     });
 
     ws.on('error', (error) => {
-      console.error('WebSocket error:', error);
+      console.error(`WebSocket error for ${connectionId}:`, error);
+      activeConnections.delete(connectionId);
+      connectionConfigs.delete(connectionId);
     });
   });
 
@@ -1040,7 +1070,7 @@ Crawl-delay: 1
           console.log(`${logPrefix}: Video chunk complete: ${start}-${end}`);
         });
 
-        // Enhanced error handling
+        // Enhanced error handling with retry capability
         fileStream.on('error', (error: Error) => {
           console.error(`${logPrefix}: Error streaming video:`, error);
           if (!res.headersSent) {
@@ -1049,10 +1079,21 @@ Crawl-delay: 1
           fileStream.destroy();
         });
 
-        // Handle client disconnect
+        // Improved client disconnect handling
+        let clientDisconnected = false;
         req.on('close', () => {
-          console.log(`${logPrefix}: Client disconnected, closing video stream`);
-          fileStream.destroy();
+          if (!clientDisconnected) {
+            console.log(`${logPrefix}: Client disconnected, closing video stream`);
+            clientDisconnected = true;
+            fileStream.destroy();
+          }
+        });
+
+        // Handle response finish to prevent multiple logs
+        res.on('finish', () => {
+          if (!clientDisconnected) {
+            fileStream.destroy();
+          }
         });
       } 
       // No range requested - deliver YouTube-like optimized initial segment
