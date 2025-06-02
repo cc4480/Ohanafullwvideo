@@ -126,11 +126,6 @@ export default function AboutRealtor() {
               
               {/* Main image with clear styling - no blur effects */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/10 group" style={{ minHeight: '100px', maxHeight: '150px', maxWidth: '200px' }}>
-                {/* Dark overlay ONLY at the bottom to ensure text visibility but keep image clear */}
-                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
-                
-                {/* Removed animated hover overlay for clarity */}
-                
                 <img 
                   src={valentinCuellarImg} 
                   alt="Valentin Cuellar - Ohana Realty" 
@@ -142,15 +137,15 @@ export default function AboutRealtor() {
                     objectPosition: 'center top'
                   }}
                 />
-                
-                {/* Name tag overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-2 z-20">
-                  <div className="flex items-center">
-                    <div className="w-1 h-6 bg-secondary mr-2 rounded-full"></div>
-                    <div>
-                      <p className="text-white/80 text-xs">Your Trusted Realtor</p>
-                      <h3 className="text-white text-sm font-serif font-bold">Valentin Cuellar</h3>
-                    </div>
+              </div>
+              
+              {/* Name tag below image */}
+              <div className="mt-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="w-1 h-6 bg-secondary mr-2 rounded-full"></div>
+                  <div>
+                    <p className={`${isDarkMode ? 'text-slate-400' : 'text-muted-foreground'} text-xs`}>Your Trusted Realtor</p>
+                    <h3 className={`${isDarkMode ? 'text-white' : 'text-foreground'} text-sm font-serif font-bold`}>Valentin Cuellar</h3>
                   </div>
                 </div>
               </div>
