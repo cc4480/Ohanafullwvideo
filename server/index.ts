@@ -110,7 +110,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Initialize database with sample data
+  // Initialize database with sample data (only once)
   console.log('Initializing database with sample data...');
   try {
     await initializeSampleData();
@@ -165,4 +165,18 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
   });
-})();
+})().catch((error) => {
+  console.error('Server startup failed:', error);
+  process.exit(1);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
