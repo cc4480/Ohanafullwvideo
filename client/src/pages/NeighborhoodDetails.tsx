@@ -23,7 +23,8 @@ import {
 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import northLaredoImg from "../assets/north-laredo-industrial-park.png";
-import downtownLaredoImg from "../assets/downtown-laredo.png";
+// Using fallback image for downtown Laredo since the file doesn't exist
+const downtownLaredoImg = "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
 import delMarImg from "../assets/del-mar.png";
 import southLaredoImg from "../assets/south-laredo.png";
 import SEOHead from "@/components/SEOHead";
