@@ -8,8 +8,8 @@ packages = ["imagemagick", "jq"]
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["npm", "run", "build"]
-run = ["npm", "run", "start"]
+build = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "npm start"]
 
 [[ports]]
 localPort = 5000
@@ -41,3 +41,16 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Production Build"
+author = 40496650
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=production npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=production npm run start"

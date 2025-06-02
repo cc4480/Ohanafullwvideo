@@ -541,11 +541,15 @@ class MemoryStorage {
   }
 
   async getUserFavorites(userId: number): Promise<Property[]> {
-    const userFavorites = this.favorites.filter(f => f.userId === userId);
-    const favoriteProperties = userFavorites
-      .map(f => this.properties.find(p => p.id === f.propertyId))
-      .filter((p): p is Property => p !== undefined);
-    return favoriteProperties;
+    if (!this.users || this.users.length === 0) {
+      return [];
+    }
+
+    const favoriteIds = this.users
+      .filter((user) => user.id === userId)
+      .flatMap((user) => user.favoriteProperties || []);
+
+    return this.properties.filter((property) => favoriteIds.includes(property.id));
   }
 
   async isFavorite(userId: number, propertyId: number): Promise<boolean> {
