@@ -54,7 +54,6 @@ const applyPerformanceOptimizations = () => {
 initializeTheme();
 applyPerformanceOptimizations();
 unregisterServiceWorkers();
-applyInstantOptimizations();
 
 const container = document.getElementById("root");
 
