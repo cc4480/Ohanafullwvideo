@@ -18,7 +18,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
   }));
-  
+
   // Serve public directory with aggressively optimized caching for static content
   app.use('/static', express.static(path.join(process.cwd(), 'public'), {
     maxAge: 31536000000, // Cache for 1 year in milliseconds
@@ -27,7 +27,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
   }));
-  
+
   // Serve images directory directly to match database paths
   app.use('/images', express.static(path.join(process.cwd(), 'public/images'), {
     maxAge: 31536000000, // Cache for 1 year in milliseconds
@@ -37,7 +37,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }));
 
-  
+
   // Initialize database with sample data
   try {
     console.log("Initializing database with sample data...");
@@ -48,41 +48,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
   const apiRouter = express.Router();
 
-  // Get all properties
   apiRouter.get("/properties", async (req, res) => {
     try {
       const properties = await storage.getProperties();
-      res.json(properties);
+      res.json(properties || []);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch properties" });
+      console.error("Error fetching properties:", error);
+      res.status(500).json({ error: "Failed to fetch properties" });
     }
   });
 
-  // Get featured properties (top properties using database sorting)
   apiRouter.get("/properties/featured", async (req, res) => {
     try {
-      // Get the limit parameter if provided, default to 4 if not
-      let limit = 4;
-      if (req.query.limit) {
-        limit = parseInt(String(req.query.limit));
-        // Check if the parsed limit is a valid number
-        if (isNaN(limit) || limit <= 0) {
-          limit = 4; // Default to 4 if limit is invalid
-        }
-      }
-      
-      console.log(`Route handler requesting featured properties with limit: ${limit}`);
-      
-      // Use database-optimized method for fetching featured properties
-      const featuredProperties = await storage.getFeaturedProperties(limit);
-      
-      res.json(featuredProperties);
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      const properties = await (storage as any).getFeaturedProperties?.(limit) || await storage.getProperties();
+      const featuredProperties = properties.filter((p: any) => p.featured === true).slice(0, limit || 4);
+      res.json(featuredProperties || []);
     } catch (error) {
-      console.error("Featured properties error:", error);
-      res.status(500).json({ message: "Failed to fetch featured properties" });
+      console.error("Error fetching featured properties:", error);
+      res.status(500).json({ error: "Failed to fetch featured properties" });
     }
   });
-  
+
   // Search properties with filters
   apiRouter.get("/properties/search", async (req, res) => {
     try {
@@ -100,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         limit,
         offset
       } = req.query;
-      
+
       // Prepare filter object with correct types
       const filters: {
         type?: string;
@@ -116,48 +103,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
         limit?: number;
         offset?: number;
       } = {};
-      
+
       // Add only defined filters with proper type conversion
       if (type) filters.type = String(type);
-      
+
       if (minPrice) {
         const price = Number(minPrice);
         if (!isNaN(price) && price >= 0) {
           filters.minPrice = price;
         }
       }
-      
+
       if (maxPrice) {
         const price = Number(maxPrice);
         if (!isNaN(price) && price >= 0) {
           filters.maxPrice = price;
         }
       }
-      
+
       if (minBeds) {
         const beds = Number(minBeds);
         if (!isNaN(beds) && beds >= 0) {
           filters.minBeds = beds;
         }
       }
-      
+
       if (minBaths) {
         const baths = Number(minBaths);
         if (!isNaN(baths) && baths >= 0) {
           filters.minBaths = baths;
         }
       }
-      
+
       if (city) filters.city = String(city);
       if (zipCode) filters.zipCode = String(zipCode);
-      
+
       if (neighborhood) {
         const neighborhoodId = Number(neighborhood);
         if (!isNaN(neighborhoodId) && neighborhoodId > 0) {
           filters.neighborhood = neighborhoodId;
         }
       }
-      
+
       // Add sorting parameters
       if (sortBy) {
         const validSortFields = ['price', 'bedrooms', 'bathrooms', 'squareFeet'];
@@ -166,14 +153,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           filters.sortBy = field;
         }
       }
-      
+
       if (order) {
         const direction = String(order).toLowerCase();
         if (direction === 'asc' || direction === 'desc') {
           filters.order = direction;
         }
       }
-      
+
       // Add pagination parameters
       if (limit) {
         const limitVal = Number(limit);
@@ -181,23 +168,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           filters.limit = limitVal;
         }
       }
-      
+
       if (offset) {
         const offsetVal = Number(offset);
         if (!isNaN(offsetVal) && offsetVal >= 0) {
           filters.offset = offsetVal;
         }
       }
-      
+
       // Log the search filters for debugging
       console.log("Searching properties with filters:", JSON.stringify(filters, null, 2));
-      
+
       // Calculate total count for pagination
       const totalCount = await storage.getPropertiesCount(filters);
-      
+
       // Use the database-optimized search method
       const properties = await storage.searchProperties(filters);
-      
+
       // Return structured response with metadata
       res.json({
         properties,
@@ -221,19 +208,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (isNaN(propertyId)) {
         return res.status(400).json({ message: "Invalid property ID" });
       }
-      
+
       const property = await storage.getProperty(propertyId);
       if (!property) {
         return res.status(404).json({ message: "Property not found" });
       }
-      
+
       res.json(property);
     } catch (error) {
       console.error("Property fetch error:", error);
       res.status(500).json({ message: "Failed to fetch property details" });
     }
   });
-  
+
   // Get all properties of a specified type
   apiRouter.get("/properties/type/:type", async (req, res) => {
     try {
@@ -241,16 +228,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!type) {
         return res.status(400).json({ message: "Invalid property type" });
       }
-      
+
       const properties = await storage.getPropertiesByType(type);
-      
+
       res.json(properties);
     } catch (error) {
       console.error("Property type fetch error:", error);
       res.status(500).json({ message: "Failed to fetch properties by type" });
     }
   });
-  
+
   // Get all neighborhoods
   apiRouter.get("/neighborhoods", async (req, res) => {
     try {
@@ -261,7 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch neighborhoods" });
     }
   });
-  
+
   // Get a neighborhood by ID with its properties
   apiRouter.get("/neighborhoods/:id", async (req, res) => {
     try {
@@ -269,15 +256,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (isNaN(neighborhoodId)) {
         return res.status(400).json({ message: "Invalid neighborhood ID" });
       }
-      
+
       const neighborhood = await storage.getNeighborhood(neighborhoodId);
       if (!neighborhood) {
         return res.status(404).json({ message: "Neighborhood not found" });
       }
-      
+
       // Fetch properties in this neighborhood
       const properties = await storage.getPropertiesByNeighborhood(neighborhoodId);
-      
+
       // Return combined response
       res.json({
         ...neighborhood,
@@ -288,28 +275,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch neighborhood details" });
     }
   });
-  
+
   // Submit a contact message
   apiRouter.post("/messages", async (req, res) => {
     try {
       const result = insertMessageSchema.safeParse(req.body);
-      
+
       if (!result.success) {
         return res.status(400).json({ 
           message: "Invalid message data",
           errors: result.error.flatten() 
         });
       }
-      
+
       // Validate email format
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(result.data.email)) {
         return res.status(400).json({ message: "Invalid email format" });
       }
-      
+
       // Create the message
       const newMessage = await storage.createMessage(result.data);
-      
+
       res.status(201).json({
         message: "Message sent successfully",
         data: newMessage
@@ -319,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to submit your message" });
     }
   });
-  
+
   // Get all messages (admin route)
   apiRouter.get("/messages", async (req, res) => {
     try {
@@ -331,26 +318,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch messages" });
     }
   });
-  
+
   // Add a property to favorites
   apiRouter.post("/favorites", async (req, res) => {
     try {
       const { userId, propertyId } = req.body;
-      
+
       // Validate IDs
       if (!userId || !propertyId || isNaN(Number(userId)) || isNaN(Number(propertyId))) {
         return res.status(400).json({ message: "Invalid user ID or property ID" });
       }
-      
+
       // Check if already favorite
       const isAlreadyFavorite = await storage.isFavorite(userId, propertyId);
       if (isAlreadyFavorite) {
         return res.json({ message: "Property is already in favorites", favorite: true });
       }
-      
+
       // Add to favorites
       const favorite = await storage.addFavorite({ userId, propertyId });
-      
+
       res.status(201).json({
         message: "Property added to favorites",
         favorite: true,
@@ -361,20 +348,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to add property to favorites" });
     }
   });
-  
+
   // Remove a property from favorites
   apiRouter.delete("/favorites/:userId/:propertyId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
       const propertyId = parseInt(req.params.propertyId);
-      
+
       if (isNaN(userId) || isNaN(propertyId)) {
         return res.status(400).json({ message: "Invalid user ID or property ID" });
       }
-      
+
       // Remove from favorites
       const removed = await storage.removeFavorite(userId, propertyId);
-      
+
       if (removed) {
         res.json({
           message: "Property removed from favorites",
@@ -388,41 +375,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to remove property from favorites" });
     }
   });
-  
+
   // Get user's favorite properties
   apiRouter.get("/favorites/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      
+
       if (isNaN(userId)) {
         return res.status(400).json({ message: "Invalid user ID" });
       }
-      
+
       // Get the user's favorites
       const favorites = await storage.getUserFavorites(userId);
-      
+
       res.json(favorites);
     } catch (error) {
       console.error("Error fetching user favorites:", error);
       res.status(500).json({ message: "Failed to fetch favorites" });
     }
   });
-  
+
   // Check if a property is in user's favorites
   apiRouter.get("/favorites/:userId/:propertyId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
       const propertyId = parseInt(req.params.propertyId);
-      
+
       if (isNaN(userId) || isNaN(propertyId)) {
         return res.status(400).json({ 
           message: "Invalid user ID or property ID" 
         });
       }
-      
+
       // Check favorite status
       const isFavorite = await storage.isFavorite(userId, propertyId);
-      
+
       res.json({ isFavorite });
     } catch (error) {
       console.error("Error checking favorite status:", error);
@@ -454,10 +441,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           limit = 4; // Default to 4 if limit is invalid
         }
       }
-      
+
       // Use database-optimized method for fetching featured Airbnb rentals
       const featuredRentals = await storage.getFeaturedAirbnbRentals(limit);
-      
+
       res.json(featuredRentals);
     } catch (error) {
       console.error("Featured Airbnb rentals error:", error);
@@ -481,7 +468,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         limit,
         offset
       } = req.query;
-      
+
       // Prepare filter object with correct types
       const filters: {
         minPrice?: number;
@@ -496,7 +483,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         limit?: number;
         offset?: number;
       } = {};
-      
+
       // Add only defined filters with proper type conversion
       if (minPrice) {
         const price = Number(minPrice);
@@ -504,44 +491,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
           filters.minPrice = price;
         }
       }
-      
+
       if (maxPrice) {
         const price = Number(maxPrice);
         if (!isNaN(price) && price >= 0) {
           filters.maxPrice = price;
         }
       }
-      
+
       if (minBeds) {
         const beds = Number(minBeds);
         if (!isNaN(beds) && beds >= 0) {
           filters.minBeds = beds;
         }
       }
-      
+
       if (minBaths) {
         const baths = Number(minBaths);
         if (!isNaN(baths) && baths >= 0) {
           filters.minBaths = baths;
         }
       }
-      
+
       if (guests) {
         const guestCount = Number(guests);
         if (!isNaN(guestCount) && guestCount >= 0) {
           filters.guests = guestCount;
         }
       }
-      
+
       if (city) filters.city = String(city);
-      
+
       if (neighborhood) {
         const neighborhoodId = Number(neighborhood);
         if (!isNaN(neighborhoodId) && neighborhoodId > 0) {
           filters.neighborhood = neighborhoodId;
         }
       }
-      
+
       // Add sorting parameters
       if (sortBy) {
         const validSortFields = ['price', 'bedrooms', 'bathrooms', 'guests', 'rating'];
@@ -550,14 +537,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           filters.sortBy = field;
         }
       }
-      
+
       if (order) {
         const direction = String(order).toLowerCase();
         if (direction === 'asc' || direction === 'desc') {
           filters.order = direction;
         }
       }
-      
+
       // Add pagination parameters
       if (limit) {
         const limitVal = Number(limit);
@@ -565,20 +552,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           filters.limit = limitVal;
         }
       }
-      
+
       if (offset) {
         const offsetVal = Number(offset);
         if (!isNaN(offsetVal) && offsetVal >= 0) {
           filters.offset = offsetVal;
         }
       }
-      
+
       // Log the search filters for debugging
       console.log("Searching Airbnb rentals with filters:", JSON.stringify(filters, null, 2));
-      
+
       // Use the database-optimized search method
       const rentals = await storage.searchAirbnbRentals(filters);
-      
+
       // Return structured response with metadata
       res.json({
         rentals,
@@ -602,12 +589,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (isNaN(rentalId)) {
         return res.status(400).json({ message: "Invalid rental ID" });
       }
-      
+
       const rental = await storage.getAirbnbRental(rentalId);
       if (!rental) {
         return res.status(404).json({ message: "Rental not found" });
       }
-      
+
       res.json(rental);
     } catch (error) {
       console.error("Airbnb rental fetch error:", error);
@@ -618,21 +605,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create WebSocket server for real-time communications
   const server = createServer(app);
   const wss = new WebSocketServer({ server, path: '/ws' });
-  
+
   wss.on('connection', (ws) => {
     console.log('New WebSocket connection established');
-    
+
     ws.on('message', (message) => {
       try {
         const data = JSON.parse(message.toString());
         console.log('Received WebSocket message:', data);
-        
+
         // Handle different message types
         if (data.type === 'video_metrics') {
           // Process video metrics from the client
           const metrics = data.metrics;
           console.log('Received video metrics:', metrics);
-          
+
           // Based on metrics, we could respond with optimized video settings
           // Just a simple example response
           ws.send(JSON.stringify({
@@ -652,11 +639,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('Error processing WebSocket message:', error);
       }
     });
-    
+
     ws.on('close', () => {
       console.log('WebSocket connection closed');
     });
-    
+
     ws.on('error', (error) => {
       console.error('WebSocket error:', error);
     });
@@ -664,23 +651,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register API routes
   app.use('/api', apiRouter);
-  
+
   // Generate XML sitemap for SEO
   app.get('/sitemap.xml', async (req, res) => {
     try {
       // Get all properties and neighborhoods from the database
       const properties = await storage.getProperties();
       const neighborhoods = await storage.getNeighborhoods();
-      
+
       // Base URL for the website
       const baseUrl = process.env.NODE_ENV === 'production' 
         ? 'https://ohanarealty.com'
         : `http://${req.headers.host}`;
-      
+
       // Generate XML sitemap
       let xml = '<?xml version="1.0" encoding="UTF-8"?>';
       xml += '\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-      
+
       // Add static pages
       const staticPages = ['', 'properties', 'about', 'contact', 'neighborhoods', 'favorites'];
       for (const page of staticPages) {
@@ -690,7 +677,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         xml += '    <priority>1.0</priority>\n';
         xml += '  </url>\n';
       }
-      
+
       // Add property detail pages
       for (const property of properties) {
         xml += '  <url>\n';
@@ -699,7 +686,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         xml += '    <priority>0.8</priority>\n';
         xml += '  </url>\n';
       }
-      
+
       // Add neighborhood detail pages
       for (const neighborhood of neighborhoods) {
         xml += '  <url>\n';
@@ -708,13 +695,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         xml += '    <priority>0.7</priority>\n';
         xml += '  </url>\n';
       }
-      
+
       // Filter pages for various property types
       // Create a collection of unique property types
       const typeSet = new Set<string>();
       properties.forEach(p => p.type && typeSet.add(p.type));
       const propertyTypes = Array.from(typeSet);
-      
+
       for (const type of propertyTypes) {
         xml += '  <url>\n';
         xml += `    <loc>${baseUrl}/properties?type=${type.toLowerCase()}</loc>\n`;
@@ -722,13 +709,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         xml += '    <priority>0.7</priority>\n';
         xml += '  </url>\n';
       }
-      
+
       // City-based filter pages
       // Create a collection of unique cities
       const citySet = new Set<string>();
       properties.forEach(p => p.city && citySet.add(p.city));
       const cities = Array.from(citySet);
-      
+
       for (const city of cities) {
         if (city) {
           xml += '  <url>\n';
@@ -738,9 +725,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           xml += '  </url>\n';
         }
       }
-      
+
       xml += '</urlset>';
-      
+
       // Set headers and send response
       res.header('Content-Type', 'application/xml');
       res.header('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
@@ -750,19 +737,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).send('Error generating sitemap');
     }
   });
-  
+
   // HTML Sitemap
   app.get('/sitemap.html', async (req, res) => {
     try {
       // Get all properties and neighborhoods from the database
       const properties = await storage.getProperties();
       const neighborhoods = await storage.getNeighborhoods();
-      
+
       // Base URL for the website
       const baseUrl = process.env.NODE_ENV === 'production' 
         ? 'https://ohanarealty.com'
         : `http://${req.headers.host}`;
-      
+
       // Generate HTML sitemap
       let html = `<!DOCTYPE html>
 <html lang="en">
@@ -795,9 +782,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   <header>
     <h1>Ohana Realty Sitemap</h1>
   </header>
-  
+
   <p>Welcome to our complete site map. Find quick links to all pages on the Ohana Realty website below.</p>
-  
+
   <h2>Main Pages</h2>
   <ul>
     <li><a href="${baseUrl}/">Home</a></li>
@@ -807,7 +794,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     <li><a href="${baseUrl}/contact">Contact</a></li>
     <li><a href="${baseUrl}/favorites">Favorites</a></li>
   </ul>
-  
+
   <h2>Property Listings</h2>
   <div class="category">
     <div class="category-column">
@@ -819,7 +806,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .join('\n        ')}
       </ul>
     </div>
-    
+
     <div class="category-column">
       <h3>Commercial Properties</h3>
       <ul>
@@ -830,23 +817,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       </ul>
     </div>
   </div>
-  
+
   <h2>Neighborhoods</h2>
   <ul>
     ${neighborhoods
       .map(n => `<li><a href="${baseUrl}/neighborhoods/${n.id}">${n.name}</a></li>`)
       .join('\n    ')}
   </ul>
-  
+
   <a href="${baseUrl}" class="back-link">Back to Home</a>
-  
+
   <footer>
     <p>© ${new Date().getFullYear()} Ohana Realty. All rights reserved.</p>
     <p>123 Main Street, Laredo, TX 78040 | (956) 324-6714 | info@ohanarealty.com</p>
   </footer>
 </body>
 </html>`;
-      
+
       // Send the HTML sitemap
       res.setHeader('Content-Type', 'text/html');
       res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
@@ -856,13 +843,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).send('Error generating HTML sitemap');
     }
   });
-  
+
   // Robots.txt
   app.get('/robots.txt', (req, res) => {
     const baseUrl = process.env.NODE_ENV === 'production' 
       ? 'https://ohanarealty.com'
       : `http://${req.headers.host}`;
-    
+
     const robotsTxt = `
 # Ohana Realty Robots.txt
 # Website: ${baseUrl}
@@ -890,7 +877,7 @@ Sitemap: ${baseUrl}/sitemap.xml
 # Crawl delay to avoid overloading the server
 Crawl-delay: 1
     `.trim();
-    
+
     res.header('Content-Type', 'text/plain');
     res.header('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
     res.send(robotsTxt);
@@ -900,23 +887,23 @@ Crawl-delay: 1
   function serveAdaptiveVideo(req: express.Request, res: express.Response, videoFileName: string, endpointType: 'standard' | 'mobile' | 'highperf') {
     try {
       const videoPath = path.join(process.cwd(), 'public', videoFileName);
-      
+
       // Check if file exists
       if (!fs.existsSync(videoPath)) {
         console.error(`Video file not found at: ${videoPath}`);
         return res.status(404).send('Video file not found');
       }
-      
+
       // Get file stats
       const stat = fs.statSync(videoPath);
       const fileSize = stat.size;
-      
+
       // YouTube-like adaptive streaming parameters based on endpoint type
       let chunkSize: number;
       let bufferSize: number;
       let initialChunkSize: number; // Special initial chunk for immediate playback start
       let logPrefix: string;
-      
+
       // Configure settings based on endpoint type with optimized chunk sizes
       if (endpointType === 'mobile') {
         // Mobile-optimized settings with smaller 2MB chunks for reliable playback
@@ -942,9 +929,9 @@ Crawl-delay: 1
         logPrefix = '📺 Standard';
         console.log(`${logPrefix}: Serving optimized standard video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
       }
-      
+
       const range = req.headers.range;
-      
+
       // CRITICAL FIX: If no range is specified, send a perfect initial chunk
       // This is key to fixing the 3-second play-stop issue
       if (!range) {
@@ -957,31 +944,31 @@ Crawl-delay: 1
           'Connection': 'keep-alive',
           'X-Content-Type-Options': 'nosniff'
         };
-        
+
         console.log(`${logPrefix}: Sending perfect initial chunk: ${(initialChunkSize / 1024 / 1024).toFixed(2)}MB`);
-        
+
         // Create a special stream with a smaller buffer
         const fileStream = fs.createReadStream(videoPath, { 
           start: 0,
           end: initialChunkSize - 1,
           highWaterMark: bufferSize
         });
-        
+
         res.writeHead(200, headers);
-        
+
         // Log when chunk is completely sent
         let bytesSent = 0;
         fileStream.on('data', (chunk) => {
           bytesSent += chunk.length;
         });
-        
+
         fileStream.on('end', () => {
           console.log(`${logPrefix}: Initial chunk complete: ${bytesSent} bytes sent`);
         });
-        
+
         // Pipe the file stream to the response
         fileStream.pipe(res);
-        
+
         // Handle errors and disconnects
         fileStream.on('error', (error: Error) => {
           console.error(`${logPrefix}: Error streaming initial chunk:`, error);
@@ -990,20 +977,20 @@ Crawl-delay: 1
           }
           fileStream.close();
         });
-        
+
         req.on('close', () => {
           console.log(`${logPrefix}: Client disconnected during initial chunk`);
           fileStream.close();
         });
-        
+
         return; // End function execution after sending initial chunk
       }
-      
+
       // YouTube-like handling of range requests for video seeking
       if (range) {
         const parts = range.replace(/bytes=/, "").split("-");
         const start = parseInt(parts[0], 10);
-        
+
         // Adaptive end position based on device capabilities
         let end: number;
         if (parts[1]) {
@@ -1012,16 +999,16 @@ Crawl-delay: 1
           // If no end specified, use the appropriate chunk size
           end = Math.min(start + chunkSize, fileSize - 1);
         }
-        
+
         // Ensure end doesn't exceed file size
         end = Math.min(end, fileSize - 1);
-        
+
         const chunksize = (end - start) + 1;
-        
+
         // Log range request with appropriate prefix
         // For all endpoint types, we're now using MB to be consistent
         console.log(`${logPrefix}: Range request: ${start}-${end}/${fileSize} (${(chunksize / 1024 / 1024).toFixed(2)}MB)`);
-        
+
         // Set YouTube-like headers with adaptive caching
         res.writeHead(206, {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -1031,22 +1018,22 @@ Crawl-delay: 1
           'Cache-Control': 'public, max-age=31536000, immutable', // YouTube-like aggressive caching
           'Connection': 'keep-alive',
         });
-        
+
         // Create optimized read stream with adaptive buffer size
         const fileStream = fs.createReadStream(videoPath, { 
           start, 
           end,
           highWaterMark: bufferSize // Adaptive buffer size based on device type
         });
-        
+
         // YouTube-like efficient piping
         fileStream.pipe(res, { end: true });
-        
+
         // Handle stream end
         fileStream.on('end', () => {
           console.log(`${logPrefix}: Video chunk complete: ${start}-${end}`);
         });
-        
+
         // Enhanced error handling
         fileStream.on('error', (error: Error) => {
           console.error(`${logPrefix}: Error streaming video:`, error);
@@ -1055,7 +1042,7 @@ Crawl-delay: 1
           }
           fileStream.destroy();
         });
-        
+
         // Handle client disconnect
         req.on('close', () => {
           console.log(`${logPrefix}: Client disconnected, closing video stream`);
@@ -1067,14 +1054,14 @@ Crawl-delay: 1
         // For high-performance, we might send the entire video
         // For mobile, we send just enough to start playing quickly
         const initialSize = Math.min(initialChunkSize, fileSize);
-        
+
         // Log initial load with appropriate prefix - all in MB for consistency
         if (endpointType === 'highperf') {
           console.log(`${logPrefix}: Sending full video: ${(initialSize / 1024 / 1024).toFixed(2)}MB`);
         } else {
           console.log(`${logPrefix}: Initial segment: ${(initialSize / 1024 / 1024).toFixed(2)}MB`);
         }
-        
+
         // Set YouTube-like optimized headers
         res.writeHead(206, {
           'Content-Range': `bytes 0-${initialSize - 1}/${fileSize}`,
@@ -1084,17 +1071,17 @@ Crawl-delay: 1
           'Cache-Control': 'public, max-age=31536000, immutable', // YouTube-like aggressive caching
           'Connection': 'keep-alive',
         });
-        
+
         // Create optimized read stream with adaptive buffer size
         const fileStream = fs.createReadStream(videoPath, { 
           start: 0, 
           end: initialSize - 1,
           highWaterMark: bufferSize // Adaptive buffer size based on device type
         });
-        
+
         // YouTube-like efficient piping
         fileStream.pipe(res, { end: true });
-        
+
         // Enhanced error handling
         fileStream.on('error', (error: Error) => {
           console.error(`${logPrefix}: Error streaming video:`, error);
@@ -1103,7 +1090,7 @@ Crawl-delay: 1
           }
           fileStream.destroy();
         });
-        
+
         // Handle client disconnect
         req.on('close', () => {
           console.log(`${logPrefix}: Client disconnected, closing stream`);
@@ -1122,22 +1109,22 @@ Crawl-delay: 1
   app.get('/api/video/property', (req, res) => {
     serveVideoFile(req, res, 'property-video.mp4');
   });
-  
+
   // YouTube-like streaming endpoints for OHANAVIDEOMASTER.mp4
   app.get('/api/video/ohana', (req, res) => {
     serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'standard');
   });
-  
+
   // Mobile-optimized video endpoint with smaller chunks and buffer
   app.get('/api/video/ohana/mobile', (req, res) => {
     serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'mobile');
   });
-  
+
   // High-performance optimized endpoint with larger chunks and buffer
   app.get('/api/video/ohana/highperf', (req, res) => {
     serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'highperf');
   });
-  
+
   // Legacy function to maintain compatibility with existing code
   // Will be gradually replaced by serveAdaptiveVideo
   function serveVideoFile(req: express.Request, res: express.Response, videoFileName: string) {

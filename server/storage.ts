@@ -115,11 +115,24 @@ export class DatabaseStorage implements IStorage {
       // Using raw SQL to avoid column name issues
       const result = await db.execute(sql`SELECT * FROM properties`);
       const propertiesList = result.rows as Property[];
-      console.log("Properties fetched successfully:", propertiesList.length);
-      return propertiesList;
+      console.log("Properties fetched successfully:", propertiesList?.length || 0);
+      return propertiesList || [];
     } catch (error) {
       console.error("Error fetching properties:", error);
       // Return empty array instead of throwing error
+      return [];
+    }
+  }
+
+  async getFeaturedProperties(limit?: number): Promise<Property[]> {
+    try {
+      const limitClause = limit ? `LIMIT ${limit}` : '';
+      const result = await db.execute(sql`SELECT * FROM properties WHERE featured = true ORDER BY created_at DESC ${sql.raw(limitClause)}`);
+      const propertiesList = result.rows as Property[];
+      console.log("Featured properties fetched successfully:", propertiesList?.length || 0);
+      return propertiesList || [];
+    } catch (error) {
+      console.error("Error fetching featured properties:", error);
       return [];
     }
   }

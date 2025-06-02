@@ -36,9 +36,14 @@ export function usePropertiesByType(type: string) {
 export function useFeaturedProperties(limit?: number) {
   return useQuery<Property[]>({
     queryKey: ['/api/properties/featured', limit],
-    retry: 3, // Retry 3 times in case database is sleeping
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    queryFn: async () => {
+      const response = await fetch(`/api/properties/featured${limit ? `?limit=${limit}` : ''}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch featured properties');
+      }
+      return response.json();
+    },
+    retry: 3,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

@@ -40,33 +40,37 @@ export function OhanaVideoPlayer({
   const [duration, setDuration] = useState(0);
   const [isControlsVisible, setIsControlsVisible] = useState(false);
   const [objectFit, setObjectFit] = useState<'contain' | 'cover' | 'fill'>('contain');
-  
+  const [videoEndpoint, setVideoEndpoint] = useState('/api/video/ohana');
+  const [playbackQuality, setPlaybackQuality] = useState('standard');
+  const [deviceType, setDeviceType] = useState('desktop');
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // Handle fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
-    
+
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    
+
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
-  
+
   // Socket for real-time video performance monitoring
   const socketRef = useRef<WebSocket | null>(null);
   const [optimizedConfig, setOptimizedConfig] = useState<any>(null);
-  
+
   // State to track device type and optimal settings
   const [deviceSettings, setDeviceSettings] = useState(getVideoDisplaySettings());
-  
+
   // Log device detection info when component mounts
   useEffect(() => {
     const deviceType = getDeviceType();
     const devicePerformance = getDevicePerformance();
     const settings = getVideoDisplaySettings();
-    
+
     console.log('OhanaVideoPlayer: Device Detection', {
       deviceType,
       devicePerformance,
@@ -81,7 +85,7 @@ export function OhanaVideoPlayer({
       pixelRatio: window.devicePixelRatio,
     });
   }, []);
-  
+
   // Throttle function for performance-critical handlers
   const throttle = (func: Function, limit: number) => {
     let inThrottle: boolean;
@@ -96,50 +100,50 @@ export function OhanaVideoPlayer({
       }
     };
   };
-  
+
   // Update device settings on window resize with throttling
   useEffect(() => {
     // Track last resize timestamp to prevent excessive changes
     let lastResizeTimestamp = 0;
     const resizeThrottleMs = 1000; // Only process resize once per second
-    
+
     // Track the original source and time so we can resume playback
     let originalSrc = '';
     let originalTime = 0;
     let wasPlaying = false;
-    
+
     const handleResize = throttle(() => {
       // Update device settings
       setDeviceSettings(getVideoDisplaySettings());
-      
+
       // Re-evaluate the video source on significant resize (e.g., device orientation change)
       if (videoRef.current && videoRef.current.src.includes('/api/video/ohana')) {
         const now = Date.now();
-        
+
         // Only process resize if sufficient time has passed since last resize
         if (now - lastResizeTimestamp < resizeThrottleMs) return;
         lastResizeTimestamp = now;
-        
+
         const settings = getVideoDisplaySettings();
         const deviceType = getDeviceType();
         const devicePerformance = getDevicePerformance();
-        
+
         console.log(`Device resize detected: ${deviceType} with ${devicePerformance} performance`);
-        
+
         // Remember playback state
         wasPlaying = !videoRef.current.paused;
         originalTime = videoRef.current.currentTime;
         originalSrc = videoRef.current.src;
-        
+
         // Only change source if the endpoint type needs to change
         const shouldUseMobile = devicePerformance === 'low' || 
             (devicePerformance === 'medium' && (deviceType === 'mobile' || deviceType === 'tablet'));
-        
+
         if (shouldUseMobile && !videoRef.current.src.includes('/mobile')) {
           console.log('Switching to mobile-optimized endpoint due to device resize');
           videoRef.current.src = '/api/video/ohana/mobile';
           videoRef.current.load();
-          
+
           // After loading, restore playback position
           videoRef.current.addEventListener('loadedmetadata', function onceLoaded() {
             videoRef.current!.currentTime = originalTime;
@@ -153,11 +157,11 @@ export function OhanaVideoPlayer({
           // For 16GB+ RAM, always use high-performance endpoint
           const memoryGB = typeof navigator !== 'undefined' ? (navigator as any).deviceMemory || 4 : 4;
           const hasSuperHighMemory = memoryGB >= 16;
-          
+
           videoRef.current.src = (devicePerformance === 'high' || hasSuperHighMemory) ? 
             '/api/video/ohana/highperf' : '/api/video/ohana';
           videoRef.current.load();
-          
+
           // After loading, restore playback position
           videoRef.current.addEventListener('loadedmetadata', function onceLoaded() {
             videoRef.current!.currentTime = originalTime;
@@ -167,29 +171,29 @@ export function OhanaVideoPlayer({
         }
       }
     }, 250); // Throttle resize events to max once per 250ms
-    
+
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  
+
   // Connect to WebSocket for real-time video performance optimization
   useEffect(() => {
     // Only enable WebSocket for high-performance devices
     if (!isHighPerformanceDevice()) return;
-    
+
     // Create WebSocket connection for performance monitoring
     try {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}/ws`;
       const socket = new WebSocket(wsUrl);
       socketRef.current = socket;
-      
+
       socket.onopen = () => {
         console.log('WebSocket connected for video performance monitoring');
-        
+
         // Start sending performance metrics
         const metricsInterval = setInterval(() => {
           if (socket.readyState === WebSocket.OPEN && videoRef.current) {
@@ -203,7 +207,7 @@ export function OhanaVideoPlayer({
                   ((performance as any).memory.usedJSHeapSize / (performance as any).memory.jsHeapSizeLimit) * 100 : 50,
                 timestamp: Date.now()
               };
-              
+
               if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({
                   type: 'video_metrics',
@@ -215,15 +219,15 @@ export function OhanaVideoPlayer({
             }
           }
         }, 5000); // Send metrics every 5 seconds
-        
+
         return () => clearInterval(metricsInterval);
       };
-      
+
       socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
           console.log('Received WebSocket message:', data);
-          
+
           if (data.type === 'video_config') {
             setOptimizedConfig(data.config);
             console.log('Received optimized video configuration:', data.config);
@@ -235,15 +239,15 @@ export function OhanaVideoPlayer({
           console.error('Error parsing WebSocket message:', error);
         }
       };
-      
+
       socket.onerror = (error) => {
         console.error('WebSocket error:', error);
       };
-      
+
       socket.onclose = () => {
         console.log('WebSocket connection closed');
       };
-      
+
       return () => {
         if (socket && socket.readyState !== WebSocket.CLOSED) {
           socket.close();
@@ -253,18 +257,18 @@ export function OhanaVideoPlayer({
       console.error('Error setting up WebSocket connection:', err);
     }
   }, []);
-  
+
   // Use adaptive quality based on device capabilities
   useEffect(() => {
     // Get the device info to determine optimal video quality
     const deviceType = getDeviceType();
     const devicePerformance = getDevicePerformance();
     const settings = getVideoDisplaySettings();
-    
+
     // Check for high-RAM systems (16GB+)
     const memoryGB = typeof navigator !== 'undefined' ? (navigator as any).deviceMemory || 4 : 4;
     const hasSuperHighMemory = memoryGB >= 16;
-    
+
     if (videoRef.current && src.includes('/api/video/ohana')) {
       // For 16GB+ RAM systems, always use high-performance endpoint
       let endpoint = settings.videoEndpoint;
@@ -274,9 +278,9 @@ export function OhanaVideoPlayer({
       } else {
         console.log(`Using adaptive video quality for ${deviceType} device with ${devicePerformance} performance`);
       }
-      
+
       console.log(`Selected video endpoint: ${endpoint}`);
-      
+
       // Set src based on device capabilities
       videoRef.current.src = endpoint;
       videoRef.current.load();
@@ -286,35 +290,35 @@ export function OhanaVideoPlayer({
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     // Performance optimization: Use passive event listeners for better scroll performance
     const eventOptions = { passive: true };
-    
+
     const handleCanPlay = () => {
       setIsLoaded(true);
       setDuration(video.duration);
       console.log('OhanaVideoPlayer: Video can play now');
     };
-    
+
     const handlePlaying = () => {
       setIsPlaying(true);
       setError(null);
       onPlay?.();
       console.log('OhanaVideoPlayer: Video is playing');
     };
-    
+
     const handlePause = () => {
       setIsPlaying(false);
       onPause?.();
       console.log('OhanaVideoPlayer: Video is paused');
     };
-    
+
     const handleError = (e: any) => {
       // Extract useful information from the error event
       const videoElement = e.target as HTMLVideoElement;
       const errorCode = videoElement.error ? videoElement.error.code : 'unknown';
       const errorMessage = videoElement.error ? videoElement.error.message : 'Unknown error';
-      
+
       // Map error codes to user-friendly messages
       let userMessage = 'Error loading video';
       switch (errorCode) {
@@ -340,7 +344,7 @@ export function OhanaVideoPlayer({
         default:
           userMessage = `Video playback error (${errorMessage})`;
       }
-      
+
       setError(userMessage);
       setIsPlaying(false);
       onError?.(e);
@@ -350,21 +354,21 @@ export function OhanaVideoPlayer({
         event: e
       });
     };
-    
+
     // Throttle time update to reduce unnecessary re-renders
     const handleTimeUpdate = throttle(() => {
       setCurrentTime(video.currentTime);
     }, 250); // Update at most once every 250ms for better performance
-    
+
     const handleVolumeChange = () => {
       setIsMuted(video.muted);
       setVolume(video.volume);
     };
-    
+
     const handleLoadedMetadata = () => {
       setDuration(video.duration);
     };
-    
+
     // Performance optimization: Low quality during playback, high quality when paused
     const handleQualityControl = () => {
       if (video.readyState >= 3) { // HAVE_FUTURE_DATA or better
@@ -372,7 +376,7 @@ export function OhanaVideoPlayer({
         video.style.filter = 'none';
       }
     };
-    
+
     // Add event listeners with passive option when possible
     video.addEventListener('canplay', handleCanPlay, eventOptions);
     video.addEventListener('canplaythrough', handleQualityControl, eventOptions);
@@ -382,27 +386,27 @@ export function OhanaVideoPlayer({
     video.addEventListener('timeupdate', handleTimeUpdate, eventOptions);
     video.addEventListener('volumechange', handleVolumeChange, eventOptions);
     video.addEventListener('loadedmetadata', handleLoadedMetadata, eventOptions);
-    
+
     // Optimization: Prioritize loading metadata
     video.preload = 'metadata';
-    
+
     // Set video to have higher priority loading
     if ('priority' in HTMLImageElement.prototype) {
       (video as any).fetchPriority = 'high';
     }
-    
+
     // Try to play if autoPlay is true with a slight delay to allow browser to prepare
     if (autoPlay) {
       // Always ensure video is muted for autoplay (browsers require this)
       video.muted = true;
       setIsMuted(true);
-      
+
       // Add longer delay to prevent immediate play failures
       setTimeout(() => {
         try {
           // Use a safer approach to handle autoplay
           const playPromise = video.play();
-          
+
           // Only attach handlers if it's actually a promise
           if (playPromise !== undefined && typeof playPromise.then === 'function') {
             playPromise
@@ -422,7 +426,7 @@ export function OhanaVideoPlayer({
         }
       }, 300); // Increased delay for better reliability
     }
-    
+
     // Cleanup event listeners
     return () => {
       video.removeEventListener('canplay', handleCanPlay);
@@ -435,21 +439,21 @@ export function OhanaVideoPlayer({
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
   }, [autoPlay, onPlay, onPause, onError, src]);
-  
+
   // Apply volume when isMuted changes
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     video.muted = isMuted;
     video.volume = isMuted ? 0 : volume;
   }, [isMuted, volume]);
-  
+
   // Enhanced YouTube-like adaptive bitrate control: now much more aggressive with quality switching
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     // These track playback performance metrics like YouTube does
     let rebufferingEvents = 0;
     let lastBufferCheck = Date.now();
@@ -457,26 +461,26 @@ export function OhanaVideoPlayer({
     let isBuffering = false;
     let loadAttempts = 0;
     let consecutiveGoodPlayback = 0;
-    
+
     // MUCH more aggressive threshold - switch quality after just 1-2 buffer events
     const rebufferingThreshold = 1; // Was 3, now 1 for much faster response
-    
+
     // YouTube-like metric for monitoring playback smoothness
     const checkBuffering = () => {
       if (!video) return;
-      
+
       const now = Date.now();
       // Check more frequently (500ms vs 2000ms)
       if (now - lastBufferCheck < 500) return;
       lastBufferCheck = now;
-      
+
       // Calculate how much video is buffered ahead of current playback
       let bufferedAhead = 0;
       if (video.buffered.length) {
         const currentBufferEnd = video.buffered.end(video.buffered.length - 1);
         bufferedAhead = currentBufferEnd - video.currentTime;
       }
-      
+
       // Much more sensitive buffering detection
       if (bufferedAhead < 1 && video.readyState < 4 && !video.paused) { // Was < 2, now < 1
         // We're about to buffer
@@ -485,27 +489,27 @@ export function OhanaVideoPlayer({
           rebufferingEvents++;
           isBuffering = true;
           consecutiveGoodPlayback = 0; // Reset good playback counter
-          
+
           // Switch quality IMMEDIATELY after a single buffer event
           if (rebufferingEvents >= rebufferingThreshold) {
             // CRITICAL CHANGE: Try mobile version immediately regardless of current endpoint
             // This is key to fixing choppy playback
             console.log('OhanaVideoPlayer: Switching to mobile-optimized version immediately');
-            
+
             // Save current playback position
             const currentTime = video.currentTime;
-            
+
             // Switch to mobile-optimized version
             video.src = '/api/video/ohana/mobile';
             video.load();
-            
+
             // After loading, jump to slightly before where we left off
             // The "slightly before" helps create a seamless transition
             video.addEventListener('loadedmetadata', function onceLoaded() {
               video.currentTime = Math.max(0, currentTime - 0.5); // Go back just half a second
               video.removeEventListener('loadedmetadata', onceLoaded);
             });
-            
+
             loadAttempts++;
             video.play().catch(err => console.log('Error after quality switch:', err));
           }
@@ -514,7 +518,7 @@ export function OhanaVideoPlayer({
         // We have good buffer now
         isBuffering = false;
         consecutiveGoodPlayback++;
-        
+
         // This tracks when we have consistently good playback, like YouTube does
         // After 10 consecutive good checks (5 seconds of smooth playback),
         // we could consider switching back to higher quality
@@ -526,22 +530,22 @@ export function OhanaVideoPlayer({
           // Only attempt this once
           if (loadAttempts <= 1) { 
             console.log('OhanaVideoPlayer: Trying higher quality version');
-            
+
             // Save current playback position
             const currentTime = video.currentTime;
-            
+
             // Try standard quality
             video.src = '/api/video/ohana'; 
             video.load();
-            
+
             video.addEventListener('loadedmetadata', function onceLoaded() {
               video.currentTime = Math.max(0, currentTime - 0.5);
               video.removeEventListener('loadedmetadata', onceLoaded);
             });
-            
+
             loadAttempts++;
             video.play().catch(err => console.log('Error after quality increase:', err));
-            
+
             // Reset counters
             consecutiveGoodPlayback = 0;
             rebufferingEvents = 0;
@@ -550,11 +554,11 @@ export function OhanaVideoPlayer({
         }
       }
     };
-    
+
     // Track playback smoothness metrics much more frequently
     // 500ms vs 2000ms - 4x more frequent checks
     const intervalId = setInterval(checkBuffering, 500);
-    
+
     // YouTube monitors when playback actually starts
     const handlePlaying = () => {
       if (playbackStartTime === 0) {
@@ -562,13 +566,13 @@ export function OhanaVideoPlayer({
         console.log(`OhanaVideoPlayer: Playback started after ${playbackStartTime - lastBufferCheck}ms`);
       }
     };
-    
+
     // Check for stalled playback - critical for addressing 3-second play-stop issue
     const handleStalled = () => {
       console.log('OhanaVideoPlayer: Playback stalled');
       isBuffering = true;
       rebufferingEvents++;
-      
+
       // Immediately switch to mobile version when stalled
       if (!video.src.includes('/mobile')) {
         console.log('OhanaVideoPlayer: Stalled - immediately switching to mobile version');
@@ -577,37 +581,37 @@ export function OhanaVideoPlayer({
         video.play().catch(err => console.log('Error after stalled quality switch:', err));
       }
     };
-    
+
     // Monitor waiting events (browser waiting for more data)
     const handleWaiting = () => {
       console.log('OhanaVideoPlayer: Waiting for data');
       isBuffering = true;
       rebufferingEvents++;
-      
+
       // After any waiting, immediately downgrade quality
       if (!video.src.includes('/mobile')) {
         console.log('OhanaVideoPlayer: Waiting for data - switching to mobile version');
-        
+
         // Save current playback position
         const currentTime = video.currentTime;
-        
+
         // Switch to mobile version
         video.src = '/api/video/ohana/mobile';
         video.load();
-        
+
         video.addEventListener('loadedmetadata', function onceLoaded() {
           video.currentTime = Math.max(0, currentTime - 0.5);
           video.removeEventListener('loadedmetadata', onceLoaded);
         });
-        
+
         video.play().catch(err => console.log('Error after waiting quality switch:', err));
       }
     };
-    
+
     video.addEventListener('playing', handlePlaying);
     video.addEventListener('stalled', handleStalled);
     video.addEventListener('waiting', handleWaiting);
-    
+
     return () => {
       clearInterval(intervalId);
       video.removeEventListener('playing', handlePlaying);
@@ -615,11 +619,11 @@ export function OhanaVideoPlayer({
       video.removeEventListener('waiting', handleWaiting);
     };
   }, []);
-  
+
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     if (isPlaying) {
       video.pause();
     } else {
@@ -629,30 +633,30 @@ export function OhanaVideoPlayer({
       });
     }
   };
-  
+
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };
-  
+
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     setIsMuted(newVolume === 0);
   };
-  
+
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     const newTime = parseFloat(e.target.value);
     video.currentTime = newTime;
     setCurrentTime(newTime);
   };
-  
+
   const toggleFullscreen = () => {
     const container = containerRef.current;
     if (!container) return;
-    
+
     if (!document.fullscreenElement) {
       container.requestFullscreen().catch(err => {
         console.error(`Error attempting to enable full-screen mode: ${err.message}`);
@@ -661,7 +665,7 @@ export function OhanaVideoPlayer({
       document.exitFullscreen();
     }
   };
-  
+
   // Function to cycle through different video display modes
   const cycleDisplayMode = () => {
     if (objectFit === 'contain') {
@@ -672,13 +676,13 @@ export function OhanaVideoPlayer({
       setObjectFit('contain');
     }
   };
-  
+
   const formatTime = (seconds: number) => {
     const min = Math.floor(seconds / 60);
     const sec = Math.floor(seconds % 60);
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
-  
+
   return (
     <div 
       ref={containerRef}
@@ -723,7 +727,7 @@ export function OhanaVideoPlayer({
         {/* Add a fallback text for browsers that don't support video */}
         Your browser does not support the video tag.
       </video>
-      
+
       {/* Custom play/pause button overlay */}
       <div 
         className="absolute inset-0 flex items-center justify-center cursor-pointer"
@@ -738,7 +742,7 @@ export function OhanaVideoPlayer({
             <p className="mt-2 text-sm">Loading video...</p>
           </div>
         )}
-        
+
         {isLoaded && !isPlaying && !error && (
           <div className="bg-black/30 rounded-full p-3 sm:p-4">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 sm:w-12 sm:h-12 text-white">
@@ -747,7 +751,7 @@ export function OhanaVideoPlayer({
           </div>
         )}
       </div>
-      
+
       {/* Error message display */}
       {error && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-white p-4">
@@ -765,11 +769,11 @@ export function OhanaVideoPlayer({
                   // First, reset the video element
                   video.pause();
                   video.currentTime = 0;
-                  
+
                   // Ensure it's muted to improve chances of success
                   video.muted = true;
                   setIsMuted(true);
-                  
+
                   // Try mobile-optimized version regardless of current endpoint
                   // This gives us a better chance of success on constrained devices
                   const devicePerformance = getDevicePerformance();
@@ -781,16 +785,16 @@ export function OhanaVideoPlayer({
                     console.log('Retry: Trying mobile endpoint as fallback');
                     video.src = '/api/video/ohana/mobile';
                   }
-                  
+
                   // Reload and attempt to play
                   video.load();
-                  
+
                   // Delay play slightly to ensure video is ready
                   setTimeout(() => {
                     video.play().catch(e => {
                       console.error('Retry failed:', e);
                       // Don't update error state here to avoid an error loop
-                      
+
                       // Final fallback: try the general endpoint
                       if (video.src.includes('/mobile') || video.src.includes('/highperf')) {
                         console.log('Final fallback: trying general endpoint');
@@ -815,7 +819,7 @@ export function OhanaVideoPlayer({
           </button>
         </div>
       )}
-      
+
       {/* Enhanced video controls - with responsive spacing */}
       <div 
         className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2 sm:p-3 flex flex-col transition-opacity duration-300 ${isControlsVisible || !isPlaying ? 'opacity-100' : 'opacity-0'}`}
@@ -836,7 +840,7 @@ export function OhanaVideoPlayer({
             <span>{formatTime(duration)}</span>
           </div>
         </div>
-        
+
         {/* Controls row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -858,7 +862,7 @@ export function OhanaVideoPlayer({
                 </svg>
               )}
             </button>
-            
+
             {/* Volume control */}
             <div className="flex items-center space-x-1">
               <button 
@@ -896,11 +900,11 @@ export function OhanaVideoPlayer({
               </div>
             </div>
           </div>
-          
+
           <div className="text-white text-xs mr-2 sm:mr-3 hidden xs:block">
             {isLoaded ? 'Ohana Realty Video' : 'Preparing video...'}
           </div>
-          
+
           {/* Display mode toggle button */}
           <button 
             onClick={(e) => {

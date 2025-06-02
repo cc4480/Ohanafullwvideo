@@ -8,18 +8,24 @@ import FavoriteButton from "@/components/FavoriteButton";
 
 interface PropertyCardProps {
   property: Property;
+  className?: string;
 }
+
+// Helper function to safely access property values
+const safePropertyAccess = (property: Property, key: keyof Property, fallback: any = '') => {
+  return property?.[key] ?? fallback;
+};
 
 export default function PropertyCard({ property }: PropertyCardProps) {
   // Simple theme detection as fallback
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { toggleFavorite, isFavorite } = useFavorites();
-  
+
   useEffect(() => {
     // Check for dark mode preference
     const isDark = document.documentElement.classList.contains('dark');
     setIsDarkMode(isDark);
-    
+
     // Listen for theme changes
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -29,18 +35,18 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         }
       });
     });
-    
+
     observer.observe(document.documentElement, { attributes: true });
-    
+
     return () => observer.disconnect();
   }, []);
-  
+
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleFavorite(property.id);
   };
-  
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', { 
       style: 'currency', 
@@ -48,7 +54,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       maximumFractionDigits: 0
     }).format(price);
   };
-  
+
   return (
     <div className={`property-card ${isDarkMode ? 'bg-slate-800' : 'bg-card'} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 card-hover-effect border border-border/30 mobile-optimized group w-full hover:-translate-y-1`}>
       <Link href={`/properties/${property.id}`}>
@@ -76,10 +82,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               <span className="text-muted-foreground">No image available</span>
             </div>
           )}
-          
+
           {/* Enhanced overlay gradient with shimmering effect */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500 after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/5 after:to-transparent after:translate-x-[-100%] group-hover:after:translate-x-[100%] after:transition-transform after:duration-1000 after:ease-in-out overflow-hidden"></div>
-          
+
           {/* Property type badge - slides in from top, larger touch target on mobile */}
           <div className="absolute top-4 left-4 z-10 transition-transform duration-500 transform-gpu translate-y-0 group-hover:-translate-y-1">
             <span className={`text-white text-xs sm:text-sm font-medium px-3 py-1.5 rounded-full shadow-md backdrop-blur-sm ${
@@ -89,7 +95,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                property.type === "COMMERCIAL" ? "Commercial" : "Land"}
             </span>
           </div>
-          
+
           {/* Favorite button using our new component */}
           <div className="absolute bottom-4 right-4 z-10 transition-transform duration-300 transform-gpu group-hover:scale-110"
                onClick={(e) => {
@@ -107,14 +113,14 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               className="bg-background/80 text-primary backdrop-blur-sm hover:bg-primary hover:text-primary-foreground shadow-lg"
             />
           </div>
-          
+
           {/* Price tag - slides in from bottom, more visible on mobile */}
           <div className="absolute bottom-4 left-4 z-10 transition-transform duration-500 transform-gpu translate-y-0 group-hover:-translate-y-1">
             <div className="bg-primary/90 text-white font-bold px-3 py-1.5 rounded-md shadow-lg backdrop-blur-sm text-sm sm:text-base">
               {formatPrice(property.price)}
             </div>
           </div>
-          
+
           {/* View details overlay - appears on hover (hidden on mobile touch) */}
           <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-5 pointer-events-none">
             <div className="bg-primary/90 text-white px-4 py-2 rounded-md shadow-lg transform-gpu translate-y-4 group-hover:translate-y-0 transition-transform duration-500 font-medium flex items-center">
@@ -122,7 +128,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               <i className='bx bx-right-arrow-alt ml-2'></i>
             </div>
           </div>
-          
+
           {/* Mobile-specific touch indicator - always visible on small screens */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 sm:hidden flex items-end justify-center pb-12">
             <div className="bg-primary/80 text-white px-3 py-1 rounded-full text-xs shadow-lg backdrop-blur-sm flex items-center animate-pulse">
@@ -136,7 +142,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div className="absolute top-0 right-0 w-10 sm:w-12 h-10 sm:h-12 overflow-hidden">
           <div className="absolute -top-6 -right-6 w-12 h-12 bg-primary/10 rotate-45 transform-gpu origin-bottom-left group-hover:bg-primary/20 transition-colors duration-500"></div>
         </div>
-        
+
         <div className="flex flex-col mb-2">
           <h3 className={`font-serif text-base sm:text-lg md:text-xl font-bold ${isDarkMode ? 'text-white' : 'text-foreground'} group-hover:text-primary transition-colors duration-300 line-clamp-1`}>
             {property.address}
