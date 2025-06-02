@@ -198,41 +198,9 @@ export class MemoryStorage implements IStorage {
         seoMetaDescription: 'Beautiful 3-bedroom home with modern kitchen and large backyard in Del Mar neighborhood',
         seoKeywords: 'Laredo house for sale, Don Tomas Loop, 3 bedroom home'
       },
+      
       {
         id: 2,
-        type: 'condo',
-        address: '505 Shiloh Dr Unit 6',
-        city: 'Laredo',
-        state: 'TX',
-        zipCode: '78045',
-        price: 95000,
-        bedrooms: 2,
-        bathrooms: '1.0',
-        squareFeet: 900,
-        description: 'Affordable 2-bedroom, 1-bathroom condo in a well-maintained complex. Perfect for first-time buyers or investors.',
-        features: ['updated kitchen', 'community pool', 'laundry hookups', 'covered parking', 'gated community'],
-        images: [
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-primary-photo(1).jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo.jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(1).jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(2).jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(3).jpg'
-        ],
-        status: 'active',
-        featured: true,
-        neighborhoodId: 2,
-        yearBuilt: 2010,
-        parkingSpaces: 1,
-        lat: '27.5742',
-        lng: '-99.4685',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        seoMetaTitle: '2BR Condo for Sale - 505 Shiloh Dr Unit 6, Laredo TX',
-        seoMetaDescription: 'Affordable 2-bedroom condo with community amenities in North Laredo',
-        seoKeywords: 'Laredo condo for sale, Shiloh Drive, affordable housing'
-      },
-      {
-        id: 3,
         type: 'house',
         address: '1314 Iturbide St',
         city: 'Laredo',
@@ -268,7 +236,7 @@ export class MemoryStorage implements IStorage {
         seoKeywords: 'Laredo house for sale, Iturbide Street, downtown Laredo'
       },
       {
-        id: 4,
+        id: 3,
         type: 'house',
         address: '1318 Iturbide St',
         city: 'Laredo',
@@ -304,7 +272,7 @@ export class MemoryStorage implements IStorage {
         seoKeywords: 'Laredo house for sale, 4 bedroom home, family house'
       },
       {
-        id: 5,
+        id: 4,
         type: 'house',
         address: '3405 Juan Novoa Dr',
         city: 'Laredo',
@@ -334,7 +302,7 @@ export class MemoryStorage implements IStorage {
         seoKeywords: 'Laredo house for sale, Juan Novoa Drive, modern home'
       },
       {
-        id: 6,
+        id: 5,
         type: 'house',
         address: '3720 Flores Ave',
         city: 'Laredo',
