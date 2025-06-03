@@ -690,7 +690,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/health', healthCheck);
 
   // Import and configure AI SEO services
-  import { configureAISEOServices } from './ai-seo-services';
+  const { configureAISEOServices } = await import('./ai-seo-services');
   configureAISEOServices(app);
 
   // Simple health check for load balancers
