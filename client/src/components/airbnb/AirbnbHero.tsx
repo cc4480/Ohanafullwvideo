@@ -78,17 +78,7 @@ export function AirbnbHero() {
         
         {/* Removed floating particles effect */}
         
-        {/* Enhanced scroll indicator */}
-        <div className="absolute bottom-8 left-0 right-0 flex justify-center z-20">
-          <a 
-            href="#browse-rentals" 
-            className="bg-gradient-to-r from-blue-600/60 to-indigo-600/60 hover:from-blue-500 hover:to-indigo-500 backdrop-blur-md transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center shadow-lg shadow-blue-900/20 animate-bounce-slow"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </a>
-        </div>
+        
       </div>
     </section>
   );
