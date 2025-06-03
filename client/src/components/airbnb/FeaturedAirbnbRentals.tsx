@@ -1,14 +1,5 @@
-
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { StarIcon, ArrowRightIcon, HomeIcon, MapPinIcon, SparklesIcon } from "lucide-react";
-import { Link } from "wouter";
-import AirbnbRentalCard from "./AirbnbRentalCard";
-import APIFallback from "@/components/APIFallback";
-import type { AirbnbRental } from "@shared/schema";
+import React, { useState, useEffect } from "react";
+import OhanaVideoPlayer from "../ui/OhanaVideoPlayer";
 
 interface FeaturedAirbnbRentalsProps {
   title?: string;
@@ -17,205 +8,103 @@ interface FeaturedAirbnbRentalsProps {
   showViewAllButton?: boolean;
 }
 
-export default function FeaturedAirbnbRentals({
-  title = "Featured Luxury Rentals",
-  subtitle = "Handpicked premium accommodations for your perfect stay",
+export function FeaturedAirbnbRentals({
+  title = "Experience Laredo Luxury Living",
+  subtitle = "Take a virtual tour of our exclusive properties",
   limit = 4,
-  showViewAllButton = true,
+  showViewAllButton = false
 }: FeaturedAirbnbRentalsProps) {
-  const {
-    data: rentals,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<AirbnbRental[]>({
-    queryKey: [`/api/airbnb/featured?limit=${limit}`],
-    queryFn: async ({ queryKey }) => {
-      const path = queryKey[0];
-      const response = await fetch(path);
-      if (!response.ok) {
-        throw new Error("Failed to fetch featured rentals");
-      }
-      return response.json();
-    },
-  });
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+  const [isVisible, setIsVisible] = useState(false);
+  
+  // Add scroll reveal effect
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
       },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
-  };
-
+      { threshold: 0.2 }
+    );
+    
+    const section = document.getElementById('browse-rentals');
+    if (section) observer.observe(section);
+    
+    return () => observer.disconnect();
+  }, []);
+  
   return (
-    <section className="py-16 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-100/50 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-100/50 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-50/30 to-purple-50/30 rounded-full blur-3xl"></div>
-      </div>
+    <section 
+      id="browse-rentals" 
+      className="py-16 px-4 md:px-8 relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-900 to-black"
+    >
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-black to-transparent opacity-70"></div>
+      <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-black to-transparent opacity-70"></div>
+      <div className="absolute -top-40 -right-40 w-[40vw] h-[40vw] rounded-full bg-indigo-900/10 blur-3xl animate-pulse-slow"></div>
+      
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <h2 className="text-4xl font-bold mb-4 text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-200">{title}</h2>
+          <div className="h-1 w-24 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto mb-6 rounded-full"></div>
+          <p className="text-gray-300 max-w-2xl mx-auto text-lg">{subtitle}</p>
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 relative z-10">
-        {/* Header Section */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <Badge className="mb-4 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0">
-            <SparklesIcon className="w-4 h-4 mr-2" />
-            Premium Collection
-          </Badge>
-          
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
-            {title}
-          </h2>
-          
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            {subtitle}
-          </p>
-
-          {/* Decorative elements */}
-          <div className="flex justify-center items-center mt-6 gap-2">
-            <div className="w-12 h-0.5 bg-gradient-to-r from-transparent to-blue-500"></div>
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <div className="w-8 h-0.5 bg-blue-500"></div>
-            <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-            <div className="w-12 h-0.5 bg-gradient-to-l from-transparent to-purple-500"></div>
+        <div className={`w-full max-w-5xl mx-auto relative transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          {/* Video container with subtle animations and glow effect */}
+          <div className="relative rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(79,70,229,0.5)] transform transition-transform duration-700 hover:scale-[1.01] bg-black" style={{ aspectRatio: '16/9' }}>
+            {/* Animated border - BRIGHTER */}
+            <div className="absolute inset-0 z-0 bg-gradient-to-tr from-blue-600/50 via-indigo-500/40 to-purple-600/50 rounded-2xl animate-pulse-slow shadow-[0_0_40px_15px_rgba(79,70,229,0.4)] ring-2 ring-blue-400/70"></div>
+            
+            {/* Corners decoration - BRIGHTER */}
+            <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-blue-400 rounded-tl-2xl z-10"></div>
+            <div className="absolute top-0 right-0 w-20 h-20 border-t-4 border-r-4 border-indigo-400 rounded-tr-2xl z-10"></div>
+            <div className="absolute bottom-0 left-0 w-20 h-20 border-b-4 border-l-4 border-blue-400 rounded-bl-2xl z-10"></div>
+            <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-indigo-400 rounded-br-2xl z-10"></div>
+            
+            <OhanaVideoPlayer 
+              src="/api/video/ohana/highperf" 
+              poster="/shiloh-primary.jpg"
+              autoPlay={true}
+              muted={true}
+              loop={true}
+              className="w-full h-full bg-black/90 z-10 relative"
+            />
           </div>
-        </motion.div>
-
-        {/* Content */}
-        <APIFallback
-          isLoading={isLoading}
-          isError={isError}
-          error={error as Error}
-          queryKey={`/api/airbnb/featured?limit=${limit}`}
-        >
-          {rentals && rentals.length > 0 ? (
-            <>
-              {/* Rentals Grid */}
-              <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-12"
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-              >
-                {rentals.map((rental) => (
-                  <motion.div
-                    key={rental.id}
-                    variants={itemVariants}
-                    className="group"
-                    whileHover={{ y: -5 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="h-full transform transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-blue-500/10">
-                      <AirbnbRentalCard rental={rental} featured />
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {/* Features Section */}
-              <motion.div
-                className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-              >
-                {[
-                  {
-                    icon: <HomeIcon className="h-8 w-8" />,
-                    title: "Luxury Amenities",
-                    description: "Premium furnishings, high-end appliances, and thoughtful touches throughout."
-                  },
-                  {
-                    icon: <MapPinIcon className="h-8 w-8" />,
-                    title: "Prime Locations",
-                    description: "Strategically located near Laredo's best attractions and business districts."
-                  },
-                  {
-                    icon: <StarIcon className="h-8 w-8" />,
-                    title: "5-Star Service",
-                    description: "24/7 support and concierge services to ensure your perfect stay."
-                  }
-                ].map((feature, index) => (
-                  <div
-                    key={index}
-                    className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group hover:bg-white"
-                  >
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900">
-                      {feature.title}
-                    </h3>
-                    <p className="text-gray-600">
-                      {feature.description}
-                    </p>
-                  </div>
-                ))}
-              </motion.div>
-
-              {/* CTA Section */}
-              {showViewAllButton && (
-                <motion.div
-                  className="text-center"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.5 }}
-                >
-                  <Link href="/airbnb">
-                    <Button
-                      size="lg"
-                      className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-xl hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 group"
-                    >
-                      View All Rentals
-                      <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
-                </motion.div>
-              )}
-            </>
-          ) : (
-            <motion.div
-              className="text-center py-12"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+          
+          {/* Removed floating particles */}
+        </div>
+        
+        {/* CTA buttons */}
+        <div className={`mt-10 text-center transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a 
+              href="/contact" 
+              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium transition-all duration-300 hover:from-blue-500 hover:to-indigo-500 hover:shadow-lg hover:shadow-blue-500/20 transform hover:-translate-y-1"
             >
-              <HomeIcon className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-2xl font-semibold text-gray-600 mb-2">
-                No Featured Rentals Available
-              </h3>
-              <p className="text-gray-500">
-                Check back soon for our latest luxury accommodations.
-              </p>
-            </motion.div>
-          )}
-        </APIFallback>
+              Contact Us About This Property
+              <svg className="ml-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+            
+            {showViewAllButton && (
+              <a 
+                href="/airbnb" 
+                className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 text-white font-medium transition-all duration-300 hover:bg-white/20 hover:shadow-lg transform hover:-translate-y-1 border border-blue-400/30"
+              >
+                View All Rentals
+                <svg className="ml-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );
 }
+
+export default FeaturedAirbnbRentals;
