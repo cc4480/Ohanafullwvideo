@@ -319,15 +319,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                         </div>
                       </div>
                       
-                      {rental.airbnbUrl ? (
-                        <a href={rental.airbnbUrl} target="_blank" rel="noopener noreferrer" className="block w-full mb-4">
-                          <Button className="w-full bg-[#FF5A5F] hover:bg-[#E04348] text-white">
-                            Book on Airbnb
-                          </Button>
-                        </a>
-                      ) : (
-                        <Button className="w-full mb-4">Check availability</Button>
-                      )}
+                      <Button className="w-full mb-4">Check availability</Button>
                     </div>
                     
                     {rental.cancellationPolicy && (

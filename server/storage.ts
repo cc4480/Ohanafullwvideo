@@ -61,8 +61,6 @@ class MemoryStorage {
   private neighborhoods: Neighborhood[] = [];
   private users: User[] = [];
   private messages: Message[] = [];
-  private airbnbRentals: AirbnbRental[] = [];
-  private favorites: Favorite[] = [];
   private isInitialized = false;
   private _propertiesCache: Map<number, Property> = new Map();
   private _searchCache: Map<string, Property[]> = new Map();
@@ -308,69 +306,7 @@ class MemoryStorage {
       }
     ];
 
-    // Initialize Airbnb rentals
-    this.airbnbRentals = [
-      {
-        id: 1,
-        title: '505 Shiloh Dr Unit 6 - Modern 2BR Condo in Laredo',
-        description: '505 Shiloh Dr is a condo located in Webb County and the 78045 ZIP Code. This area is served by the United Independent attendance zone. Features ceiling fans, refrigerator, and tile floors. Perfect for vacation rentals with modern amenities.',
-        address: '505 Shiloh Dr Unit 6',
-        city: 'Laredo',
-        state: 'TX',
-        zipCode: '78045',
-        country: 'US',
-        lat: 27.5887,
-        lng: -99.4855,
-        price: 875,
-        currency: 'USD',
-        guests: 4,
-        bedrooms: 2,
-        beds: 2,
-        bathrooms: 2,
-        squareFeet: 960,
-        images: [
-          'assets/shiloh-dr/shiloh-exterior-full.jpg',
-          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-primary-photo(1).jpg',
-          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo.jpg',
-          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(1).jpg',
-          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(2).jpg',
-          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(3).jpg'
-        ],
-        amenities: [
-          'Ceiling Fans',
-          'Refrigerator', 
-          'Tile Floors',
-          'Modern Kitchen',
-          'Air Conditioning',
-          'Parking Available',
-          'Near Shopping Centers',
-          'Close to Hospitals',
-          'Schools Nearby'
-        ],
-        highlights: [
-          'Located in desirable Webb County area',
-          '13-minute walk to Las Brisas Plaza',
-          '3-minute drive to Doctors Hospital',
-          'Near Texas A&M International University',
-          'Close to Laredo International Airport',
-          'Walk Score of 59 (Somewhat Walkable)'
-        ],
-        airbnbUrl: 'https://www.airbnb.com/rooms/shiloh-dr-unit-6-laredo',
-        featured: true,
-        rating: 4.8,
-        reviewCount: 24,
-        cancellationPolicy: 'Free cancellation up to 48 hours before check-in',
-        checkInTime: '15:00',
-        checkOutTime: '11:00',
-        minimumStay: 2,
-        maximumStay: 30,
-        instantBook: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ];
-
-    this.nextId = Math.max(...this.properties.map(p => p.id), ...this.neighborhoods.map(n => n.id), ...this.airbnbRentals.map(r => r.id)) + 1;
+    this.nextId = Math.max(...this.properties.map(p => p.id), ...this.neighborhoods.map(n => n.id)) + 1;
   }
 
   async getUser(id: number): Promise<User | undefined> {
