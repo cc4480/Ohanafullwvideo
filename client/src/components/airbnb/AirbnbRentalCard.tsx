@@ -138,11 +138,20 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
             <span className="text-sm text-muted-foreground"> / night</span>
           </div>
           
-          <Link href={`/airbnb/${rental.id}`}>
-            <Button variant="outline" size="sm" className="gap-1">
-              View <ChevronsRightIcon className="h-4 w-4" />
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            {rental.airbnbUrl && (
+              <a href={rental.airbnbUrl} target="_blank" rel="noopener noreferrer">
+                <Button size="sm" className="bg-[#FF5A5F] hover:bg-[#E04348] text-white text-xs px-2">
+                  Book
+                </Button>
+              </a>
+            )}
+            <Link href={`/airbnb/${rental.id}`}>
+              <Button variant="outline" size="sm" className="gap-1">
+                View <ChevronsRightIcon className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>
