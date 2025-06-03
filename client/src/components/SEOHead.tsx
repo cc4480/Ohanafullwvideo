@@ -72,12 +72,23 @@ export default function SEOHead({
   // Format description for optimal length (between 140-160 characters)
   const optimizedDescription = description.length > 160 ? description.substring(0, 157) + '...' : description;
   
-  // Extend keywords with main real estate terms for better SEO relevance
+  // AI-optimized keyword enhancement for maximum SEO impact
   const enhancedKeywords = [
     ...keywords,
+    // Primary real estate keywords
     'real estate', 'homes for sale', 'Laredo properties', 'Texas real estate',
     'home buying', 'property listings', 'realtors', 'residential properties',
-    'commercial properties', 'land for sale', 'Ohana Realty'
+    'commercial properties', 'land for sale', 'Ohana Realty',
+    // AI-optimized long-tail keywords
+    'best real estate agent Laredo TX', 'luxury homes Laredo Texas',
+    'affordable houses for sale Laredo', 'Laredo real estate market trends',
+    'homes for sale near me Laredo', 'Laredo Texas property investment',
+    // Local SEO keywords
+    'Webb County real estate', 'South Texas properties', 'Rio Grande Valley homes',
+    'Laredo neighborhood properties', 'Texas Mexico border real estate',
+    // Voice search optimization
+    'how to buy a house in Laredo', 'what are home prices in Laredo',
+    'where to find houses for sale Laredo TX', 'best neighborhoods Laredo Texas'
   ].filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
   
   // Generate JSON-LD for organization
