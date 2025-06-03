@@ -20,8 +20,8 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
   // Process image paths
   useEffect(() => {
     if (!rental.images || rental.images.length === 0) {
-      // If no images, use a placeholder
-      setImages(['./shiloh-primary.webp']);
+      // If no images, use a fallback
+      setImages(['/assets/fallback-image.svg']);
       return;
     }
 
@@ -30,7 +30,7 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
       // If it's already a URL, use it as is
       if (img.startsWith('http')) return img;
       
-      // If it has a leading slash, remove it (from /shiloh-main.jpg to shiloh-main.jpg)
+      // If it has a leading slash, remove it (from /assets/... to assets/...)
       if (img.startsWith('/')) {
         return img.substring(1);
       }
@@ -39,7 +39,7 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
     });
     
     setImages(processedImages);
-    console.log('Processed images:', processedImages);
+    console.log('AirbnbRentalCard - Processed images for', rental.title, ':', processedImages);
   }, [rental.images]);
 
   // Format price with commas

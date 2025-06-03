@@ -329,12 +329,12 @@ class MemoryStorage {
         bathrooms: 2,
         squareFeet: 960,
         images: [
-          '/assets/shiloh-dr/shiloh-exterior-full.jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-primary-photo(1).jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo.jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(1).jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(2).jpg',
-          '/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(3).jpg'
+          'assets/shiloh-dr/shiloh-exterior-full.jpg',
+          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-primary-photo(1).jpg',
+          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo.jpg',
+          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(1).jpg',
+          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(2).jpg',
+          'assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(3).jpg'
         ],
         amenities: [
           'Ceiling Fans',
