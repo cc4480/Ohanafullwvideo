@@ -10,16 +10,16 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const [isDark, setIsDark] = useState(false);
-  
+
   // Detect dark mode from document class
   useEffect(() => {
     const checkDarkMode = () => {
       setIsDark(document.documentElement.classList.contains('dark'));
     };
-    
+
     // Check immediately
     checkDarkMode();
-    
+
     // Set up observer to monitor class changes
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -31,32 +31,32 @@ export default function Header() {
         }
       });
     });
-    
+
     observer.observe(document.documentElement, { attributes: true });
-    
+
     return () => observer.disconnect();
   }, []);
-  
+
   // Handle scroll effect for header
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    
+
     // Initial check
     handleScroll();
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
+
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       const mobileMenu = document.getElementById("mobileMenu");
       const menuButton = document.getElementById("menuButton");
-      
+
       if (
         mobileMenuOpen && 
         mobileMenu && 
@@ -67,42 +67,42 @@ export default function Header() {
         setMobileMenuOpen(false);
       }
     };
-    
+
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, [mobileMenuOpen]);
-  
+
   // Close mobile menu on location change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
-  
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
-  
+
   // Dynamic header styles based on scroll position
   const headerClasses = scrolled
     ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/10" 
     : location === "/"
       ? "bg-transparent"  // Completely transparent on homepage when not scrolled
       : "bg-background/95 backdrop-blur-md";
-      
+
   const textClasses = (isActive: boolean) => {
     if (scrolled) {
       return `hover:text-primary font-medium transition-all duration-300 relative
         ${isActive ? 'text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-primary after:rounded-full' : 'text-foreground'}`;
     }
-    
+
     if (location === "/" && !scrolled) {
       return `hover:text-white hover:brightness-125 font-medium transition-all duration-300 
         ${isActive ? 'text-secondary font-bold after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-secondary after:rounded-full' : 'text-white'}`;
     }
-    
+
     return `hover:text-primary font-medium transition-all duration-300 relative
       ${isActive ? 'text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-[3px] after:w-full after:bg-primary after:rounded-full' : 'text-foreground'}`;
   };
-  
+
   return (
     <header className={`sticky top-0 z-50 transition-all duration-500 ${headerClasses}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -125,14 +125,17 @@ export default function Header() {
             </div>
           </div>
         </Link>
-        
+
         <nav className="hidden md:flex items-center space-x-8 animate-slide-down">
           {[
             { path: '/', label: 'Home' },
             { path: '/properties', label: 'Properties' },
             { path: '/airbnb', label: 'Vacation Rentals' },
             { path: '/neighborhoods', label: 'Neighborhoods' },
-            { path: '/#about', label: 'About' }
+            { path: '/#about', label: 'About' },
+            { path: '/contact', label: 'Contact' },
+            { path: '/ai-seo', label: 'AI SEO' },
+            { path: '/ai-search', label: 'AI Search' }
           ].map((item, index) => (
             <Link 
               key={item.path} 
@@ -145,10 +148,10 @@ export default function Header() {
             </Link>
           ))}
         </nav>
-        
+
         <div className="flex items-center gap-4 animate-fade-in">
 {/* Desktop Contact button removed completely as requested */}
-          
+
           <button 
             className={`md:hidden focus:outline-none ${scrolled || location !== "/" ? 'text-foreground' : 'text-white'} p-2`}
             id="menuButton"
@@ -165,7 +168,7 @@ export default function Header() {
           </button>
         </div>
       </div>
-      
+
       {/* Mobile menu with improved mobile UX */}
       <div 
         id="mobileMenu" 
@@ -188,7 +191,9 @@ export default function Header() {
             { path: '/airbnb', label: 'Vacation Rentals', icon: 'bx-hotel' },
             { path: '/neighborhoods', label: 'Neighborhoods', icon: 'bx-map-alt' },
             { path: '/#about', label: 'About', icon: 'bx-user' },
-            { path: '/contact', label: 'Contact', icon: 'bx-envelope' }
+            { path: '/contact', label: 'Contact', icon: 'bx-envelope' },
+            { path: '/ai-seo', label: 'AI SEO', icon: 'bx-brain' },
+            { path: '/ai-search', label: 'AI Search', icon: 'bx-search-alt-2'}
           ].map((item, index) => (
             <Link 
               key={item.path} 
@@ -209,7 +214,7 @@ export default function Header() {
               )}
             </Link>
           ))}
-          
+
           {/* Mobile-specific bottom actions for enhanced UX */}
           <div className="mt-4 pt-4 border-t border-border/30">
             <Link href="/contact">

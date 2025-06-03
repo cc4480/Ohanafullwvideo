@@ -36,6 +36,8 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const EnhancedNeighborhoodDemo = lazy(() => import("@/pages/EnhancedNeighborhoodDemo"));
 const BacklinkManagement = lazy(() => import("@/pages/BacklinkManagement"));
 const DeploymentReadiness = lazy(() => import("@/pages/DeploymentReadiness"));
+import AISEODashboard from '@/components/AISEODashboard';
+import AISearchCapabilities from '@/components/AISearchCapabilities';
 
 // Import our $10,000 Enterprise-Grade SEO Solution
 import SEODashboard from "@/components/SEODashboard";

@@ -689,6 +689,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Comprehensive health check endpoint
   app.get('/api/health', healthCheck);
 
+  // Import and configure AI SEO services
+  import { configureAISEOServices } from './ai-seo-services';
+  configureAISEOServices(app);
+
   // Simple health check for load balancers
   app.get('/api/ping', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
