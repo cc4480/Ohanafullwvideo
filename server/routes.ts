@@ -380,22 +380,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get user's favorite properties
-  apiRouter.get("/favorites/:userId", async (req, res) => {
+  // Favorites endpoints
+  apiRouter.get('/favorites/:userId', async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-
       if (isNaN(userId)) {
-        return res.status(400).json({ message: "Invalid user ID" });
+        return res.status(400).json({ error: 'Invalid user ID' });
       }
 
-      // Get the user's favorites
       const favorites = await storage.getUserFavorites(userId);
 
-      res.json(favorites);
+      // Log for debugging
+      console.log(`Favorites for user ${userId}:`, favorites);
+
+      // Ensure we return an array
+      res.json(Array.isArray(favorites) ? favorites : []);
     } catch (error) {
-      console.error("Error fetching user favorites:", error);
-      res.status(500).json({ message: "Failed to fetch favorites" });
+      console.error('Error fetching favorites:', error);
+      res.status(500).json({ error: 'Failed to fetch favorites' });
     }
   });
 
@@ -913,7 +915,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     .category { display: flex; flex-wrap: wrap; }
     .category-column { flex: 1; min-width: 250px; margin-right: 20px; }
     header { display: flex; align-items: center; margin-bottom: 30px; }
-    .logo { max-width: 200px; margin-right: 20px; }
+    .logo{ max-width: 200px; margin-right: 20px; }
     .back-link { margin-top: 40px; display: inline-block; padding: 10px 20px; background-color: #0A2342; color: white; border-radius: 4px; }
     footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; }
     @media (max-width: 768px) {

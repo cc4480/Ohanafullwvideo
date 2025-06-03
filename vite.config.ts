@@ -21,7 +21,12 @@ export default defineConfig({
       plugins: [
         (await import('tailwindcss')).default,
         (await import('autoprefixer')).default
-      ]
+      ],
+      // Prevent PostCSS warnings
+      parser: false,
+      map: false,
+      from: undefined,
+      to: undefined
     }
   },
   resolve: {

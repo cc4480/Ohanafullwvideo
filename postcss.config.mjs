@@ -11,5 +11,6 @@ export default {
   // Proper PostCSS options to prevent warnings
   parser: false,
   map: false,
-  from: undefined
+  from: undefined,
+  to: undefined
 };

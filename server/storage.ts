@@ -64,6 +64,12 @@ class MemoryStorage {
   private isInitialized = false;
   private _propertiesCache: Map<number, Property> = new Map();
   private _searchCache: Map<string, Property[]> = new Map();
+  // Initialize favorites storage with default user
+  private favorites: Map<number, number[]> = new Map<number, number[]>([[1, []]]);
+  private airbnbRentals: AirbnbRental[] = [];
+  private seoKeywords: SeoKeyword[] = [];
+  private seoRankings: SeoRanking[] = [];
+  private nextId = 1;
 
   constructor() {
     // Initialize data immediately for instant access
@@ -545,15 +551,21 @@ class MemoryStorage {
       return [];
     }
 
-    const favoriteIds = this.users
-      .filter((user) => user.id === userId)
-      .flatMap((user) => user.favoriteProperties || []);
+    const favoriteIds = await this.getFavorites(userId);
 
     return this.properties.filter((property) => favoriteIds.includes(property.id));
   }
 
   async isFavorite(userId: number, propertyId: number): Promise<boolean> {
     return this.favorites.some(f => f.userId === userId && f.propertyId === propertyId);
+  }
+
+  async getFavorites(userId: number): Promise<number[]> {
+    // Ensure user exists in favorites map
+    if (!this.favorites.has(userId)) {
+      this.favorites.set(userId, []);
+    }
+    return this.favorites.get(userId) || [];
   }
 
   // Airbnb methods (simplified for now)
