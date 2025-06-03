@@ -1,15 +1,10 @@
 import express, { type Express } from "express";
 import { createServer, type Server } from "http";
-import { storage, initializeSampleData } from "./storage";
+import { storage } from "./storage";
 import { insertMessageSchema } from "@shared/schema";
-import { z } from "zod";
-import { db } from "./db";
-import { sql } from "drizzle-orm";
 import path from "path";
 import fs from "fs";
-import WebSocket, { WebSocketServer } from "ws";
-
-// Import health check and testing
+import { WebSocketServer } from "ws";
 import { healthCheck } from './health-check';
 import { testAllEndpoints } from './endpoint-tests';
 
@@ -42,14 +37,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }));
 
 
-  // Initialize database with sample data
-  try {
-    console.log("Initializing database with sample data...");
-    await initializeSampleData();
-    console.log("Database initialization complete.");
-  } catch (error) {
-    console.error("Error initializing database:", error);
-  }
+  // Database is initialized in server/index.ts
   const apiRouter = express.Router();
 
   apiRouter.get("/properties", async (req, res) => {
@@ -1169,31 +1157,18 @@ Crawl-delay: 1
       let initialChunkSize: number; // Special initial chunk for immediate playback start
       let logPrefix: string;
 
-      // Configure settings based on endpoint type with optimized chunk sizes
-      if (endpointType === 'mobile') {
-        // Mobile-optimized settings with smaller 2MB chunks for reliable playback
-        chunkSize = 2 * 1024 * 1024;     // 2MB chunks for smooth mobile playback
-        bufferSize = 2 * 1024 * 1024;    // 2MB buffer - matching buffer size
-        initialChunkSize = 2 * 1024 * 1024; // 2MB initial chunk
-        logPrefix = '📱 Mobile';
-        console.log(`${logPrefix}: Serving super-optimized video for mobile: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`); 
-      } 
-      else if (endpointType === 'highperf') {
-        // High-performance settings optimized for 16GB+ RAM systems
-        chunkSize = 16 * 1024 * 1024;    // 16MB chunks for high-RAM devices
-        bufferSize = 24 * 1024 * 1024;   // 24MB buffer for much faster loading
-        initialChunkSize = 8 * 1024 * 1024; // 8MB initial chunk for near-instant startup
-        logPrefix = '🖥️ HighPerf';
-        console.log(`${logPrefix}: Serving ultra high-performance optimized video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
-      } 
-      else {
-        // Standard settings with balanced 4MB chunk size
-        chunkSize = 4 * 1024 * 1024;     // 4MB chunks - balanced for most devices
-        bufferSize = 4 * 1024 * 1024;    // 4MB buffer - matching buffer size
-        initialChunkSize = 3 * 1024 * 1024; // 3MB initial chunk for quick start
-        logPrefix = '📺 Standard';
-        console.log(`${logPrefix}: Serving optimized standard video: ${videoFileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`);
-      }
+      // Configure settings based on endpoint type
+      const configs = {
+        mobile: { chunk: 2, buffer: 2, initial: 2, prefix: '📱 Mobile' },
+        highperf: { chunk: 16, buffer: 24, initial: 8, prefix: '🖥️ HighPerf' },
+        standard: { chunk: 4, buffer: 4, initial: 3, prefix: '📺 Standard' }
+      };
+      
+      const config = configs[endpointType];
+      chunkSize = config.chunk * 1024 * 1024;
+      bufferSize = config.buffer * 1024 * 1024;
+      initialChunkSize = config.initial * 1024 * 1024;
+      logPrefix = config.prefix;
 
       const range = req.headers.range;
 
@@ -1395,96 +1370,45 @@ Crawl-delay: 1
     serveVideoFile(req, res, 'property-video.mp4');
   });
 
-  // YouTube-like streaming endpoints for OHANAVIDEOMASTER.mp4
-  app.get('/api/video/ohana', (req, res) => {
-    serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'standard');
+  // Video streaming endpoints
+  const videoEndpoints = [
+    { path: '/api/video/ohana', type: 'standard' as const },
+    { path: '/api/video/ohana/mobile', type: 'mobile' as const },
+    { path: '/api/video/ohana/highperf', type: 'highperf' as const }
+  ];
+
+  videoEndpoints.forEach(({ path, type }) => {
+    app.get(path, (req, res) => {
+      serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', type);
+    });
   });
 
-  // Mobile-optimized video endpoint with smaller chunks and buffer
-  app.get('/api/video/ohana/mobile', (req, res) => {
-    serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'mobile');
-  });
-
-  // High-performance optimized endpoint with larger chunks and buffer
-  app.get('/api/video/ohana/highperf', (req, res) => {
-    serveAdaptiveVideo(req, res, 'OHANAVIDEOMASTER.mp4', 'highperf');
-  });
-
-  // Legacy function to maintain compatibility with existing code
-  // Will be gradually replaced by serveAdaptiveVideo
-  function serveVideoFile(req: express.Request, res: express.Response, videoFileName: string) {
-    try {
-      // Simply redirect to the adaptive video serving function with standard settings
-      serveAdaptiveVideo(req, res, videoFileName, 'standard');
-    } catch (error) {
-      console.error(`Legacy video serving error for ${videoFileName}:`, error);
-      if (!res.headersSent) {
-        res.status(500).send('Error serving video file');
-      }
-    }
-  }
-
-  // Daily file creation function
-  function createDailyFile() {
+  // Daily file management utilities
+  const createDailyFile = () => {
     try {
       const messagesDir = path.join(process.cwd(), 'messages');
-      
-      // Ensure messages directory exists
-      if (!fs.existsSync(messagesDir)) {
-        fs.mkdirSync(messagesDir, { recursive: true });
-      }
+      fs.mkdirSync(messagesDir, { recursive: true });
 
-      const now = new Date();
-      const dateString = now.toISOString().split('T')[0]; // YYYY-MM-DD format
-      const timestamp = now.toISOString();
+      const dateString = new Date().toISOString().split('T')[0];
+      const dailyFilePath = path.join(messagesDir, `valentin-cuellar-messages-${dateString}.txt`);
       
-      const dailyFileName = `valentin-cuellar-messages-${dateString}.txt`;
-      const dailyFilePath = path.join(messagesDir, dailyFileName);
-      
-      // Only create if file doesn't exist
       if (!fs.existsSync(dailyFilePath)) {
-        const headerText = `
-=================================================================
-DAILY MESSAGE LOG FOR VALENTIN CUELLAR
-Date: ${dateString}
-Created: ${timestamp}
-=================================================================
-This file contains all messages received on ${dateString}
+        const headerText = `=================================================================
+DAILY MESSAGE LOG FOR VALENTIN CUELLAR - ${dateString}
 =================================================================
 
 `;
-        
         fs.writeFileSync(dailyFilePath, headerText);
-        console.log(`Daily message file created: ${dailyFilePath}`);
+        console.log(`Daily message file created for ${dateString}`);
       }
     } catch (error) {
       console.error("Error creating daily file:", error);
     }
-  }
-
-  // Create today's file immediately
-  createDailyFile();
-
-  // Schedule daily file creation at midnight (00:00)
-  const scheduleNextDailyFile = () => {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0); // Set to midnight
-    
-    const timeUntilMidnight = tomorrow.getTime() - now.getTime();
-    
-    setTimeout(() => {
-      createDailyFile();
-      // Schedule the next one (24 hours later)
-      setInterval(createDailyFile, 24 * 60 * 60 * 1000); // 24 hours
-    }, timeUntilMidnight);
-    
-    console.log(`Next daily file creation scheduled for: ${tomorrow.toISOString()}`);
   };
 
-  // Start the daily file scheduler
-  scheduleNextDailyFile();
+  // Initialize daily file system
+  createDailyFile();
+  setInterval(createDailyFile, 24 * 60 * 60 * 1000);
 
   return server;
 }

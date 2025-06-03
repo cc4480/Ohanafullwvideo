@@ -683,6 +683,18 @@ export function OhanaVideoPlayer({
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
+  // Add missing ref for logging optimization
+  const [qualityMessage, setQualityMessage] = useState<string>("");
+  const [isHighPerformance, setIsHighPerformance] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState<string>("");
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const qualityCheckInterval = useRef<NodeJS.Timeout | null>(null);
+  const performanceCheckInterval = useRef<NodeJS.Timeout | null>(null);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastLoggedRatio = useRef<number>(0);
+
   return (
     <div 
       ref={containerRef}
