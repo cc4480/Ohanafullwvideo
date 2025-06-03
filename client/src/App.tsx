@@ -35,6 +35,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 // Enhanced SEO Pages
 const EnhancedNeighborhoodDemo = lazy(() => import("@/pages/EnhancedNeighborhoodDemo"));
 const BacklinkManagement = lazy(() => import("@/pages/BacklinkManagement"));
+const DeploymentReadiness = lazy(() => import("@/pages/DeploymentReadiness"));
 
 // Import our $10,000 Enterprise-Grade SEO Solution
 import SEODashboard from "@/components/SEODashboard";
@@ -49,20 +50,20 @@ const LOGO_URL = "https://ohanarealty.com/logo.png";
 
 function App() {
   // Main App component with advanced optimizations and enterprise-grade SEO
-  
+
   // Track app loading state to show loading screen
   const [isAppLoaded, setIsAppLoaded] = useState<boolean>(false);
-  
+
   // Get current location for route change detection
   const [location] = useLocation();
   const prevLocationRef = useRef(location);
-  
+
   // Initialize the mobile experience hook for mobile optimizations
   const { isMobile, isTouchDevice } = useMobile();
-  
+
   // Base URL for the website - used for SEO components and sitemap generation
   const baseUrl = "https://ohanarealty.com";
-  
+
   // Organization information for schema.org markup
   const organizationInfo = {
     name: "Ohana Realty",
@@ -81,37 +82,37 @@ function App() {
       longitude: -99.4803
     }
   };
-  
+
   // Force scroll to top on all route changes
   useEffect(() => {
     if (location !== prevLocationRef.current) {
       console.log("GLOBAL ROUTE CHANGE DETECTED - FORCING SCROLL RESET");
-      
+
       // Define an aggressive scroll reset function
       const forceScrollToTop = () => {
         console.log("Executing global scroll reset");
-        
+
         // Use all known techniques to reset scroll
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
-        
+
         // Forcefully reset scroll on all scrollable elements
         document.querySelectorAll('main, section, article, div, .scrollable, .overflow-auto, .overflow-y-auto').forEach(el => {
           if (el instanceof HTMLElement) {
             el.scrollTop = 0;
           }
         });
-        
+
         // Special hack for stubborn mobile browsers
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
           // Temporarily disable scrolling to force position
           document.body.style.overflow = 'hidden';
           document.documentElement.style.overflow = 'hidden';
-          
+
           // Force browser to recognize the change
           void document.body.offsetHeight;
-          
+
           // After a short delay, restore scrolling at the top position
           setTimeout(() => {
             document.body.style.overflow = '';
@@ -120,26 +121,26 @@ function App() {
           }, 10);
         }
       };
-      
+
       // Execute immediately
       forceScrollToTop();
-      
+
       // Then multiple times with different timing approaches
       setTimeout(forceScrollToTop, 0);
       setTimeout(forceScrollToTop, 50);
       setTimeout(forceScrollToTop, 100);
       setTimeout(forceScrollToTop, 300);
-      
+
       // Also use requestAnimationFrame for precise timing with render cycle
       requestAnimationFrame(() => {
         requestAnimationFrame(forceScrollToTop);
       });
-      
+
       // Update the reference to current location
       prevLocationRef.current = location;
     }
   }, [location]);
-  
+
   // Apply native lazy loading to images once mounted
   useEffect(() => {
     // Set native lazy loading on non-critical images
@@ -149,22 +150,22 @@ function App() {
         img.loading = 'lazy';
       }
     });
-    
+
     // Add viewport height fix for mobile browsers (particularly iOS Safari)
     function setViewportHeight() {
       document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
     }
-    
+
     setViewportHeight();
     window.addEventListener('resize', setViewportHeight);
     window.addEventListener('orientationchange', setViewportHeight);
-    
+
     return () => {
       window.removeEventListener('resize', setViewportHeight);
       window.removeEventListener('orientationchange', setViewportHeight);
     };
   }, []);
-  
+
   // Add hardware acceleration CSS class to document root on mount
   // and initialize app loading state
   useEffect(() => {
@@ -172,7 +173,7 @@ function App() {
     document.documentElement.classList.add('hardware-accelerated');
     document.body.classList.add('hardware-accelerated');
     document.getElementById('root')?.classList.add('hardware-accelerated');
-    
+
     // Set content-visibility for better paint performance and faster initial load
     const contentElements = document.querySelectorAll('main, section, article, footer');
     contentElements.forEach(element => {
@@ -181,7 +182,7 @@ function App() {
         element.style.containIntrinsicSize = 'auto';
       }
     });
-    
+
     // Force hardware acceleration on key interactive elements
     const interactiveElements = document.querySelectorAll('button, a, .card, .property-card');
     interactiveElements.forEach(element => {
@@ -189,25 +190,25 @@ function App() {
         element.classList.add('transform-gpu');
       }
     });
-    
+
     // Initialize app loading state with instant loading
     const markAppAsLoaded = () => {
       // Mark app as loaded immediately for instant UX
       setIsAppLoaded(true);
-      
+
       // Load fonts in background without blocking UI
       document.fonts.ready.catch(error => {
         console.warn('Font loading error (non-blocking):', error);
       });
     };
-    
+
     // Start loading process
     if (document.readyState === 'complete') {
       markAppAsLoaded();
     } else {
       window.addEventListener('load', markAppAsLoaded);
     }
-    
+
     return () => {
       // Cleanup if needed (though App component shouldn't unmount)
       document.documentElement.classList.remove('hardware-accelerated');
@@ -221,12 +222,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       {/* Show app loading screen while the app is initializing */}
       {!isAppLoaded && <AppLoading minimumDuration={1000} />}
-      
+
       {/* $10,000 Enterprise-grade SEO Implementation */}
       {/* SEO Dashboard has been moved to a separate admin route */}
-      
+
       {/* Sitemaps are now generated server-side */}
-      
+
       {/* Schema Graph - Knowledge Graph Implementation */}
       <SchemaGraph
         baseUrl={baseUrl}
@@ -242,7 +243,7 @@ function App() {
             ["real estate", "homes", "properties", "Laredo", "Texas", "commercial", "residential"],
             new Date().getFullYear()
           ),
-          
+
           // Organization entity
           createRealEstateBusinessEntity(
             `${baseUrl}/#organization`,
@@ -269,7 +270,7 @@ function App() {
           )
         ]}
       />
-      
+
       <ThemeProvider>
         <TooltipProvider>
           <Toaster />
@@ -277,7 +278,7 @@ function App() {
             <FavoritesProvider>
               {/* Global header */}
               <Header />
-              
+
               {/* Main content with layout wrapper - add hardware acceleration */}
               <Layout>
                 {/* Use Suspense for route-based code splitting */}
@@ -465,6 +466,18 @@ function App() {
                         );
                       }}
                     </Route>
+                    <Route path="/deployment-check">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <DeploymentReadiness />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
                     <Route path="/neighborhoods/enhanced-demo">
                       {() => {
                         return (
@@ -492,10 +505,10 @@ function App() {
                 </Switch>
                 </Suspense>
               </Layout>
-              
+
               {/* Global footer */}
               <Footer />
-              
+
               {/* Floating scroll to top button - always accessible on mobile */}
               <ScrollToTopButton />
             </FavoritesProvider>

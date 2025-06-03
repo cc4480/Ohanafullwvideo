@@ -456,6 +456,7 @@ export function OhanaVideoPlayer({
     let isBuffering = false;
     let loadAttempts = 0;
     let consecutiveGoodPlayback = 0;
+    let qualityAssessmentCount = 0;
 
     // MUCH more aggressive threshold - switch quality after just 1-2 buffer events
     const rebufferingThreshold = 1; // Was 3, now 1 for much faster response
@@ -513,12 +514,16 @@ export function OhanaVideoPlayer({
         // We have good buffer now
         isBuffering = false;
         consecutiveGoodPlayback++;
+        qualityAssessmentCount++;
 
         // This tracks when we have consistently good playback, like YouTube does
         // After 10 consecutive good checks (5 seconds of smooth playback),
         // we could consider switching back to higher quality
         if (consecutiveGoodPlayback > 10 && video.src.includes('/mobile')) {
-          console.log('OhanaVideoPlayer: Consistently good playback, could switch to higher quality');
+          // Only log quality changes, not every assessment
+          if (qualityAssessmentCount % 10 === 0) {
+            console.log(`OhanaVideoPlayer: Quality assessment ${qualityAssessmentCount}: good playback`);
+          }
           // NOTE: Commented out for now to prioritize smooth playback, uncomment to enable
           // adaptive quality increases (but might cause more buffering)
           /*

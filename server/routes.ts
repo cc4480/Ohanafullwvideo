@@ -9,6 +9,10 @@ import path from "path";
 import fs from "fs";
 import WebSocket, { WebSocketServer } from "ws";
 
+// Import health check and testing
+import { healthCheck } from './health-check';
+import { testAllEndpoints } from './endpoint-tests';
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Explicitly serve videos directory to ensure video files are accessible
   app.use('/videos', express.static(path.join(process.cwd(), 'public/videos'), {
@@ -613,7 +617,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   wss.on('connection', (ws) => {
     const connectionId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     activeConnections.add(connectionId);
-    
+
     console.log(`WebSocket connection established: ${connectionId}`);
 
     // Rate limiting for messages
@@ -633,7 +637,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Handle different message types
         if (data.type === 'video_metrics') {
           const metrics = data.metrics;
-          
+
           // Only send config if it has changed significantly
           const currentConfig = connectionConfigs.get(connectionId);
           const newQuality = metrics.bufferLevel < 3 ? 'mobile' : 
@@ -643,7 +647,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (!currentConfig || 
               currentConfig.quality !== newQuality || 
               currentConfig.bufferSize !== newBufferSize) {
-            
+
             const config = {
               quality: newQuality,
               bufferSize: newBufferSize,
@@ -681,6 +685,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register API routes
   app.use('/api', apiRouter);
+
+  // Import health check
+  import { healthCheck } from './health-check';
+
+  // Comprehensive health check endpoint
+  app.get('/api/health', healthCheck);
+
+  // Simple health check for load balancers
+  app.get('/api/ping', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
+  // Comprehensive endpoint testing (development only)
+  if (process.env.NODE_ENV !== 'production') {
+    app.get('/api/test-endpoints', testAllEndpoints);
+  }
 
   // Generate XML sitemap for SEO
   app.get('/sitemap.xml', async (req, res) => {
