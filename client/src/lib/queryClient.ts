@@ -164,14 +164,14 @@ const customRetry = (failureCount: number, error: Error) => {
   // Don't retry for specific error types like 404, 401, etc.
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
-    if (message.includes('404') || message.includes('401') || message.includes('403')) {
+    if (message.includes('404') || message.includes('401') || message.includes('403') || message.includes('zip_code')) {
       return false;
     }
   }
   
-  // In production, retry network requests up to 3 times
-  const isProduction = process.env.NODE_ENV === 'production';
-  return isProduction && failureCount < 3;
+  // Limit retries to prevent infinite loops
+  const maxRetries = process.env.NODE_ENV === 'production' ? 3 : 1;
+  return failureCount < maxRetries;
 };
 
 // Initialize optimized QueryClient with performance settings

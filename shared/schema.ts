@@ -61,11 +61,11 @@ export type Neighborhood = typeof neighborhoods.$inferSelect;
 // Properties table
 export const properties = pgTable('properties', {
   id: serial('id').primaryKey(),
-  type: text('type').notNull(), // house, condo, apartment, etc.
+  type: text('type').notNull(),
   address: text('address').notNull(),
   city: text('city').notNull(),
   state: text('state').notNull(),
-  zipCode: text('zip_code').notNull(),
+  zipCode: text('zipCode').notNull(),
   price: integer('price').notNull(),
   bedrooms: integer('bedrooms').notNull(),
   bathrooms: decimal('bathrooms', { precision: 3, scale: 1 }).notNull(),

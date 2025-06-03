@@ -408,8 +408,9 @@ export function OhanaVideoPlayer({
               })
               .catch((err) => {
                 console.warn('OhanaVideoPlayer: Autoplay prevented by browser', err);
-                // Don't show error to user, just let them click play manually
-                // This creates a better user experience than showing an error message
+                // Reset any error states since autoplay prevention is normal
+                setError(null);
+                // Don't treat autoplay prevention as a fatal error
               });
           }
         } catch (err) {
