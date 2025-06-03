@@ -7,6 +7,7 @@ import { db } from "./db";
 import { configureSecurity } from "./security";
 import { configureSEO } from "./seo";
 import { initializeSampleData } from "./storage";
+import { globalErrorHandler } from "./error-handler";
 
 const app = express();
 app.use(express.json());
@@ -126,24 +127,8 @@ app.use((req, res, next) => {
   
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    
-    console.error(`Server error: ${message}`, err);
-    
-    // In production, don't expose error details to clients
-    const responseMessage = process.env.NODE_ENV === 'production' 
-      ? "Internal Server Error" 
-      : message;
-    
-    res.status(status).json({ message: responseMessage });
-    
-    // Don't throw the error again in production
-    if (process.env.NODE_ENV !== 'production') {
-      throw err;
-    }
-  });
+  // Global error handling middleware
+  app.use(globalErrorHandler);
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
