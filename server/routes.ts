@@ -301,6 +301,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create the message
       const newMessage = await storage.createMessage(result.data);
 
+      // Save message to text file
+      try {
+        const messagesDir = path.join(process.cwd(), 'messages');
+        
+        // Ensure messages directory exists
+        if (!fs.existsSync(messagesDir)) {
+          fs.mkdirSync(messagesDir, { recursive: true });
+        }
+
+        const timestamp = new Date().toISOString();
+        const messageText = `
+=================================================================
+MESSAGE RECEIVED: ${timestamp}
+=================================================================
+Name: ${result.data.name}
+Email: ${result.data.email}
+Phone: ${result.data.phone}
+Interest: ${result.data.interest}
+Message: ${result.data.message}
+=================================================================
+
+`;
+
+        const fileName = `valentin-cuellar-messages.txt`;
+        const filePath = path.join(messagesDir, fileName);
+        
+        // Append to the file (create if doesn't exist)
+        fs.appendFileSync(filePath, messageText);
+        
+        console.log(`Message saved to file: ${filePath}`);
+      } catch (fileError) {
+        console.error("Error saving message to file:", fileError);
+        // Don't fail the request if file saving fails
+      }
+
       res.status(201).json({
         message: "Message sent successfully",
         data: newMessage
@@ -320,6 +355,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Messages fetch error:", error);
       res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // Get messages from text file (admin route)
+  apiRouter.get("/messages/text-file", (req, res) => {
+    try {
+      const messagesDir = path.join(process.cwd(), 'messages');
+      const fileName = `valentin-cuellar-messages.txt`;
+      const filePath = path.join(messagesDir, fileName);
+      
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "No messages file found" });
+      }
+
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', 'attachment; filename="valentin-cuellar-messages.txt"');
+      res.send(fileContent);
+    } catch (error) {
+      console.error("Error reading messages file:", error);
+      res.status(500).json({ message: "Failed to retrieve messages file" });
     }
   });
 

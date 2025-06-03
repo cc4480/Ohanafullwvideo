@@ -53,7 +53,7 @@ export default function ContactForm({ propertyInquiry, isDarkMode }: ContactForm
   // Define mutation
   const contactMutation = useMutation({
     mutationFn: (values: ContactFormValues) => {
-      return apiRequest("POST", "/api/contact", values);
+      return apiRequest("POST", "/api/messages", values);
     },
     onSuccess: () => {
       toast({
