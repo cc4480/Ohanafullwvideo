@@ -8,8 +8,8 @@ export default {
     tailwindcss,
     autoprefixer
   ],
-  // Add these options to prevent the 'from' option warning
-  from: undefined,
-  to: undefined,
-  map: { inline: false }
+  // Proper PostCSS options to prevent warnings
+  parser: false,
+  map: false,
+  from: undefined
 };
