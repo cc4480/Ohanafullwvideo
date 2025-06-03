@@ -4,6 +4,14 @@ import "./index.css";
 
 // Global error handlers
 window.addEventListener('unhandledrejection', (event) => {
+  // Filter out autoplay prevention errors as they're expected
+  const reason = event.reason?.toString() || '';
+  if (reason.includes('autoplay') || reason.includes('play()')) {
+    console.warn('Autoplay prevented (expected):', event.reason);
+    event.preventDefault();
+    return;
+  }
+  
   console.error('Unhandled promise rejection:', event.reason);
   event.preventDefault(); // Prevent default browser error handling
 });

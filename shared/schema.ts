@@ -27,7 +27,7 @@ export const neighborhoods = pgTable('neighborhoods', {
   description: text('description').notNull(),
   city: text('city').notNull(),
   state: text('state').notNull(),
-  zipCode: text('zip_code').notNull(),
+  zipCode: text('zipCode').notNull(),
   image: text('image'),
   lat: decimal('lat', { precision: 9, scale: 6 }),
   lng: decimal('lng', { precision: 9, scale: 6 }),
@@ -100,7 +100,7 @@ export const airbnbRentals = pgTable('airbnb_rentals', {
   address: text('address').notNull(),
   city: text('city').notNull(),
   state: text('state').notNull(),
-  zipCode: text('zip_code').notNull(),
+  zipCode: text('zipCode').notNull(),
   price: integer('price').notNull(), // per night
   bedrooms: integer('bedrooms').notNull(),
   bathrooms: decimal('bathrooms', { precision: 3, scale: 1 }).notNull(),

@@ -411,6 +411,7 @@ export function OhanaVideoPlayer({
                 // Reset any error states since autoplay prevention is normal
                 setError(null);
                 // Don't treat autoplay prevention as a fatal error
+                return Promise.resolve(); // Explicitly resolve to prevent unhandled rejection
               });
           }
         } catch (err) {
