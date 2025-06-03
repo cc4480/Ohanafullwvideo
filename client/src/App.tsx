@@ -38,6 +38,7 @@ const BacklinkManagement = lazy(() => import("@/pages/BacklinkManagement"));
 const DeploymentReadiness = lazy(() => import("@/pages/DeploymentReadiness"));
 import AISEODashboard from '@/components/AISEODashboard';
 import AISearchCapabilities from '@/components/AISearchCapabilities';
+import MessageFiles from './pages/MessageFiles';
 
 // Import our $10,000 Enterprise-Grade SEO Solution
 import SEODashboard from "@/components/SEODashboard";
@@ -487,6 +488,18 @@ function App() {
                             <ScrollToTop />
                             <ErrorBoundary>
                               <EnhancedNeighborhoodDemo />
+                            </ErrorBoundary>
+                          </>
+                        );
+                      }}
+                    </Route>
+                    <Route path="/admin/messages">
+                      {() => {
+                        return (
+                          <>
+                            <ScrollToTop />
+                            <ErrorBoundary>
+                              <MessageFiles />
                             </ErrorBoundary>
                           </>
                         );

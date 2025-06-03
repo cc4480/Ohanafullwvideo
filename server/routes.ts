@@ -301,7 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create the message
       const newMessage = await storage.createMessage(result.data);
 
-      // Save message to text file
+      // Save message to text file with daily file creation
       try {
         const messagesDir = path.join(process.cwd(), 'messages');
         
@@ -310,7 +310,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fs.mkdirSync(messagesDir, { recursive: true });
         }
 
-        const timestamp = new Date().toISOString();
+        const now = new Date();
+        const timestamp = now.toISOString();
+        const dateString = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+        
         const messageText = `
 =================================================================
 MESSAGE RECEIVED: ${timestamp}
@@ -324,13 +327,20 @@ Message: ${result.data.message}
 
 `;
 
-        const fileName = `valentin-cuellar-messages.txt`;
-        const filePath = path.join(messagesDir, fileName);
+        // Save to daily file
+        const dailyFileName = `valentin-cuellar-messages-${dateString}.txt`;
+        const dailyFilePath = path.join(messagesDir, dailyFileName);
         
-        // Append to the file (create if doesn't exist)
-        fs.appendFileSync(filePath, messageText);
+        // Save to master file (all messages)
+        const masterFileName = `valentin-cuellar-messages-all.txt`;
+        const masterFilePath = path.join(messagesDir, masterFileName);
         
-        console.log(`Message saved to file: ${filePath}`);
+        // Append to both daily and master files
+        fs.appendFileSync(dailyFilePath, messageText);
+        fs.appendFileSync(masterFilePath, messageText);
+        
+        console.log(`Message saved to daily file: ${dailyFilePath}`);
+        console.log(`Message saved to master file: ${masterFilePath}`);
       } catch (fileError) {
         console.error("Error saving message to file:", fileError);
         // Don't fail the request if file saving fails
@@ -362,21 +372,74 @@ Message: ${result.data.message}
   apiRouter.get("/messages/text-file", (req, res) => {
     try {
       const messagesDir = path.join(process.cwd(), 'messages');
-      const fileName = `valentin-cuellar-messages.txt`;
-      const filePath = path.join(messagesDir, fileName);
+      const { date, type } = req.query;
+      
+      let fileName: string;
+      let filePath: string;
+      
+      if (date && typeof date === 'string') {
+        // Get specific daily file
+        fileName = `valentin-cuellar-messages-${date}.txt`;
+        filePath = path.join(messagesDir, fileName);
+      } else if (type === 'master') {
+        // Get master file with all messages
+        fileName = `valentin-cuellar-messages-all.txt`;
+        filePath = path.join(messagesDir, fileName);
+      } else {
+        // Get today's file by default
+        const today = new Date().toISOString().split('T')[0];
+        fileName = `valentin-cuellar-messages-${today}.txt`;
+        filePath = path.join(messagesDir, fileName);
+      }
       
       if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ message: "No messages file found" });
+        return res.status(404).json({ 
+          message: "No messages file found for the requested date",
+          requestedFile: fileName
+        });
       }
 
       const fileContent = fs.readFileSync(filePath, 'utf8');
       
       res.setHeader('Content-Type', 'text/plain');
-      res.setHeader('Content-Disposition', 'attachment; filename="valentin-cuellar-messages.txt"');
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
       res.send(fileContent);
     } catch (error) {
       console.error("Error reading messages file:", error);
       res.status(500).json({ message: "Failed to retrieve messages file" });
+    }
+  });
+
+  // Get list of all daily message files
+  apiRouter.get("/messages/files-list", (req, res) => {
+    try {
+      const messagesDir = path.join(process.cwd(), 'messages');
+      
+      if (!fs.existsSync(messagesDir)) {
+        return res.json({ files: [] });
+      }
+
+      const files = fs.readdirSync(messagesDir)
+        .filter(file => file.startsWith('valentin-cuellar-messages-') && file.endsWith('.txt'))
+        .map(file => {
+          const filePath = path.join(messagesDir, file);
+          const stats = fs.statSync(filePath);
+          const fileSize = stats.size;
+          const lastModified = stats.mtime;
+          
+          return {
+            filename: file,
+            size: fileSize,
+            lastModified: lastModified.toISOString(),
+            downloadUrl: `/api/messages/text-file?${file.includes('-all.txt') ? 'type=master' : `date=${file.replace('valentin-cuellar-messages-', '').replace('.txt', '')}`}`
+          };
+        })
+        .sort((a, b) => b.lastModified.localeCompare(a.lastModified));
+
+      res.json({ files });
+    } catch (error) {
+      console.error("Error listing message files:", error);
+      res.status(500).json({ message: "Failed to list message files" });
     }
   });
 
@@ -1360,6 +1423,68 @@ Crawl-delay: 1
       }
     }
   }
+
+  // Daily file creation function
+  function createDailyFile() {
+    try {
+      const messagesDir = path.join(process.cwd(), 'messages');
+      
+      // Ensure messages directory exists
+      if (!fs.existsSync(messagesDir)) {
+        fs.mkdirSync(messagesDir, { recursive: true });
+      }
+
+      const now = new Date();
+      const dateString = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+      const timestamp = now.toISOString();
+      
+      const dailyFileName = `valentin-cuellar-messages-${dateString}.txt`;
+      const dailyFilePath = path.join(messagesDir, dailyFileName);
+      
+      // Only create if file doesn't exist
+      if (!fs.existsSync(dailyFilePath)) {
+        const headerText = `
+=================================================================
+DAILY MESSAGE LOG FOR VALENTIN CUELLAR
+Date: ${dateString}
+Created: ${timestamp}
+=================================================================
+This file contains all messages received on ${dateString}
+=================================================================
+
+`;
+        
+        fs.writeFileSync(dailyFilePath, headerText);
+        console.log(`Daily message file created: ${dailyFilePath}`);
+      }
+    } catch (error) {
+      console.error("Error creating daily file:", error);
+    }
+  }
+
+  // Create today's file immediately
+  createDailyFile();
+
+  // Schedule daily file creation at midnight (00:00)
+  const scheduleNextDailyFile = () => {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0); // Set to midnight
+    
+    const timeUntilMidnight = tomorrow.getTime() - now.getTime();
+    
+    setTimeout(() => {
+      createDailyFile();
+      // Schedule the next one (24 hours later)
+      setInterval(createDailyFile, 24 * 60 * 60 * 1000); // 24 hours
+    }, timeUntilMidnight);
+    
+    console.log(`Next daily file creation scheduled for: ${tomorrow.toISOString()}`);
+  };
+
+  // Start the daily file scheduler
+  scheduleNextDailyFile();
 
   return server;
 }
