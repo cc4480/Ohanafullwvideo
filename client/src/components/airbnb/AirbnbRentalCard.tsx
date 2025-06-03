@@ -29,15 +29,15 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
     const processedImages = rental.images.map(img => {
       // If it's already a URL, use it as is
       if (img.startsWith('http')) return img;
-      
+
       // If it has a leading slash, remove it (from /shiloh-main.jpg to shiloh-main.jpg)
       if (img.startsWith('/')) {
         return img.substring(1);
       }
-      
+
       return img;
     });
-    
+
     setImages(processedImages);
     console.log('Processed images:', processedImages);
   }, [rental.images]);
@@ -89,7 +89,7 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
             </div>
           </AspectRatio>
         )}
-        
+
         {rental.rating && (
           <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center shadow-sm z-10">
             <StarIcon className="h-4 w-4 text-yellow-500 mr-1" />
@@ -100,13 +100,13 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
           </div>
         )}
       </div>
-      
+
       <CardContent className="p-4">
         <div className="mb-2">
           <h3 className="text-lg font-semibold line-clamp-2 mb-1">{rental.title}</h3>
           <p className="text-sm text-muted-foreground mb-2">{rental.address}, {rental.city}, {rental.state}</p>
         </div>
-        
+
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <Badge variant="outline" className="text-xs flex items-center gap-1">
             <UsersIcon className="h-3 w-3" /> {rental.guests} guests
@@ -118,7 +118,7 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
             <BathIcon className="h-3 w-3" /> {rental.bathrooms} {rental.bathrooms === 1 ? 'bath' : 'baths'}
           </Badge>
         </div>
-        
+
         {rental.highlights && rental.highlights.length > 0 && (
           <div className="mb-3">
             <ul className="text-xs space-y-1">
@@ -131,18 +131,19 @@ export function AirbnbRentalCard({ rental, featured = false }: AirbnbRentalCardP
             </ul>
           </div>
         )}
-        
+
         <div className="flex justify-between items-center mt-3">
           <div>
             <span className="text-lg font-bold">{formattedPrice}</span>
             <span className="text-sm text-muted-foreground"> / night</span>
           </div>
-          
+
+          {/* Action Buttons */}
           <div className="flex gap-2">
             {rental.airbnbUrl && (
               <a href={rental.airbnbUrl} target="_blank" rel="noopener noreferrer">
                 <Button size="sm" className="bg-[#FF5A5F] hover:bg-[#E04348] text-white text-xs px-2">
-                  Book
+                  Book on Airbnb
                 </Button>
               </a>
             )}

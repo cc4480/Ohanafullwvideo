@@ -33,10 +33,10 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
   const [expandedDescription, setExpandedDescription] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageError, setImageError] = useState<Record<string, boolean>>({});
-  
+
   // Check if a specific image has an error
   const hasImageError = (src: string) => imageError[src] === true;
-  
+
   // Fetch rental details
   const {
     data: rental,
@@ -54,7 +54,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
       return response.json();
     },
   });
-  
+
   // Log image details for debugging
   useEffect(() => {
     if (rental?.images && rental.images.length > 0) {
@@ -85,7 +85,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
               canonicalPath={`/airbnb/${rental.id}`}
               imageUrl={rental.images[0]}
             />
-            
+
             <SEOBreadcrumbs
               items={[
                 { name: "Home", href: "/" },
@@ -93,7 +93,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                 { name: rental.title, href: `/airbnb/${rental.id}` },
               ]}
             />
-            
+
             <SimplePropertyStructuredData
               name={rental.title}
               description={rental.description}
@@ -113,8 +113,9 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
               latitude={rental.lat}
               longitude={rental.lng}
             />
-            
-            <div className="mb-6">
+
+            {/* Header Section */}
+            <div className="mb-8">
               <h1 className="text-3xl font-bold mb-2">{rental.title}</h1>
               <div className="flex items-center mb-2">
                 {rental.rating && (
@@ -131,8 +132,25 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                   <span>{rental.address}, {rental.city}, {rental.state}</span>
                 </div>
               </div>
+
+              {/* Quick Booking Banner */}
+              <div className="bg-gradient-to-r from-red-500 to-pink-600 rounded-xl p-6 text-white mb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Ready to Book Your Stay?</h3>
+                    <p className="text-red-100">Reserve this beautiful property directly on Airbnb</p>
+                  </div>
+                  <Button 
+                    size="lg"
+                    className="bg-white text-red-600 hover:bg-red-50 font-semibold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => window.open(rental.airbnbUrl, '_blank')}
+                  >
+                    Book Now on Airbnb
+                  </Button>
+                </div>
+              </div>
             </div>
-            
+
             {/* Image gallery */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <div className="md:col-span-2">
@@ -160,7 +178,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                   )}
                 </AspectRatio>
               </div>
-              
+
               <div className="grid grid-cols-4 gap-2">
                 {rental.images.slice(0, 8).map((image, index) => (
                   <div 
@@ -190,7 +208,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                 ))}
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
                 {/* Key details */}
@@ -209,7 +227,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                       <BathIcon className="h-4 w-4" /> {rental.bathrooms} {rental.bathrooms === 1 ? 'bath' : 'baths'}
                     </Badge>
                   </div>
-                  
+
                   {rental.highlights && rental.highlights.length > 0 && (
                     <div className="mb-6">
                       <h3 className="text-lg font-semibold mb-3">Highlights</h3>
@@ -223,9 +241,9 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                       </ul>
                     </div>
                   )}
-                  
+
                   <Separator className="my-6" />
-                  
+
                   {/* Description */}
                   <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-3">Description</h3>
@@ -248,9 +266,9 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                       )}
                     </Button>
                   </div>
-                  
+
                   <Separator className="my-6" />
-                  
+
                   {/* Amenities */}
                   {rental.amenities && rental.amenities.length > 0 && (
                     <div className="mb-6">
@@ -265,14 +283,14 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                       </ul>
                     </div>
                   )}
-                  
+
                   <Separator className="my-6" />
-                  
+
                   {/* Location */}
                   <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-3">Location</h3>
                     <p className="text-muted-foreground mb-4">{rental.address}, {rental.city}, {rental.state} {rental.zipCode}</p>
-                    
+
                     {rental.lat && rental.lng && (
                       <div className="h-[300px] rounded-lg overflow-hidden">
                         <StaticPropertyMap 
@@ -285,7 +303,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                   </div>
                 </div>
               </div>
-              
+
               {/* Booking card */}
               <div className="lg:col-span-1">
                 <Card className="sticky top-24">
@@ -302,7 +320,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="mb-6 p-4 border rounded-lg">
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         <div className="border rounded-tl-lg p-3">
@@ -318,7 +336,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                           <div className="font-medium">{rental.guests} {rental.guests === 1 ? 'guest' : 'guests'} maximum</div>
                         </div>
                       </div>
-                      
+
                       {rental.airbnbUrl ? (
                         <a href={rental.airbnbUrl} target="_blank" rel="noopener noreferrer" className="block w-full mb-4">
                           <Button className="w-full bg-[#FF5A5F] hover:bg-[#E04348] text-white">
@@ -329,7 +347,7 @@ export function AirbnbRentalDetails({ id }: AirbnbRentalDetailsProps) {
                         <Button className="w-full mb-4">Check availability</Button>
                       )}
                     </div>
-                    
+
                     {rental.cancellationPolicy && (
                       <div className="text-sm text-muted-foreground">
                         <div className="flex items-start mb-2">

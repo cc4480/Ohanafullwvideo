@@ -64,6 +64,9 @@ class MemoryStorage {
   private isInitialized = false;
   private _propertiesCache: Map<number, Property> = new Map();
   private _searchCache: Map<string, Property[]> = new Map();
+  private airbnbRentals: AirbnbRental[] = []; // Initialize airbnbRentals here
+  private favorites: Favorite[] = [];
+  private nextId: number = 1;
 
   constructor() {
     // Initialize data immediately for instant access
@@ -306,7 +309,81 @@ class MemoryStorage {
       }
     ];
 
-    this.nextId = Math.max(...this.properties.map(p => p.id), ...this.neighborhoods.map(n => n.id)) + 1;
+    // Mock data for Airbnb rentals
+    this.airbnbRentals = [
+      {
+        id: 1,
+        title: "505 Shiloh Dr Unit 6 - Modern Laredo Getaway",
+        description: "Experience comfort and convenience at this beautifully appointed unit in Laredo's desirable Shiloh Drive complex. Perfect for business travelers, families, or anyone seeking a peaceful stay with modern amenities. This bright and spacious unit features contemporary furnishings, a fully equipped kitchen, and all the comforts of home.",
+        address: "505 Shiloh Dr Unit 6",
+        city: "Laredo",
+        state: "Texas",
+        zipCode: "78045",
+        price: 85,
+        beds: 2,
+        bathrooms: 1,
+        guests: 4,
+        images: [
+          "/assets/shiloh-dr/shiloh-exterior-full.jpg",
+          "/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-primary-photo(1).jpg",
+          "/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo.jpg",
+          "/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(1).jpg",
+          "/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(2).jpg",
+          "/assets/shiloh-dr/505-shiloh-dr-unit-6-laredo-tx-building-photo(3).jpg"
+        ],
+        amenities: [
+          "High-Speed WiFi", 
+          "Fully Equipped Kitchen", 
+          "Central Air Conditioning", 
+          "Free Parking", 
+          "Smart TV with Streaming", 
+          "Washer & Dryer",
+          "Professional Cleaning",
+          "24/7 Support",
+          "Keyless Entry",
+          "Business-Friendly Workspace"
+        ],
+        featured: true,
+        airbnbUrl: "https://www.airbnb.com/rooms/shiloh-dr-unit-6",
+        neighborhood_id: 1,
+        lat: 27.5432,
+        lng: -99.4654,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 2,
+        title: "Luxurious Downtown Loft",
+        description: "A stunning modern loft in the heart of downtown Laredo with premium amenities and spectacular city views.",
+        address: "123 San Bernardo Ave",
+        city: "Laredo",
+        state: "Texas",
+        zipCode: "78040",
+        price: 150,
+        beds: 2,
+        bathrooms: 2,
+        guests: 4,
+        images: [
+          "/shiloh-main.jpg",
+          "/shiloh-building1.jpg",
+          "/shiloh-building2.jpg"
+        ],
+        amenities: ["WiFi", "Kitchen", "Air Conditioning", "Parking", "TV"],
+        featured: false,
+        airbnbUrl: "https://www.airbnb.com/rooms/123456789",
+        neighborhood_id: 1,
+        lat: 27.5064,
+        lng: -99.5075,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ];
+
+    this.nextId = Math.max(
+      ...this.properties.map(p => p.id), 
+      ...this.neighborhoods.map(n => n.id),
+      ...this.airbnbRentals.map(r => r.id)
+      ) + 1;
   }
 
   async getUser(id: number): Promise<User | undefined> {
